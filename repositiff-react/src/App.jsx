@@ -4,7 +4,7 @@ import Rodape from "@/components/footer/footer";
 import Home from "./pages/home/home"; // Importe o componente Home
 import Login from "./pages/login/login";
 
-import Admin from "./pages/admin/admin";
+import LibrarianDashboard from "./pages/librarianDashboard/librarianDashboard";
 
 function App() {
   return (
@@ -15,7 +15,7 @@ function App() {
         <Route path="*" element={<p>404 - Página não encontrada</p>} />
         <Route path="/" element={<Home />} />
         <Route path="/login" element={<Login />} />
-        <Route path="/administrador" element={<Admin />} />
+        <Route path="/administrador" element={<LibrarianDashboard />} />
         {/* Outras rotas */}
       </Routes>
       <Rodape /> {/* Rodapé será mantido em todas as páginas */}
