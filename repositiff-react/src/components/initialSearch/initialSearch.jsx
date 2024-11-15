@@ -1,9 +1,9 @@
-import "./buscainicial.css";
+import "./initialSearch.css";
 import { AiOutlineSearch } from "react-icons/ai";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 
-function BuscaInicial() {
+function InitialSearch() {
   return (
     <div className="max-w-[800px] mx-auto mt-12 ">
       <div className="flex justify-center">
@@ -14,7 +14,7 @@ function BuscaInicial() {
         />
       </div>
       <div className="flex w-full max-w-[900px] items-center space-x-2">
-        <Input type="busca" placeholder="Busca" />
+        <Input type="search" placeholder="Busca" />
         <Button className="bg-botaoIFF hover:bg-green-800 " type="submit">
           Todos os campos
         </Button>
@@ -34,4 +34,4 @@ function BuscaInicial() {
   );
 }
 
-export default BuscaInicial;
+export default InitialSearch;

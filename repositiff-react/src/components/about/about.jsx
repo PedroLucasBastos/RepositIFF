@@ -1,9 +1,9 @@
-import "./sobre.css";
+import "./about.css";
 
-function Sobre() {
+function About() {
   return (
     <div
-      id="sobre"
+      id="about"
       className="flex flex-col md:flex-row items-center justify-center md:space-x-[350px] space-y-6 md:space-y-0 p-8 mt-20 mb-96"
     >
       {/* Imagem à esquerda */}
@@ -41,4 +41,4 @@ function Sobre() {
   );
 }
 
-export default Sobre;
+export default About;

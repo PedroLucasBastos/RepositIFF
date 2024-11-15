@@ -1,15 +1,15 @@
 import { Routes, Route } from "react-router-dom";
-import Cabecalho from "./components/cabecalho/cabecalho";
-import Rodape from "@/components/rodape/rodape";
+import Header from "./components/header/header";
+import Rodape from "@/components/footer/footer";
 import Home from "./pages/home/home"; // Importe o componente Home
 import Login from "./pages/login/login";
 
-import Admin from "./pages/administrador/admin";
+import Admin from "./pages/admin/admin";
 
 function App() {
   return (
     <>
-      <Cabecalho /> {/* Cabeçalho será mantido em todas as páginas */}
+      <Header /> {/* Cabeçalho será mantido em todas as páginas */}
       <Routes>
         {/* Rota principal agora renderiza o componente Home */}
         <Route path="*" element={<p>404 - Página não encontrada</p>} />

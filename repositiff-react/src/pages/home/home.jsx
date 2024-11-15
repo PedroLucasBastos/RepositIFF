@@ -1,14 +1,14 @@
 // Home.jsx
-import BuscaInicial from "@/components/buscaInicial/buscaInicial";
-import ItensColetados from "@/components/itensColetados/itensColetados";
-import Sobre from "@/components/sobre/sobre";
+import InitialSearch from "@/components/initialSearch/initialSearch";
+import CollectedItems from "@/components/collectedItems/collectedItems";
+import About from "@/components/about/about";
 
 function Home() {
   return (
     <div>
-      <BuscaInicial />
-      <ItensColetados />
-      <Sobre />
+      <InitialSearch />
+      <CollectedItems />
+      <About />
     </div>
   );
 }

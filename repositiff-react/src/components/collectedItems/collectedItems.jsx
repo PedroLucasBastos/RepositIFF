@@ -1,6 +1,6 @@
-import "./itensColetados.css";
+import "./collectedItems.css";
 
-function ItensColetados() {
+function CollectedItems() {
   return (
     <div className="itens-container mt-20">
       <p className="text-[20px] sm:text-[24px] md:text-[28px] lg:text-[32px] xl:text-[34px] mx-auto text-center text-gray-500">
@@ -55,4 +55,4 @@ function ItensColetados() {
   );
 }
 
-export default ItensColetados;
+export default CollectedItems;

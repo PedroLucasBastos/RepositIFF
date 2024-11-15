@@ -5,16 +5,16 @@ import {
   FaYoutube,
 } from "react-icons/fa6";
 
-const rolarAte = (id) => {
+const scrollToSection = (id) => {
   const section = document.getElementById(id);
   if (section) {
     section.scrollIntoView({ behavior: "smooth" });
   }
 };
 
-import "./rodape.css";
+import "./footer.css";
 
-function Rodape() {
+function Footer() {
   return (
     <footer className="text-green-900 text-sm ">
       {/* Seção de Redes Sociais */}
@@ -60,7 +60,7 @@ function Rodape() {
               INÍCIO
             </a>
             <a
-              onClick={() => rolarAte("sobre")}
+              onClick={() => scrollToSection("about")}
               className="hover:underline cursor-pointer"
             >
               SOBRE
@@ -100,4 +100,4 @@ function Rodape() {
   );
 }
 
-export default Rodape;
+export default Footer;

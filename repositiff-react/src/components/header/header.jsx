@@ -1,22 +1,23 @@
 import { Menu, Dropdown, Button } from "antd";
 import { DownOutlined } from "@ant-design/icons";
-import "./cabecalho.css";
+import "./header.css";
 import { Link } from "react-router-dom";
 
-const rolarAte = (id) => {
+const scrollToSection = (id) => {
   const section = document.getElementById(id);
+  console.log(section);
   if (section) {
     section.scrollIntoView({ behavior: "smooth" });
   }
 };
 
 // Menu para o dropdown em telas menores
-const menu = (
+const dropdownMenu = (
   <Menu>
     <Menu.Item key="inicio">
       <Link to="/">Início</Link>
     </Menu.Item>
-    <Menu.Item key="sobre" onClick={() => rolarAte("sobre")}>
+    <Menu.Item key="about" onClick={() => scrollToSection("about")}>
       Sobre
     </Menu.Item>
     <Menu.Item key="indicadores">
@@ -31,9 +32,9 @@ const menu = (
   </Menu>
 );
 
-function Cabecalho() {
+function Header() {
   return (
-    <div className="container-cabecalho">
+    <div className="container-Header">
       {/* Logo e informações */}
       <div className="logo-IFF">
         <img src="./logos/logoIFF.png" alt="logo-IFF" />
@@ -44,12 +45,12 @@ function Cabecalho() {
       </div>
 
       {/* Menu de navegação para telas grandes e dropdown para telas menores */}
-      <div className="navbar-cabecalho">
+      <div className="navbar-Header">
         <ul className="navbar-menu hidden md:flex">
           <li>
             <Link to="/">Início</Link>
           </li>
-          <li onClick={() => rolarAte("sobre")}>Sobre</li>
+          <li onClick={() => scrollToSection("about")}>Sobre</li>
           <li>
             <a href="#indicadores">Indicadores</a>
           </li>
@@ -66,7 +67,11 @@ function Cabecalho() {
 
         {/* Dropdown para dispositivos móveis */}
         <div className="md:hidden">
-          <Dropdown overlay={menu} trigger={["click"]} placement="bottomRight">
+          <Dropdown
+            overlay={dropdownMenu}
+            trigger={["click"]}
+            placement="bottomRight"
+          >
             <Button
               type="text"
               className="flex items-center space-x-1 text-black"
@@ -80,4 +85,4 @@ function Cabecalho() {
   );
 }
 
-export default Cabecalho;
+export default Header;
