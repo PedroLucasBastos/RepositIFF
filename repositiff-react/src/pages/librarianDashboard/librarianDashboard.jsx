@@ -1,23 +1,24 @@
 import React, { useState } from "react";
-import { Dropdown, Menu, Avatar, Button } from "antd";
+import { Dropdown, Menu, Avatar } from "antd";
 import { UserOutlined, LogoutOutlined } from "@ant-design/icons";
+import Lottie from "lottie-react";
+import FormTCC from "../../components/formTCC/formTCC"; // Ajuste do import para maiúscula no nome do componente
+import plusAnimation from "../../assets/lotties/plusAnimation.json";
+import editAnimation from "../../assets/lotties/editAnimation.json";
+import deleteAnimation from "../../assets/lotties/binAnimation.json";
 
 const LibrarianDashboard = () => {
-  const [isLoggedIn, setIsLoggedIn] = useState(true); // Controlo de login
+  const [hoveredButton, setHoveredButton] = useState(null); // Hover state for each button
+  const [isModalOpen, setIsModalOpen] = useState(false); // Modal control state
 
-  // Função para abrir o menu do Avatar
   const handleMenuClick = (e) => {
     if (e.key === "logout") {
-      // Lógica de logout
       console.log("Logging out...");
-      setIsLoggedIn(false); // Exemplo de lógica para simular o logout
     } else if (e.key === "editProfile") {
-      // Lógica para editar perfil
       console.log("Editing profile...");
     }
   };
 
-  // Menu de opções para o Avatar
   const menu = (
     <Menu onClick={handleMenuClick}>
       <Menu.Item
@@ -44,27 +45,74 @@ const LibrarianDashboard = () => {
           <Avatar size={40} icon={<UserOutlined />} />
         </Dropdown>
       </div>
-      <div className="min-h-screen  relative">
-        {/* Avatar no canto superior direito */}
 
-        {/* Título da página */}
+      <div className="min-h-screen">
         <h1 className="text-3xl font-semibold text-center mt-8">
-          Painel de controle
+          Painel de Controle
         </h1>
 
-        {/* Botões Centralizados */}
-        <div className="flex justify-center items-center mt-8 space-x-6">
-          <Button className="w-36 h-14 text-white bg-blue-500 hover:bg-blue-600">
-            Cadastrar novo TCC
-          </Button>
-          <Button className="w-36 h-14 text-white bg-green-500 hover:bg-green-600">
-            Editar TCC
-          </Button>
-          <Button className="w-36 h-14 text-white bg-red-500 hover:bg-red-600">
-            Deletar TCC
-          </Button>
+        <div className="flex justify-center mt-8 gap-4">
+          <button
+            className="w-48 aspect-square bg-green-500 hover:bg-green-600 text-white text-center font-semibold rounded-md flex flex-col justify-center items-center"
+            onMouseEnter={() => setHoveredButton("plus")}
+            onMouseLeave={() => setHoveredButton(null)}
+            onClick={() => setIsModalOpen(true)} // Open modal
+          >
+            <div className="w-10 h-10">
+              <Lottie
+                animationData={plusAnimation}
+                loop={hoveredButton === "plus"}
+              />
+            </div>
+            Registrar TCC
+          </button>
+
+          <button
+            className="w-48 aspect-square bg-green-500 hover:bg-green-600 text-white text-center font-semibold rounded-md flex flex-col justify-center items-center"
+            onMouseEnter={() => setHoveredButton("edit")}
+            onMouseLeave={() => setHoveredButton(null)}
+          >
+            <div className="w-10 h-10">
+              <Lottie
+                animationData={editAnimation}
+                loop={hoveredButton === "edit"}
+              />
+            </div>
+            Editar TCC's
+          </button>
+
+          <button
+            className="w-48 aspect-square bg-green-500 hover:bg-green-600 text-white text-center font-semibold rounded-md flex flex-col justify-center items-center"
+            onMouseEnter={() => setHoveredButton("delete")}
+            onMouseLeave={() => setHoveredButton(null)}
+          >
+            <div className="w-10 h-10">
+              <Lottie
+                animationData={deleteAnimation}
+                loop={hoveredButton === "delete"}
+              />
+            </div>
+            Apagar TCC
+          </button>
         </div>
       </div>
+
+      {isModalOpen && (
+        <div className="fixed inset-0 flex items-center justify-center bg-black bg-opacity-50 z-50">
+          <div className="bg-white w-[80vw] max-h-[90vh] overflow-y-auto rounded-lg p-6 shadow-lg">
+            <div className="flex justify-between items-center mb-4">
+              <h2 className="text-2xl font-semibold">Registrar novo TCC</h2>
+              <button
+                onClick={() => setIsModalOpen(false)}
+                className="text-gray-500 hover:text-gray-700"
+              >
+                ✕
+              </button>
+            </div>
+            <FormTCC />
+          </div>
+        </div>
+      )}
     </div>
   );
 };
