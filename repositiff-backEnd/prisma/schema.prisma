@@ -1,0 +1,50 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model AcademicWork {
+  id           String    @id
+  // id_doc       String
+  createdAt    DateTime  @default(now())
+  title        String
+  typeWork     String
+  year         Int
+  qtdPag       Int
+  description  String
+  course       String
+  keyWords     String[]
+  status       Boolean
+  cutterNumber String?
+  cduCode      String?
+  cddCode      String?
+  url          String?
+  advisors     Advisor[] @relation("AcademicWorkToAdvisor")
+  authors      Author[]  @relation("AcademicWorkToAuthor")
+}
+
+model Author {
+  id           String         @id @default(cuid())
+  nome         String
+  sobrenome    String
+  AcademicWork AcademicWork[] @relation("AcademicWorkToAuthor")
+}
+
+model Advisor {
+  id           String         @id @default(cuid())
+  nome         String
+  sobrenome    String
+  AcademicWork AcademicWork[] @relation("AcademicWorkToAdvisor")
+}
+
+model Librarian {
+  id                 String @id
+  name               String
+  email              String @unique
+  registrationNumber String
+  pass               String
+}
