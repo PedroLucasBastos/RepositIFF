@@ -1,1 +1,0 @@
-Apagar o arquivo .git do seu projeto caso ele tivesse algo no github
