@@ -5,6 +5,7 @@ import Home from "./pages/home/home"; // Importe o componente Home
 import Login from "./pages/login/login";
 
 import LibrarianDashboard from "./pages/librarianDashboard/librarianDashboard";
+import ProtectedRoute from "./components/protectedRoute/porotectedRoute";
 
 function App() {
   return (
@@ -15,7 +16,14 @@ function App() {
         <Route path="*" element={<p>404 - Página não encontrada</p>} />
         <Route path="/" element={<Home />} />
         <Route path="/login" element={<Login />} />
-        <Route path="/administrador" element={<LibrarianDashboard />} />
+        <Route
+          path="/administrador"
+          element={
+            <ProtectedRoute>
+              <LibrarianDashboard />
+            </ProtectedRoute>
+          }
+        />
         {/* Outras rotas */}
       </Routes>
       <Rodape /> {/* Rodapé será mantido em todas as páginas */}

@@ -1,8 +1,10 @@
 import React, { useState } from "react";
 import { Dropdown, Menu, Avatar } from "antd";
 import { UserOutlined, LogoutOutlined } from "@ant-design/icons";
+import Cookies from "js-cookie"; // Importar js-cookie
+import { useNavigate } from "react-router-dom";
 import Lottie from "lottie-react";
-import FormTCC from "../../components/formTCC/formTCC"; // Ajuste do import para maiúscula no nome do componente
+import FormTCC from "../../components/formTCC/formTCC";
 import plusAnimation from "../../assets/lotties/plusAnimation.json";
 import editAnimation from "../../assets/lotties/editAnimation.json";
 import deleteAnimation from "../../assets/lotties/binAnimation.json";
@@ -10,10 +12,13 @@ import deleteAnimation from "../../assets/lotties/binAnimation.json";
 const LibrarianDashboard = () => {
   const [hoveredButton, setHoveredButton] = useState(null); // Hover state for each button
   const [isModalOpen, setIsModalOpen] = useState(false); // Modal control state
+  const navigate = useNavigate(); // Hook para redirecionar
 
   const handleMenuClick = (e) => {
     if (e.key === "logout") {
-      console.log("Logging out...");
+      // Remove o cookie e redireciona para a página de login
+      Cookies.remove("authToken");
+      navigate("/login");
     } else if (e.key === "editProfile") {
       console.log("Editing profile...");
     }
