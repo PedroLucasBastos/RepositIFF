@@ -1,10 +1,20 @@
 import fastify from 'fastify';
+import cors from '@fastify/cors'
 import appRoutes from "@src/routes.js"
+
 import * as dotenv from 'dotenv';
 
 dotenv.config();
 const app = fastify();
 const PORT = process.env.PORT || 1111;
+
+// Configura o CORS
+app.register(cors, {
+    origin: [process.env.URL_ACCEPTED || ""], // Permitir requisições apenas desta origem
+    methods: ['GET', 'POST', 'PUT', 'DELETE'], // Métodos permitidos
+    allowedHeaders: ['Content-Type', 'Authorization'], // Cabeçalhos permitidos
+});
+
 
 app.get('/', () => {
     // console.log("Hello World")

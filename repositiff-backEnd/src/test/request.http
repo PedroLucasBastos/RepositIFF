@@ -15,6 +15,15 @@ Content-Type: application/json
 }
 
 ###
+POST http://localhost:3333/librarian/login
+Content-Type: application/json
+
+{
+    "registrationNumber": "2013655865",
+    "password": "abc@123"
+}
+
+###
 POST http://localhost:3333/librarian/register
 Content-Type: application/json
 
@@ -28,4 +37,4 @@ Content-Type: application/json
 
 ###
 GET  http://localhost:3333/librarian/librarians
-Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6ImEwMTU0ZmM2LTlhNjQtNDA0YS1hMDZkLWJhOWY3YWZkMzU1ZiIsImlhdCI6MTczMTk0ODk5NywiZXhwIjoxNzMxOTc3Nzk3fQ.BuClEIsdWc5bA7RQC7bGYzIp81gjJE7ROvN9wXLcd18
+Authorization: Bearer .eyJpZCI6ImEwMTU0ZmM2LTlhNjQtNDA0YS1hMDZkLWJhOWY3YWZkMzU1ZiIsImlhdCI6MTczMTk0ODk5NywiZXhwIjoxNzMxOTc3Nzk3fQ.BuClEIsdWc5bA7RQC7bGYzIp81gjJE7ROvN9wXLcd18
