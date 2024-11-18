@@ -1,14 +1,14 @@
 import { TrabalhoAcademico } from "@src/domain/project.js";
-import { IAcademicWorkRepository } from "@src/repositories/IAcademicWorkRepository.js";
+import { IAcademicWorkRepository } from "@src/infra/repositories/IAcademicWorkRepository.js";
 import { Advisor, Author, PrismaClient } from "@prisma/client";
 
-export class academicPrismaRepository implements IAcademicWorkRepository{
+export class academicPrismaRepository implements IAcademicWorkRepository {
     private _prismaCli: PrismaClient;
-    constructor(){
-        this._prismaCli  = new PrismaClient();
+    constructor() {
+        this._prismaCli = new PrismaClient();
     }
     async registerAcademicWork(project: TrabalhoAcademico): Promise<void> {
-        try{
+        try {
             const academicRegisted = await this._prismaCli.academicWork.create({
                 data: {
                     id: project.getId(), // Pegando o id_doc do objeto project
@@ -19,18 +19,18 @@ export class academicPrismaRepository implements IAcademicWorkRepository{
                     description: project.getDescription(), // Descrição do trabalho
                     course: project.getCourse(), // Curso relacionado ao trabalho
                     keyWords: project.getKeyWords(), // Palavras-chave
-        
+
                     // Campos opcionais, se houver
                     cutterNumber: project.getCutterNumber(), // Pode ser null se não houver
                     cduCode: project.getCduCode(),
                     cddCode: project.getCddCode(),
                     url: project.getUrl(),
                     status: project.getStatus(), // Status padrão como true
-        
+
                     // Relacionamentos com autores e orientadores
                     authors: {
                         create: project.getAuthors().map((author) => ({
-                            nome: author.nome, 
+                            nome: author.nome,
                             sobrenome: author.sobrenome,
                         }))
                     },
@@ -43,7 +43,7 @@ export class academicPrismaRepository implements IAcademicWorkRepository{
                 }
             })
             console.log("Academic Work successfully registered!");
-        }catch(error){
+        } catch (error) {
             console.error("Error details: ", error); // Adicione essa linha para imprimir o erro específico
             console.log("Academic Work failed to registered!");
             return Promise.reject();
@@ -52,33 +52,33 @@ export class academicPrismaRepository implements IAcademicWorkRepository{
 
     async findByIdDoc(id: string): Promise<TrabalhoAcademico | void> {
         console.log(`Está buscando id: ${id}`)
-        try{
+        try {
             console.log("Começo do try")
             const prismaAcademicWork = await this._prismaCli.academicWork.findUnique({
-                where:{
+                where: {
                     id: id,
                 }
             });
             const academicWork = this.mapperAcademicWork(prismaAcademicWork);
-            if(academicWork){
+            if (academicWork) {
                 return academicWork;
             }
-        }catch(error){
+        } catch (error) {
             console.error("Error details: ", error);
             throw new Error("Erro ao buscar o trabalho acadêmico.");
         }
         console.log('Não foi nenhum')
     }
     async listAllProjects(): Promise<TrabalhoAcademico[] | void> {
-        try{
+        try {
             const listPrismaAcademicWork = await this._prismaCli.academicWork.findMany();
-            const listAcademicWork = listPrismaAcademicWork.map((prismaAcademicWork)=> (this.mapperAcademicWork(prismaAcademicWork)));
+            const listAcademicWork = listPrismaAcademicWork.map((prismaAcademicWork) => (this.mapperAcademicWork(prismaAcademicWork)));
             return listAcademicWork;
-        }catch(error){
-            
+        } catch (error) {
+
         }
     }
-    private mapperAcademicWork(prismaData: any): TrabalhoAcademico{
+    private mapperAcademicWork(prismaData: any): TrabalhoAcademico {
         return new TrabalhoAcademico({
             id: prismaData.id,
             title: prismaData.title,
@@ -95,7 +95,7 @@ export class academicPrismaRepository implements IAcademicWorkRepository{
             status: prismaData.status,
             authors: prismaData.authors.map((author: Author) => (author.nome, author.sobrenome)),
             advisors: prismaData.advisors.map((advisor: Advisor) => (advisor.nome, advisor.sobrenome))
-    });
+        });
     }
 
 }

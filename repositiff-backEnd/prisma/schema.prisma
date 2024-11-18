@@ -45,6 +45,6 @@ model Librarian {
   id                 String @id
   name               String
   email              String @unique
-  registrationNumber String
+  registrationNumber String @unique
   pass               String
 }

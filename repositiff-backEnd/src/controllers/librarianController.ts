@@ -1,7 +1,8 @@
 import { Librarian, librarianProps } from "@src/domain/librarian.js";
 import { BcryptService } from "@src/infra/security/bcryptService.js";
 import { FastifyRequest, FastifyReply } from 'fastify';
-import { PrismaLibrarianRepository } from "@src/repositories/prisma-librarian-respository.js"
+import { PrismaLibrarianRepository } from "@src/infra/repositories/prisma/prisma-librarian-respository.js"
+import { JWTService } from "@src/infra/security/jwtService.js";
 
 // Interface para o corpo da requisição
 export interface RegisterLibrarianRegisterBody {
@@ -13,20 +14,25 @@ export interface RegisterLibrarianRegisterBody {
 }
 
 export interface RegisterLibrarianLoginBody {
-    email: string,
+    registrationNumber: string,
     password: string
+}
+
+export interface HeadersLibrarian {
+    authorization: string
 }
 
 export class LibrarianController {
     private _bcrypt: BcryptService;
     private _librarianRepository: PrismaLibrarianRepository;
+    private _jwtService: JWTService | undefined;
 
     constructor(
-        bcryptService: BcryptService = new BcryptService(),
-        librarianRepository: PrismaLibrarianRepository = new PrismaLibrarianRepository()
+        // bcryptService: BcryptService = new BcryptService(),
+        // librarianRepository: PrismaLibrarianRepository = new PrismaLibrarianRepository()
     ) {
-        this._bcrypt = bcryptService;
-        this._librarianRepository = librarianRepository;
+        this._bcrypt = new BcryptService();
+        this._librarianRepository = new PrismaLibrarianRepository();
     }
 
     async register(req: FastifyRequest<{ Body: RegisterLibrarianRegisterBody }>, res: FastifyReply): Promise<void> {
@@ -39,6 +45,10 @@ export class LibrarianController {
 
         if (!email) {
             return res.status(422).send({ msg: "O email é obrigatório!" });
+        }
+
+        if (!registrationNumber) {
+            return res.status(422).send({ msg: "O número de matricula é obrigatório!" });
         }
 
         if (!password) {
@@ -74,6 +84,52 @@ export class LibrarianController {
     }
 
     async login(req: FastifyRequest<{ Body: RegisterLibrarianRegisterBody }>, res: FastifyReply): Promise<void> {
+        const { registrationNumber, password } = req.body;
+        if (!registrationNumber) {
+            return res.status(422).send({ msg: "O número de matricula é obrigatório!" });
+        }
+        if (!password) {
+            return res.status(422).send({ msg: "A senha é obrigatória!" });
+        }
 
+        const librarian = await this._librarianRepository.findByRegistrationNumber(registrationNumber);
+
+        const isLibrarianInvalid = !librarian;
+        const isPasswordInvalid = librarian && !(await this._bcrypt.comparePasswords(password, librarian.pass));
+
+        if (isLibrarianInvalid || isPasswordInvalid) {
+            return res.status(422).send({ msg: "Usuário ou senha não estão corretos" });
+        }
+
+        try {
+            const jwtSecret = process.env.SECRET || ''
+            this._jwtService = new JWTService(jwtSecret, "8h");
+
+            const token = this._jwtService.generateToken({ id: librarian.id });
+            return res.status(200).send({
+                name: librarian.name,
+                token: token
+            })
+        } catch (error) {
+            return res.status(422).send({ msg: "Erro ao gerar o token" });
+        }
+
+    }
+
+    async validateLibarian(req: FastifyRequest<{ Headers: HeadersLibrarian }>): Promise<void> {
+        console.log(req.headers);
+
+    }
+
+    async listLibrarians(req: any, res: FastifyReply): Promise<void> {
+        const jwtSecret = process.env.SECRET || ''
+        this._jwtService = new JWTService(jwtSecret, "8h");
+        //
+        const token = req.authorization.split(" ")[1];
+        this._jwtService?.verifyToken(token);
+
+        const listLibrarians = await this._librarianRepository.listAll();
+
+        return res.status(200).send(listLibrarians);
     }
 }

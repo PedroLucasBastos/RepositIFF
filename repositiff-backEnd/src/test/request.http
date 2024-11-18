@@ -1,0 +1,31 @@
+GET http://localhost:3333/
+
+
+###
+
+POST http://localhost:3333/librarian/register
+Content-Type: application/json
+
+{
+    "name": "Beltrano",
+    "email": "beltrano@beltrano.com",
+    "registrationNumber": "2013655865",
+    "password": "abc@123",
+    "confirmPassword": "abc@123"
+}
+
+###
+POST http://localhost:3333/librarian/register
+Content-Type: application/json
+
+{
+    "name": "Pedro Lucas",
+    "email": "pedrinho@luca.com",
+    "registrationNumber": "558646846",
+    "password": "admin",
+    "confirmPassword": "admin"
+}
+
+###
+GET  http://localhost:3333/librarian/librarians
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6ImEwMTU0ZmM2LTlhNjQtNDA0YS1hMDZkLWJhOWY3YWZkMzU1ZiIsImlhdCI6MTczMTk0ODk5NywiZXhwIjoxNzMxOTc3Nzk3fQ.BuClEIsdWc5bA7RQC7bGYzIp81gjJE7ROvN9wXLcd18

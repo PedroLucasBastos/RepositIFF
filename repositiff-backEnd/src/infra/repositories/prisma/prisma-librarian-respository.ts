@@ -1,5 +1,5 @@
 import { Librarian, librarianProps } from "@src/domain/librarian.js";
-import { ILibrarianRepository } from "./ILibrarianRepostory.js";
+import { ILibrarianRepository } from "../ILibrarianRepostory.js";
 import { PrismaClient } from "@prisma/client";
 
 
@@ -46,9 +46,29 @@ export class PrismaLibrarianRepository implements ILibrarianRepository {
         }
     }
 
+    async listAll(): Promise<Librarian[]> {
+        const list = await this._prismaCli.librarian.findMany();
+        const librarians = list.map((librarian) => {
+            return this.mapperLibrarian(librarian);
+        })
+        return librarians
+    }
+
+    async findByRegistrationNumber(registrationNumber: string): Promise<Librarian | void> {
+        try {
+            const librarian = await this._prismaCli.librarian.findUnique({
+                where: {
+                    registrationNumber: registrationNumber
+                },
+            },);
+            if (librarian)
+                return this.mapperLibrarian(librarian);
+        } catch (error) {
+            throw new Error("Error to findByRegistrationNumber Methods.   " + error);
+        }
+    }
 
     private mapperLibrarian(prismaData: any): Librarian {
-        console.log(`Dentro do mapper\n ${prismaData}`)
         return new Librarian(
             {
                 name: prismaData.name,

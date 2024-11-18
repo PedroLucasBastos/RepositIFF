@@ -1,4 +1,4 @@
-import { IAcademicWorkRepository } from "@src/repositories/IAcademicWorkRepository.js";
+import { IAcademicWorkRepository } from "@src/infra/repositories/IAcademicWorkRepository.js";
 import { author, TrabalhoAcademico } from "@src/domain/project.js";
 import { IFileStorage } from "@src/infra/fileStorage/IFileStorage.js";
 import { IAcademicWorkSearch } from "@src/infra/searchEngine/IAcademicWorkSearch.js";
