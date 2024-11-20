@@ -28,7 +28,6 @@ function Login() {
     try {
       // Payload da requisição
       const payload = { registrationNumber, password };
-      console.log("Payload enviado:", payload);
 
       // Chamada à API usando Axios
       const response = await axios.post(
@@ -44,18 +43,19 @@ function Login() {
       const { token } = response.data;
 
       if (token) {
-        // Salvar o token nos cookies
-        Cookies.set("authToken", token, { expires: 8 }); // Token expira em 8 dias
+        // Salvar o token nos cookies com expiração de 12 horas
+        Cookies.set("authToken", token, { expires: 0.5, path: "/" });
+        // Token expira em 12 horas
         setMessage("Login bem-sucedido!");
-        navigate("/administrador");
+        navigate("/bibliotecario");
       } else {
         setErrorMessage("Erro ao processar a resposta do servidor.");
       }
     } catch (error) {
       console.error("Erro ao fazer login:", error);
       // Verificar se o erro tem uma mensagem vinda do servidor
-      if (error.response && error.response.data.message) {
-        setErrorMessage(error.response.data.message);
+      if (error.response && error.response.data.msg) {
+        setErrorMessage(error.response.data.msg); // Exibe a mensagem de erro do servidor
       } else {
         setErrorMessage("Erro ao conectar-se ao servidor.");
       }

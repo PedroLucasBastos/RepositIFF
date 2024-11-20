@@ -12,45 +12,9 @@ import deleteAnimation from "../../assets/lotties/binAnimation.json";
 const LibrarianDashboard = () => {
   const [hoveredButton, setHoveredButton] = useState(null); // Hover state for each button
   const [isModalOpen, setIsModalOpen] = useState(false); // Modal control state
-  const navigate = useNavigate(); // Hook para redirecionar
-
-  const handleMenuClick = (e) => {
-    if (e.key === "logout") {
-      // Remove o cookie e redireciona para a página de login
-      Cookies.remove("authToken");
-      navigate("/login");
-    } else if (e.key === "editProfile") {
-      console.log("Editing profile...");
-    }
-  };
-
-  const menu = (
-    <Menu onClick={handleMenuClick}>
-      <Menu.Item
-        key="editProfile"
-        icon={<UserOutlined />}
-        className="flex items-center"
-      >
-        Edit Profile
-      </Menu.Item>
-      <Menu.Item
-        key="logout"
-        icon={<LogoutOutlined />}
-        className="flex items-center"
-      >
-        Logout
-      </Menu.Item>
-    </Menu>
-  );
 
   return (
     <div>
-      <div className="absolute top-7 right-4">
-        <Dropdown overlay={menu} trigger={["click"]}>
-          <Avatar size={40} icon={<UserOutlined />} />
-        </Dropdown>
-      </div>
-
       <div className="min-h-screen">
         <h1 className="text-3xl font-semibold text-center mt-8">
           Painel de Controle
