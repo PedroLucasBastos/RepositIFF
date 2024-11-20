@@ -32,16 +32,18 @@ const LoggedInHeader = () => {
   // Menu para o dropdown em telas menores
   const dropdownMenu = (
     <Menu onClick={handleMenuClick}>
-      <Menu.Item key="inicio">
-        <Link to="/bibliotecario">Início</Link>
+      <Menu.Item key="inicio" className="flex items-center space-x-2">
         <HomeOutlined />
+        <Link to="/bibliotecario">Início</Link>
       </Menu.Item>
-      <Menu.Item key="editProfile">
+      <Menu.Item key="editProfile" className="flex items-center space-x-2">
         <EditOutlined />
-        <a href="#editarPerfil"> Editar Perfil</a>
+        <a href="#editarPerfil">Editar Perfil</a>
       </Menu.Item>
-      <LogoutOutlined />
-      <Menu.Item key="logout"> LogOut</Menu.Item>
+      <Menu.Item key="logout" className="flex items-center space-x-2">
+        <LogoutOutlined />
+        <a onClick={handleLogout}>LogOut</a>
+      </Menu.Item>
     </Menu>
   );
 
