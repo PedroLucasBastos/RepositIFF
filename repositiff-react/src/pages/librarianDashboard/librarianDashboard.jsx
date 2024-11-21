@@ -33,7 +33,7 @@ const LibrarianDashboard = () => {
                 loop={hoveredButton === "plus"}
               />
             </div>
-            Registrar TCC
+            <p>Registrar TCC</p>
           </button>
 
           <button
@@ -47,7 +47,7 @@ const LibrarianDashboard = () => {
                 loop={hoveredButton === "edit"}
               />
             </div>
-            Editar TCC's
+            <p>Editar TCC&apos;s</p>
           </button>
 
           <button
@@ -61,7 +61,7 @@ const LibrarianDashboard = () => {
                 loop={hoveredButton === "delete"}
               />
             </div>
-            Apagar TCC
+            <p>Apagar TCC</p>
           </button>
         </div>
       </div>

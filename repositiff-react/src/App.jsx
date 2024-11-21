@@ -6,6 +6,8 @@ import Login from "./pages/login/login";
 import LibrarianDashboard from "./pages/librarianDashboard/librarianDashboard";
 import LoggedInHeader from "./components/header/LoggedInHeader/loggedInHeader";
 import ProtectedRoute from "./components/protectedRoute/porotectedRoute";
+import NotFound from "./pages/error/404NotFound";
+import AdminDashboard from "./pages/adminDashboard/adminDashboard";
 
 function App() {
   const location = useLocation();
@@ -17,9 +19,10 @@ function App() {
     <>
       {isLoggedInRoute ? <LoggedInHeader /> : <Header />}
       <Routes>
-        <Route path="*" element={<p>404 - Página não encontrada</p>} />
+        <Route path="*" element={<NotFound />} />
         <Route path="/" element={<Home />} />
         <Route path="/login" element={<Login />} />
+        <Route path="/admin" element={<AdminDashboard />} />
         <Route
           path="/bibliotecario"
           element={
