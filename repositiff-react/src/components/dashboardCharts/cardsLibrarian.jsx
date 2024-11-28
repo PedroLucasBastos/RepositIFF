@@ -8,6 +8,7 @@ import {
   Tooltip,
   Legend,
   ResponsiveContainer,
+  CartesianGrid,
 } from "recharts";
 
 // Dados simulados
@@ -28,12 +29,20 @@ const CardsLibrarian = () => {
   return (
     <div className="flex justify-between mx-12 gap-12 mt-10">
       {/* Card 1: Gráfico de barras duplas */}
-      <Card className="flex-1" title="TCCs Cadastrados por Ano e Curso">
+      <Card
+        className="flex-1 bg-gray-100 border-2 border-gray-400 rounded-lg"
+        title={
+          <div className="border-b border-gray-400 pb-2">
+            TCCs Cadastrados por Ano e Curso
+          </div>
+        }
+      >
         <ResponsiveContainer width="100%" height={250}>
           <BarChart
             data={yearlyData}
             margin={{ top: 20, right: 20, bottom: 20, left: 0 }}
           >
+            <CartesianGrid strokeDasharray="3 3" stroke="#ccc" />
             <XAxis dataKey="year" />
             <YAxis />
             <Tooltip />
@@ -53,17 +62,37 @@ const CardsLibrarian = () => {
       </Card>
 
       {/* Card 2: Total de TCCs cadastrados neste ano */}
-      <Card className="flex-1 text-center" title="TCCs Cadastrados em 2024">
-        <p className="text-4xl font-bold text-green-500 flex justify-center ">
-          {currentYearTCCs}
-        </p>
-        <p>Total de TCCs cadastrados neste ano</p>
+      <Card
+        className="flex-1 bg-sky-100 border-2 border-sky-300 rounded-lg text-center flex flex-col justify-center items-center"
+        title={
+          <div className="border-b border-sky-300 pb-2 text-xl font-semibold">
+            TCCs Cadastrados em 2024
+          </div>
+        }
+      >
+        <div className="flex flex-col justify-center items-center h-full">
+          <p className="text-6xl font-extrabold text-green-500">
+            {currentYearTCCs}
+          </p>
+          <p className="text-lg text-gray-600 mt-4">
+            Total de TCCs cadastrados neste ano
+          </p>
+        </div>
       </Card>
 
       {/* Card 3: Total de TCCs cadastrados no sistema */}
-      <Card className="flex-1 text-center" title="TCCs Cadastrados no Sistema">
-        <p className="text-4xl font-bold text-blue-500">{totalTCCs}</p>
-        <p>Total de TCCs no sistema</p>
+      <Card
+        className="flex-1 bg-green-100 border-2 border-green-300 rounded-lg text-center flex flex-col justify-center items-center"
+        title={
+          <div className="border-b border-green-300 pb-2 text-xl font-semibold">
+            TCCs Cadastrados no Sistema
+          </div>
+        }
+      >
+        <div className="flex flex-col justify-center items-center h-full">
+          <p className="text-6xl font-extrabold text-blue-500">{totalTCCs}</p>
+          <p className="text-lg text-gray-600 mt-4">Total de TCCs no sistema</p>
+        </div>
       </Card>
     </div>
   );
