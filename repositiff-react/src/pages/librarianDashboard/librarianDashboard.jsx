@@ -9,6 +9,9 @@ import plusAnimation from "../../assets/lotties/plusAnimation.json";
 import editAnimation from "../../assets/lotties/editAnimation.json";
 import deleteAnimation from "../../assets/lotties/binAnimation.json";
 
+import CardsLibrarian from "@/components/dashboardCharts/cardsLibrarian";
+import TCCListTable from "@/components/tccListTable/tccListTable";
+
 const LibrarianDashboard = () => {
   const [hoveredButton, setHoveredButton] = useState(null); // Hover state for each button
   const [isModalOpen, setIsModalOpen] = useState(false); // Modal control state
@@ -19,10 +22,9 @@ const LibrarianDashboard = () => {
         <h1 className="text-3xl font-semibold text-center mt-8">
           Painel de Controle
         </h1>
-
-        <div className="flex justify-center mt-8 gap-4">
+        <div>
           <button
-            className="w-48 aspect-square bg-green-500 hover:bg-green-600 text-white text-center font-semibold rounded-md flex flex-col justify-center items-center"
+            className="w-full h-25 bg-green-500 hover:bg-green-600 text-white text-center font-semibold rounded-md flex flex-col justify-center items-center mt-5 "
             onMouseEnter={() => setHoveredButton("plus")}
             onMouseLeave={() => setHoveredButton(null)}
             onClick={() => setIsModalOpen(true)} // Open modal
@@ -35,37 +37,14 @@ const LibrarianDashboard = () => {
             </div>
             <p>Registrar TCC</p>
           </button>
-
-          <button
-            className="w-48 aspect-square bg-green-500 hover:bg-green-600 text-white text-center font-semibold rounded-md flex flex-col justify-center items-center"
-            onMouseEnter={() => setHoveredButton("edit")}
-            onMouseLeave={() => setHoveredButton(null)}
-          >
-            <div className="w-10 h-10">
-              <Lottie
-                animationData={editAnimation}
-                loop={hoveredButton === "edit"}
-              />
-            </div>
-            <p>Editar TCC&apos;s</p>
-          </button>
-
-          <button
-            className="w-48 aspect-square bg-green-500 hover:bg-green-600 text-white text-center font-semibold rounded-md flex flex-col justify-center items-center"
-            onMouseEnter={() => setHoveredButton("delete")}
-            onMouseLeave={() => setHoveredButton(null)}
-          >
-            <div className="w-10 h-10">
-              <Lottie
-                animationData={deleteAnimation}
-                loop={hoveredButton === "delete"}
-              />
-            </div>
-            <p>Apagar TCC</p>
-          </button>
+        </div>
+        <div>
+          <CardsLibrarian />
+        </div>
+        <div>
+          <TCCListTable />
         </div>
       </div>
-
       {isModalOpen && (
         <div className="fixed inset-0 flex items-center justify-center bg-black bg-opacity-50 z-50">
           <div className="bg-white w-[80vw] max-h-[90vh] overflow-y-auto rounded-lg p-6 shadow-lg">
