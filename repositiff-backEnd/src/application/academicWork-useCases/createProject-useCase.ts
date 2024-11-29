@@ -1,8 +1,7 @@
 import { IAcademicWorkRepository } from "@src/infra/repositories/IAcademicWorkRepository.js";
-import { author, TrabalhoAcademico } from "@src/domain/project.js";
+import { author, TrabalhoAcademico } from "@src/domain/academicWork.js";
 import { IFileStorage } from "@src/infra/fileStorage/IFileStorage.js";
-import { IAcademicWorkSearch } from "@src/infra/searchEngine/IAcademicWorkSearch.js";
-import { Advisor, AdvisorProps } from "@src/domain/advisor.js";
+import { AdvisorProps } from "@src/domain/advisor.js";
 
 type newWorkDTO = {
     authors: author[],
@@ -43,7 +42,7 @@ export class CreateProjectUseCase {
         if (newWork)
             console.log(await this.academicWorkRepository.registerAcademicWork(newWork));
         else
-            throw Error("Fail to create a newWork objesct")
+            throw Error("Fail to create a newWork objesct");
 
     }
 }

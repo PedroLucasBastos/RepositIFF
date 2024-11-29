@@ -9,7 +9,7 @@ CREATE TABLE "AcademicWork" (
     "description" TEXT NOT NULL,
     "course" TEXT NOT NULL,
     "keyWords" TEXT[],
-    "status" BOOLEAN NOT NULL,
+    "academicWorkStatus" TEXT NOT NULL,
     "cutterNumber" TEXT,
     "cduCode" TEXT,
     "cddCode" TEXT,
@@ -61,6 +61,9 @@ CREATE TABLE "_AcademicWorkToAuthor" (
 
 -- CreateIndex
 CREATE UNIQUE INDEX "Librarian_email_key" ON "Librarian"("email");
+
+-- CreateIndex
+CREATE UNIQUE INDEX "Librarian_registrationNumber_key" ON "Librarian"("registrationNumber");
 
 -- CreateIndex
 CREATE UNIQUE INDEX "_AcademicWorkToAdvisor_AB_unique" ON "_AcademicWorkToAdvisor"("A", "B");

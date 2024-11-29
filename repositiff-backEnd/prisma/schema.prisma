@@ -8,23 +8,22 @@ datasource db {
 }
 
 model AcademicWork {
-  id           String    @id
-  // id_doc       String
-  createdAt    DateTime  @default(now())
-  title        String
-  typeWork     String
-  year         Int
-  qtdPag       Int
-  description  String
-  course       String
-  keyWords     String[]
-  status       Boolean
-  cutterNumber String?
-  cduCode      String?
-  cddCode      String?
-  url          String?
-  advisors     Advisor[] @relation("AcademicWorkToAdvisor")
-  authors      Author[]  @relation("AcademicWorkToAuthor")
+  id                 String    @id
+  createdAt          DateTime  @default(now())
+  title              String
+  typeWork           String
+  year               Int
+  qtdPag             Int
+  description        String
+  course             String
+  keyWords           String[]
+  academicWorkStatus String
+  cutterNumber       String?
+  cduCode            String?
+  cddCode            String?
+  url                String?
+  advisors           Advisor[] @relation("AcademicWorkToAdvisor")
+  authors            Author[]  @relation("AcademicWorkToAuthor")
 }
 
 model Author {
@@ -35,10 +34,11 @@ model Author {
 }
 
 model Advisor {
-  id           String         @id @default(cuid())
-  nome         String
-  sobrenome    String
-  AcademicWork AcademicWork[] @relation("AcademicWorkToAdvisor")
+  id                 String         @id @default(cuid())
+  nome               String
+  sobrenome          String
+  registrationNumber String         @unique
+  AcademicWork       AcademicWork[] @relation("AcademicWorkToAdvisor")
 }
 
 model Librarian {

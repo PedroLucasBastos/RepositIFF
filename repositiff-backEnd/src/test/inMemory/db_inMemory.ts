@@ -1,11 +1,11 @@
-import { TrabalhoAcademico } from "@src/domain/project.js";
+import { TrabalhoAcademico } from "@src/domain/academicWork.js";
 
-export class db_inMemory{
+export class db_inMemory {
     private _db: TrabalhoAcademico[];
-    constructor(){
+    constructor() {
         this._db = []
     }
-    
+
     // Adiciona um novo trabalho acadêmico ao "banco de dados"
     add(work: TrabalhoAcademico): void {
         this._db.push(work);

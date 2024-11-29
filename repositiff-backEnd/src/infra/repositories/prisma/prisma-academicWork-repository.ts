@@ -1,4 +1,4 @@
-import { TrabalhoAcademico } from "@src/domain/project.js";
+import { academicWorkStatus, TrabalhoAcademico } from "@src/domain/academicWork.js";
 import { IAcademicWorkRepository } from "@src/infra/repositories/IAcademicWorkRepository.js";
 import { Advisor, Author, PrismaClient } from "@prisma/client";
 
@@ -79,23 +79,25 @@ export class academicPrismaRepository implements IAcademicWorkRepository {
         }
     }
     private mapperAcademicWork(prismaData: any): TrabalhoAcademico {
-        return new TrabalhoAcademico({
+        return new TrabalhoAcademico(
+            {
+                title: prismaData.title,
+                typeWork: prismaData.typeWork,
+                year: prismaData.year,
+                qtdPag: prismaData.qtdPag,
+                description: prismaData.description,
+                course: prismaData.course,
+                keyWords: prismaData.keyWords,
+                cutterNumber: prismaData.cutterNumber,
+                cduCode: prismaData.cduCode,
+                cddCode: prismaData.cddCode,
+                url: prismaData.url,
+                authors: prismaData.authors.map((author: Author) => (author.nome, author.sobrenome)),
+                advisors: prismaData.advisors.map((advisor: Advisor) => (advisor.nome, advisor.sobrenome))
+            },
             id: prismaData.id,
-            title: prismaData.title,
-            typeWork: prismaData.typeWork,
-            year: prismaData.year,
-            qtdPag: prismaData.qtdPag,
-            description: prismaData.description,
-            course: prismaData.course,
-            keyWords: prismaData.keyWords,
-            cutterNumber: prismaData.cutterNumber,
-            cduCode: prismaData.cduCode,
-            cddCode: prismaData.cddCode,
-            url: prismaData.url,
-            status: prismaData.status,
-            authors: prismaData.authors.map((author: Author) => (author.nome, author.sobrenome)),
-            advisors: prismaData.advisors.map((advisor: Advisor) => (advisor.nome, advisor.sobrenome))
-        });
+            academicWorkStatusParams: prismaData.academicWorkStatus,
+        );
     }
 
 }

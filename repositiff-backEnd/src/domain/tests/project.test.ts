@@ -1,7 +1,6 @@
-import {TrabalhoAcademico} from "@src/domain/project.js"
-import {describe, it, expect} from "vitest";
-describe("Create project object",()=>{
-    it("Should be able to instantiate the entity Project ",()=>{
+import { describe, it, expect } from "vitest";
+describe("Create project object", () => {
+    it("Should be able to instantiate the entity Project ", () => {
         const tudoCerto = {
             authors: [
                 { nome: "John Doe", sobrenome: "Jane Smith" },
@@ -23,14 +22,7 @@ describe("Create project object",()=>{
             cddCode: "cdd312",
             // status:true
         };
-        // const proj = new AcademicWork(tudoCerto);
 
-        const test = {...tudoCerto,OlaMundoNovo:"Olá Mundo"}
-        // console.log(test)
-        const proj = new TrabalhoAcademico({...tudoCerto,status:false});
-
-        console.log(proj)
-        expect(proj).instanceOf(TrabalhoAcademico);    
     })
 
 

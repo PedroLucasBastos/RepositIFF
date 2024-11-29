@@ -1,5 +1,3 @@
-
-
 export type authorsProps = {
     registrationNumber: number,
     name: string,
@@ -13,5 +11,4 @@ export class Author {
         this._id = id || crypto.randomUUID();
         this._props = props;
     }
-
 }

@@ -1,4 +1,4 @@
-import { TrabalhoAcademico } from "../../domain/project.js";
+import { TrabalhoAcademico } from "../../domain/academicWork.js";
 
 export interface IAcademicWorkRepository {
     registerAcademicWork(project: TrabalhoAcademico): Promise<void>;
