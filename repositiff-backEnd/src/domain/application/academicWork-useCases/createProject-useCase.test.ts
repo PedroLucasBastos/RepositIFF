@@ -1,12 +1,12 @@
 
-import { CreateProjectUseCase } from "@src/application/academicWork-useCases/createProject-useCase.js";
-import {describe, it, expect} from "vitest";
-import { Project_InMemory_Repository } from "../../test/inMemory/project-inMemory-repository.js";
-import { fileStorageFake } from "../../test/inMemory/fileStorageFake.js";
-describe("Executing a useCase to create and regist a academicWork",()=>{
-    it("It must be able to correctly execute the use case, related to the registration of an academic work, missing the file url and literary codes",async ()=>{
+import { CreateProjectUseCase } from "@src/domain/application/academicWork-useCases/createProject-useCase.js";
+import { describe, it, expect } from "vitest";
+import { Project_InMemory_Repository } from "../../../test/inMemory/project-inMemory-repository.js";
+import { fileStorageFake } from "../../../test/inMemory/fileStorageFake.js";
+describe("Executing a useCase to create and regist a academicWork", () => {
+    it("It must be able to correctly execute the use case, related to the registration of an academic work, missing the file url and literary codes", async () => {
         const fileContent = 'This is a test file content';
-        const file = new File([ ], 'test-file.txt', { type: 'text/plain' });
+        const file = new File([], 'test-file.txt', { type: 'text/plain' });
         const info = {
             // id: "123abc890",
             // createdAt: "29/02",
@@ -30,7 +30,7 @@ describe("Executing a useCase to create and regist a academicWork",()=>{
         }
         const inMemoryRepo = new Project_InMemory_Repository();
         const inMemoryStorage = new fileStorageFake();
-        const sup = new CreateProjectUseCase(inMemoryRepo,inMemoryStorage);
+        const sup = new CreateProjectUseCase(inMemoryRepo, inMemoryStorage);
 
         sup.execute(info);
 
@@ -38,5 +38,5 @@ describe("Executing a useCase to create and regist a academicWork",()=>{
         console.log(register);
     })
 
-    
+
 });

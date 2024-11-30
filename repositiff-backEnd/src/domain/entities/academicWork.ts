@@ -1,5 +1,5 @@
 import * as crypto from "crypto";
-import { Advisor } from "@src/domain/advisor.js";
+import { Advisor } from "@src/domain/entities/advisor.js";
 
 export type author = {
     nome: string;

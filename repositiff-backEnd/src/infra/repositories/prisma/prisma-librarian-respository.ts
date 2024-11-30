@@ -1,4 +1,4 @@
-import { Librarian, librarianProps } from "@src/domain/librarian.js";
+import { Librarian, librarianProps } from "@src/domain/entities/librarian.js";
 import { ILibrarianRepository } from "../ILibrarianRepostory.js";
 import { PrismaClient } from "@prisma/client";
 

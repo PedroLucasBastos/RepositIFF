@@ -4,9 +4,9 @@ export enum ErrorCategory {
 }
 
 export class DomainError extends Error {
-    private readonly _descriptionError: string[];
+    private readonly _descriptionError: string | string[];
 
-    constructor(category: ErrorCategory, message: string, descriptionError: string[]) {
+    constructor(category: ErrorCategory, message: string, descriptionError: string | string[]) {
         super(message);
         this.name = category;
         this._descriptionError = descriptionError;
@@ -17,7 +17,7 @@ export class DomainError extends Error {
         return this.name;
     }
 
-    get details(): string[] {
+    get details(): string | string[] {
         return this._descriptionError;
     }
 

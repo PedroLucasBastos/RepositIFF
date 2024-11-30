@@ -1,18 +1,21 @@
 import { Either, Left, Right } from "@src/error_handling/either.js";
 import { DomainError, ErrorCategory } from "@src/error_handling/domainServicesErrors.js";
 import { Advisor, AdvisorProps } from "../advisor.js";
+import { AdvisorErrors } from "@src/domain/errorsDomain/advisorErrorDomain.js";
 
 
 export class AdvisorFactory {
     static createAdvisor(props: AdvisorProps): Either<DomainError, Advisor> {
-        const errorList = [
+        const errorList: string[] = [
             this.validateNameField(props.name),
             this.validateSurnameField(props.surname),
             this.validateRegistrationNumberField(props.registrationNumber)
-        ].filter((error) => error.isLeft()); // Remove undefined ou null
-
-        if (errorList.length > 0)
-            return new Left(new DomainError(ErrorCategory.Domain, "Error to instatiate the classe Advisor", errorList));
+        ].filter((error) => error.isLeft()) // Filtra para pegar apenas os erros
+            .map((error) => error.value.details)
+            .flat()
+        if (errorList.length > 0) {
+            return new Left(AdvisorErrors.InvalidCreateAdvisorError(errorList));
+        }
 
         return new Right(new Advisor(props));
     }
@@ -53,19 +56,19 @@ export class AdvisorFactory {
     // }/ Método de validação retornando Either (Left ou Right)
     static validateNameField(name: string): Either<DomainError, string> {
         if (!name || name.length === 0)
-            return new Left(new DomainError(ErrorCategory.Domain, "Name is required", ["The name field can't be empty"]));
+            return new Left(AdvisorErrors.InvalidNameAdvisorField());
         return new Right(name);
     }
 
     static validateSurnameField(surname: string): Either<DomainError, string> {
         if (!surname || surname.length === 0)
-            return new Left(new DomainError(ErrorCategory.Domain, "Surname is required", ["The surname field can't be empty"]));
+            return new Left(AdvisorErrors.InvalidSurnameAdvisorAttribute());
         return new Right(surname);
     }
 
     static validateRegistrationNumberField(registrationNumber: string): Either<DomainError, string> {
         if (!registrationNumber || registrationNumber.length === 0)
-            return new Left(new DomainError(ErrorCategory.Domain, "Registration number is required", ["The registration number field can't be empty"]));
+            return new Left(AdvisorErrors.InvalidRegistrationNumberAttritube());
         return new Right(registrationNumber);
     }
 }

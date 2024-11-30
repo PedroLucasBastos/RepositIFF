@@ -1,4 +1,4 @@
-import { Librarian, librarianProps } from "@src/domain/librarian.js";
+import { Librarian, librarianProps } from "@src/domain/entities/librarian.js";
 import { BcryptService } from "@src/infra/security/bcryptService.js";
 import { FastifyRequest, FastifyReply } from 'fastify';
 import { PrismaLibrarianRepository } from "@src/infra/repositories/prisma/prisma-librarian-respository.js"

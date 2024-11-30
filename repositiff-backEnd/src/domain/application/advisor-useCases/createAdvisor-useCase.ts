@@ -1,7 +1,8 @@
-import { Advisor, AdvisorProps } from "@src/domain/advisor.js";
-import { AdvisorFactory } from "@src/domain/factories/advisorFactory.js";
+import { Advisor, AdvisorProps } from "@src/domain/entities/advisor.js";
+import { AdvisorFactory } from "@src/domain/entities/factories/advisorFactory.js";
 import { IAdvisorRepository } from "@src/infra/repositories/IAdvisorRepository.js";
 import { DomainError, ErrorCategory } from "@src/error_handling/domainServicesErrors.js";
+import { AdvisorErrors } from "@src/domain/errorsDomain/advisorErrorDomain.js";
 
 export class CreateAdvisorUseCase {
     constructor(
@@ -16,7 +17,7 @@ export class CreateAdvisorUseCase {
         const advisor = advisorOrError.value as Advisor;
         const advisorExisting = await this.advisorRepostory.findAdvisorByRegistrationNumber(advisor.registrationNumber);
         if (advisorExisting) {
-            return new DomainError(ErrorCategory.Application, "Error when registering advisor", ["Advisor already exists on the platform"]);
+            return AdvisorErrors.AdvisorAlreadyExisting();
         }
         await this.advisorRepostory.cadastrationNewAdvisor(advisor);
     }

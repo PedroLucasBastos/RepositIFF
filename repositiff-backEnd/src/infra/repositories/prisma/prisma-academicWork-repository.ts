@@ -1,4 +1,4 @@
-import { academicWorkStatus, TrabalhoAcademico } from "@src/domain/academicWork.js";
+import { academicWorkStatus, TrabalhoAcademico } from "@src/domain/entities/academicWork.js";
 import { IAcademicWorkRepository } from "@src/infra/repositories/IAcademicWorkRepository.js";
 import { Advisor, Author, PrismaClient } from "@prisma/client";
 

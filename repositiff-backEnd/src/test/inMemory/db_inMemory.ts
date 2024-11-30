@@ -1,4 +1,4 @@
-import { TrabalhoAcademico } from "@src/domain/academicWork.js";
+import { TrabalhoAcademico } from "@src/domain/entities/academicWork.js";
 
 export class db_inMemory {
     private _db: TrabalhoAcademico[];

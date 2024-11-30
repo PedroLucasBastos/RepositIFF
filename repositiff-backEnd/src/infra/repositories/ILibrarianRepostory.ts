@@ -1,4 +1,4 @@
-import { Librarian } from "@src/domain/librarian.js";
+import { Librarian } from "@src/domain/entities/librarian.js";
 
 
 export interface ILibrarianRepository {
