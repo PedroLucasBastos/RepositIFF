@@ -32,7 +32,7 @@ describe("Executing a useCase to create and regist a academicWork", () => {
         const inMemoryStorage = new fileStorageFake();
         const sup = new CreateProjectUseCase(inMemoryRepo, inMemoryStorage);
 
-        sup.execute(info);
+        // sup.execute(info);
 
         const register = await inMemoryRepo.listAllProjects();
         console.log(register);

@@ -21,9 +21,9 @@ export class UpdateAdvisorUseCase {
     constructor(
         private advisorRepository: IAdvisorRepository,
     ) { }
-
-    async execute(updateAdvisorProps: UpdateAdvisorPropsDTO): Promise<DomainError | Advisor> {
+    async execute(updateAdvisorProps: UpdateAdvisorPropsDTO): Promise<Error | Advisor> {
         const updateFields = updateAdvisorProps.updateFields;
+        const advisorIdentification = updateAdvisorProps.advisorIdentification;
 
         // filtra os valores que não são undfined, deixando apenas o que será atualizado
         const advisorDefinedFields = Object.entries(updateFields)
@@ -34,26 +34,28 @@ export class UpdateAdvisorUseCase {
             return AdvisorErrors.AdvisorInvalidParameters();
         }
         // Seleciona o orientador que terá seus dados atualizados
-        const advisorExisting = await this.advisorRepository.advisorExisting(updateAdvisorProps.advisorIdentification);
+        const advisorExisting = await this.advisorRepository.advisorExisting(advisorIdentification);
         if (!advisorExisting) {
             return AdvisorErrors.AdvisorNotFound();
         }
-
-        let validFields: UpdateFieldsDTO = {};
+        // Faz a validação para garantir que os novos dados do orientador siguam as regras de negócio
+        let validFieldsToUpdate: UpdateFieldsDTO = {};
         for (let i = 0; i < advisorDefinedFields.length; i++) {
             const fieldUpdate = this.updateValidateFields(
                 advisorDefinedFields[i][0],// Pega a "chave" Ex: "name"
                 advisorDefinedFields[i][1] // Pega o "valor" Ex: "fulano" 
             );
-
+            // Se houver algum campo que não segue as regras necessárias, irá retornar um erro
             if (fieldUpdate.isLeft()) {
                 return fieldUpdate.value; // Retorna o erro imediatamente, se houver.
             }
-
-            validFields = { ...validFields, ...fieldUpdate.value };
+            validFieldsToUpdate = { ...validFieldsToUpdate, ...fieldUpdate.value };
         }
-        const advisor = await this.advisorRepository.updateAdvisor(validFields, updateAdvisorProps.advisorIdentification);
-        return advisor;
+        const advisorUpdated = await this.advisorRepository.updateAdvisor(validFieldsToUpdate, updateAdvisorProps.advisorIdentification);
+        if (advisorUpdated.isLeft()) {
+            return advisorUpdated.value;
+        }
+        return advisorUpdated.value;
     }
 
     private updateValidateFields(key: string, value: string): Either<DomainError, Partial<UpdateFieldsDTO>> {

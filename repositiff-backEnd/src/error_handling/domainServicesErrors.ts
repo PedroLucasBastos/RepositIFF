@@ -1,6 +1,7 @@
 export enum ErrorCategory {
     Domain = "DomainError",
-    Application = "ApplicationError"
+    Application = "ApplicationError",
+    Persistence = "PersistenceError"
 }
 
 export class DomainError extends Error {

@@ -34,9 +34,9 @@ model Author {
 }
 
 model Advisor {
-  id                 String         @id @default(cuid())
-  nome               String
-  sobrenome          String
+  id                 String         @id
+  name               String
+  surname            String
   registrationNumber String         @unique
   AcademicWork       AcademicWork[] @relation("AcademicWorkToAdvisor")
 }

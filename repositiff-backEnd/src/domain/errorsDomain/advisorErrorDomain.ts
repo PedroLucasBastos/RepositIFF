@@ -2,8 +2,8 @@ import { DomainError, ErrorCategory } from "@src/error_handling/domainServicesEr
 
 export class AdvisorErrors extends DomainError {
 
-    static AdvisorAlreadyExisting(): DomainError {
-        return new DomainError(ErrorCategory.Application, "Error when registering advisor", "Advisor already exists on the platform"); new DomainError(ErrorCategory.Application, "Error when registering advisor", ["Advisor already exists on the platform"]);
+    static RegistrationAlreadyExisting(): DomainError {
+        return new DomainError(ErrorCategory.Application, "Error when registering advisor", "Advisor already exists on the platform");
     }
 
     static InvalidCreateAdvisorError(errorList: string[]): DomainError {
@@ -53,7 +53,19 @@ export class AdvisorErrors extends DomainError {
         );
     }
 
+    static AdvisorMappingError(errorList: string | string[]): DomainError {
+        return new DomainError(
+            ErrorCategory.Persistence,
+            "Unexpected error to instatiate a advisor class with informatinos bring the database",
+            []
+        );
+    }
 
-
-
+    // static AdvisorMappingError(errorList: string | string[]): DomainError {
+    //     return new DomainError(
+    //         ErrorCategory.Persistence,
+    //         "Unexpected error to instatiate a advisor class with informatinos bring the database",
+    //         []
+    //     );
+    // }
 }
