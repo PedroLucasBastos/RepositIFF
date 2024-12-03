@@ -21,7 +21,7 @@ export class CreateAdvisorUseCase {
 
         const advisorExisting = await this.advisorRepostory.findAdvisorByRegistrationNumber(advisor.registrationNumber);
         if (advisorExisting.isRight()) {
-            return new Left(AdvisorErrors.RegistrationAlreadyExisting());
+            return new Left(AdvisorErrors.advisorRegistrationNumberAlreadyInUse());
         }
         const advisorRegisteredOrError = await this.advisorRepostory.cadastrationNewAdvisor(advisor);
         if (advisorRegisteredOrError.isLeft())

@@ -2,7 +2,7 @@ import { DomainError, ErrorCategory } from "@src/error_handling/domainServicesEr
 
 export class AdvisorErrors extends DomainError {
 
-    static RegistrationAlreadyExisting(): DomainError {
+    static advisorRegistrationNumberAlreadyInUse(): DomainError {
         return new DomainError(ErrorCategory.Application, "Error when registering advisor", "Advisor already exists on the platform");
     }
 

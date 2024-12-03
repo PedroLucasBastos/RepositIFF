@@ -78,7 +78,20 @@ export class PrismaAdvisorRepository implements IAdvisorRepository {
         }
         // throw new Error("Method not implemented.");
     }
-    async findAdvisorById(id: string): Promise<Either<Error, Advisor>> {
+    async findAdvisorById(id: string): Promise<Either<null, Advisor>> {
+        try {
+            const advisorPrisma = await this._prismaCli.advisor.findUnique({
+                where: {
+                    id: id
+                }
+            })
+            if (!advisorPrisma)
+                return new Left(null)
+            const advisorMappingToDomain = this.mapperToAdvisor(advisorPrisma);
+            return new Right(advisorMappingToDomain);
+        } catch (error: any) {
+            return new Left(error)
+        }
         throw new Error("Method not implemented.");
     }
     async advisorExisting(idAdvisor: string): Promise<Error | boolean> {

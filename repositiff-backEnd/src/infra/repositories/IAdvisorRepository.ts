@@ -12,7 +12,7 @@ export interface IAdvisorRepository {
 
     updateAdvisor(updateFields: UpdateFieldsDTO, id: string): Promise<Either<Error, Advisor>>;
 
-    findAdvisorById(id: String): Promise<Either<Error, Advisor>>;
+    findAdvisorById(id: String): Promise<Either<null, Advisor>>;
 
     advisorExisting(id: String): Promise<Error | boolean>;
 
