@@ -33,9 +33,9 @@ export class JWTService {
      * @returns O payload decodificado, se válido.
      * @throws Error se o token for inválido ou expirado.
      */
-    verifyToken(token: string): jwtPayload {
+    static verifyToken(token: string, secret: string): jwtPayload {
         try {
-            return jwt.verify(token, this._secret) as jwtPayload;
+            return jwt.verify(token, secret) as jwtPayload;
         } catch (error) {
             throw new Error(`Não autorizado`);
         }

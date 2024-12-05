@@ -6,6 +6,10 @@ import { Advisor } from "@src/domain/entities/advisor.js";
 import { AdvisorsProducts } from "./advisorsProducts.js";
 import { DeleteAdvisorUseCase } from "../deleteAdvisor-useCase.js";
 import { UpdateAdvisorUseCase } from "../updateAdvisor.js";
+import { IAdvisorRepository } from '@src/infra/repositories/IAdvisorRepository.js';
+
+// validar número de matricula (Ex: 1278884)
+
 
 describe("Test the guiding actor use cases", () => {
     const repo = new PrismaAdvisorRepository();
@@ -80,8 +84,11 @@ describe("Test the guiding actor use cases", () => {
         expect(advisorOrError.isRight()).toBeTruthy();
         const advisorToDelete = advisorOrError.value as Advisor
 
-        const domainError = await deleteUseCase.execute(advisorToDelete.id);
-        console.log();
+        const domainError = await deleteUseCase.execute({ advisorIdentification: advisorToDelete.id });
+        // console.log(domainError.value);
+        // console.log(domainError.isLeft());
+        // console.log(domainError.isRight());
+        expect(domainError.isRight()).toBeTruthy();
         const verification = await repo.findAdvisorByRegistrationNumber(advisorToDelete.registrationNumber);
         expect(verification.isLeft()).toBeTruthy();
         expect(verification.value).toBeNull;

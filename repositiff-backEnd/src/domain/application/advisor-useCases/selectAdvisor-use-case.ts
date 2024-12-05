@@ -6,7 +6,7 @@ import { Either } from '@src/error_handling/either.js';
 export class SelectAdvisorUseCase {
     constructor(repository: IAdvisorRepository) { }
 
-    async execute(advisorRegistrationNumber: string): Promise<Either<DomainError, Advisor>> {
+    // async execute(advisorRegistrationNumber: string): Promise<Either<DomainError, Advisor>> {
 
-    }
+    // }
 }

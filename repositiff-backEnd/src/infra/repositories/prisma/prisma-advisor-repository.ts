@@ -35,7 +35,7 @@ export class PrismaAdvisorRepository implements IAdvisorRepository {
     }
 
     async deleteAdvisor(idAdvisor: string): Promise<Either<DomainError, Advisor>> {
-        console.log(`ID: ${idAdvisor}\n`)
+        // console.log(`ID: ${idAdvisor}\n`)
         try {
             const advisorDeleted = await this._prismaCli.advisor.delete({
                 where: {

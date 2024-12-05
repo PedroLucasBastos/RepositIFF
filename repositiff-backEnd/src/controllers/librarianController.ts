@@ -116,20 +116,16 @@ export class LibrarianController {
 
     }
 
-    async validateLibarian(req: FastifyRequest<{ Headers: HeadersLibrarian }>): Promise<void> {
-        console.log(req.headers);
+    // async validateLibarian(req: FastifyRequest<{ Headers: HeadersLibrarian }>): Promise<void> {
+    //     console.log(req.headers);
 
-    }
+    // }
 
     async listLibrarians(req: any, res: FastifyReply): Promise<void> {
         const jwtSecret = process.env.SECRET || ''
-        this._jwtService = new JWTService(jwtSecret, "8h");
-        //
         const token = req.authorization.split(" ")[1];
-        this._jwtService?.verifyToken(token);
-
+        JWTService.verifyToken(token, jwtSecret);
         const listLibrarians = await this._librarianRepository.listAll();
-
         return res.status(200).send(listLibrarians);
     }
 }

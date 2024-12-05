@@ -62,13 +62,13 @@ export class AdvisorFactory {
 
     static validateSurnameField(surname: string): Either<DomainError, string> {
         if (!surname || surname.length === 0)
-            return new Left(AdvisorErrors.InvalidSurnameAdvisorAttribute());
+            return new Left(AdvisorErrors.InvalidSurnameAdvisorField());
         return new Right(surname);
     }
 
     static validateRegistrationNumberField(registrationNumber: string): Either<DomainError, string> {
         if (!registrationNumber || registrationNumber.length === 0)
-            return new Left(AdvisorErrors.InvalidRegistrationNumberAttritube());
+            return new Left(AdvisorErrors.InvalidRegistrationNumberField());
         return new Right(registrationNumber);
     }
 }

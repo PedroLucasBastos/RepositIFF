@@ -21,7 +21,7 @@ export class AdvisorErrors extends DomainError {
         );
     }
 
-    static InvalidSurnameAdvisorAttribute(): DomainError {
+    static InvalidSurnameAdvisorField(): DomainError {
         return new DomainError(
             ErrorCategory.Domain,
             "Surname is required",
@@ -29,14 +29,14 @@ export class AdvisorErrors extends DomainError {
         )
     }
 
-    static InvalidRegistrationNumberAttritube(): DomainError {
+    static InvalidRegistrationNumberField(): DomainError {
         return new DomainError(
             ErrorCategory.Domain,
             "Registration number is required",
             "The registration number field can't be empty"
         )
     }
-
+    //---------------------------------------------------------------------
     static AdvisorNotFound(): DomainError {
         return new DomainError(
             ErrorCategory.Application,
