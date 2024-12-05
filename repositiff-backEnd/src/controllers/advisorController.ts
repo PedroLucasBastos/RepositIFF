@@ -12,6 +12,7 @@ export class AdvisorController {
         req: FastifyRequest<{ Body: AdvisorProps }>,
         res: FastifyReply
     ): Promise<void> {
+        console.log("Chegou aki")
         const sanitizeOrError = this.sanitizeReceivedData(req.body);
         if (sanitizeOrError.isLeft())
             res.code(400).send({

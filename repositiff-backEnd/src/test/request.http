@@ -39,3 +39,36 @@ Content-Type: application/json
 ###
 GET  http://localhost:3333/librarian/librarians
 Authorization: Bearer .eyJpZCI6ImEwMTU0ZmM2LTlhNjQtNDA0YS1hMDZkLWJhOWY3YWZkMzU1ZiIsImlhdCI6MTczMTk0ODk5NywiZXhwIjoxNzMxOTc3Nzk3fQ.BuClEIsdWc5bA7RQC7bGYzIp81gjJE7ROvN9wXLcd18
+
+
+###
+POST  http://localhost:3333/advisor/register
+Content-Type: application/json
+
+{
+    "name": "João",
+    "surname": "Peçanha",
+    "registrationNumber": "12345"
+}
+
+###
+PUT  http://localhost:3333/advisor/update
+Content-Type: application/json
+
+{
+   "advisorIdentification": "107266df-3200-4a6b-b7b3-22475882686c",
+   "updateFields": {
+        "name": "Arnaldo",
+        "surname": "Cesar Pereira"
+   }
+}
+
+###
+DELETE  http://localhost:3333/advisor/update
+Content-Type: application/json
+
+{
+   "advisorIdentification": "1adb629d-68b4-44ad-aa85-0428cf993588"
+}
+
+

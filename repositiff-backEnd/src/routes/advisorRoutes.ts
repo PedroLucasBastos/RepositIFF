@@ -10,6 +10,7 @@ export async function advisorRoutes(fastify: FastifyInstance) {
     const controller = new AdvisorController();
 
     fastify.post('/register', async (req: FastifyRequest<{ Body: AdvisorProps }>, reply: FastifyReply) => {
+        console.log(req.body)
         try {
             await controller.create(req, reply);
         } catch (error: any) {
