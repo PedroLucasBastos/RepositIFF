@@ -1,39 +1,65 @@
 import React, { useState } from "react";
 import Lottie from "lottie-react";
+import Cookies from "js-cookie"; // Importar js-cookie
+import axios from "axios"; // Importar axios
 import animationData from "../../assets/lotties/animacaoLogin.json";
 import { Alert } from "antd";
-import { useNavigate } from "react-router-dom"; // Importe o useNavigate
+import { useNavigate } from "react-router-dom";
 
 function Login() {
   const [message, setMessage] = useState("");
-  const [errorMessage, setErrorMessage] = useState(""); // Estado para mensagem de erro
-  const navigate = useNavigate(); // Crie a instância do useNavigate
+  const [errorMessage, setErrorMessage] = useState("");
+  const navigate = useNavigate();
 
-  // Função de simulação para o envio do formulário
-  const handleFormSubmit = (e) => {
+  const handleFormSubmit = async (e) => {
     e.preventDefault();
-    const matricula = e.target.matricula.value;
+
+    const registrationNumber = e.target.registrationNumber.value;
     const password = e.target.password.value;
 
-    setMessage(""); // Limpa a mensagem de sucesso anterior
-    setErrorMessage(""); // Limpa a mensagem de erro anterior
+    setMessage("");
+    setErrorMessage("");
 
-    // Verificação se os campos estão preenchidos
-    if (!matricula || !password) {
+    if (!registrationNumber || !password) {
       setErrorMessage("Por favor, preencha todos os campos.");
-      return; // Não permite continuar se algum campo estiver vazio
+      return;
     }
 
-    // Simulação de resposta do backend
-    setTimeout(() => {
-      if (matricula === "1234" && password === "senha") {
-        console.log(matricula, password);
+    try {
+      // Payload da requisição
+      const payload = { registrationNumber, password };
+
+      // Chamada à API usando Axios
+      const response = await axios.post(
+        "http://localhost:3333/librarian/login",
+        payload,
+        {
+          headers: {
+            "Content-Type": "application/json",
+          },
+        }
+      );
+
+      const { token } = response.data;
+
+      if (token) {
+        // Salvar o token nos cookies com expiração de 12 horas
+        Cookies.set("authToken", token, { expires: 0.5, path: "/" });
+        // Token expira em 12 horas
         setMessage("Login bem-sucedido!");
-        navigate("/administrador"); // Redireciona para a página do administrador
+        navigate("/bibliotecario");
       } else {
-        setErrorMessage("Credenciais inválidas!");
+        setErrorMessage("Erro ao processar a resposta do servidor.");
       }
-    }, 1000); // Simula um atraso de 1 segundo
+    } catch (error) {
+      console.error("Erro ao fazer login:", error);
+      // Verificar se o erro tem uma mensagem vinda do servidor
+      if (error.response && error.response.data.msg) {
+        setErrorMessage(error.response.data.msg); // Exibe a mensagem de erro do servidor
+      } else {
+        setErrorMessage("Erro ao conectar-se ao servidor.");
+      }
+    }
   };
 
   return (
@@ -44,7 +70,6 @@ function Login() {
           animationData={animationData}
           className="lg:w-3/4 w-1/2 h-auto object-contain"
         />
-        {/* Linha de separação verde com gradiente, visível em telas grandes */}
         <div className="absolute lg:right-0 lg:top-1/2 lg:transform lg:-translate-y-1/2 lg:h-[400px] lg:w-1 lg:bg-gradient-to-b lg:from-iffClaro lg:to-iffEscuro lg:block hidden"></div>
       </div>
 
@@ -60,12 +85,10 @@ function Login() {
             </p>
           </div>
 
-          {/* Exibe a mensagem de sucesso */}
           {message && (
             <Alert message={message} type="success" showIcon className="mb-4" />
           )}
 
-          {/* Exibe a mensagem de erro */}
           {errorMessage && (
             <Alert
               message={errorMessage}
@@ -75,7 +98,6 @@ function Login() {
             />
           )}
 
-          {/* Formulário de login */}
           <form
             onSubmit={handleFormSubmit}
             noValidate
@@ -84,15 +106,15 @@ function Login() {
             <div className="space-y-8">
               <div>
                 <label
-                  htmlFor="matricula"
+                  htmlFor="registrationNumber"
                   className="block mb-2 text-sm font-medium text-gray-700 dark:text-gray-300"
                 >
                   Matrícula
                 </label>
                 <input
                   type="text"
-                  name="matricula"
-                  id="matricula"
+                  name="registrationNumber"
+                  id="registrationNumber"
                   placeholder="Digite sua matrícula"
                   className="w-full px-4 py-3 border rounded-md text-gray-700 dark:text-gray-800 bg-gray-100 dark:bg-gray-700 dark:border-gray-600 focus:outline-none focus:ring-2 focus:ring-iffEscuro"
                 />
@@ -132,8 +154,6 @@ function Login() {
           </form>
         </div>
       </div>
-
-      {/* Linha de separação verde com gradiente em telas menores */}
       <div className="lg:hidden w-full h-1 bg-gradient-to-r from-iffClaro to-iffEscuro"></div>
     </div>
   );

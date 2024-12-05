@@ -1,24 +1,38 @@
-import { Routes, Route } from "react-router-dom";
+import { Routes, Route, useLocation } from "react-router-dom";
 import Header from "./components/header/header";
 import Rodape from "@/components/footer/footer";
-import Home from "./pages/home/home"; // Importe o componente Home
+import Home from "./pages/home/home";
 import Login from "./pages/login/login";
-
 import LibrarianDashboard from "./pages/librarianDashboard/librarianDashboard";
+import LoggedInHeader from "./components/header/LoggedInHeader/loggedInHeader";
+import ProtectedRoute from "./components/protectedRoute/porotectedRoute";
+import NotFound from "./pages/error/404NotFound";
+import AdminDashboard from "./pages/adminDashboard/adminDashboard";
 
 function App() {
+  const location = useLocation();
+
+  // Define qual cabeçalho usar com base na rota
+  const isLoggedInRoute = location.pathname.startsWith("/bibliotecario");
+
   return (
     <>
-      <Header /> {/* Cabeçalho será mantido em todas as páginas */}
+      {isLoggedInRoute ? <LoggedInHeader /> : <Header />}
       <Routes>
-        {/* Rota principal agora renderiza o componente Home */}
-        <Route path="*" element={<p>404 - Página não encontrada</p>} />
+        <Route path="*" element={<NotFound />} />
         <Route path="/" element={<Home />} />
         <Route path="/login" element={<Login />} />
-        <Route path="/administrador" element={<LibrarianDashboard />} />
-        {/* Outras rotas */}
+        <Route path="/admin" element={<AdminDashboard />} />
+        <Route
+          path="/bibliotecario"
+          element={
+            <ProtectedRoute>
+              <LibrarianDashboard />
+            </ProtectedRoute>
+          }
+        />
       </Routes>
-      <Rodape /> {/* Rodapé será mantido em todas as páginas */}
+      <Rodape />
     </>
   );
 }

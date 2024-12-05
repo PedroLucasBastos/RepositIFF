@@ -13,6 +13,7 @@ module.exports = {
         botaoIFF: '#76b865',
         iffClaro: '#adf976',
         iffEscuro: '#2f9e41',
+        customGreenPastel: "rgb(200, 245, 220)",
         background: 'hsl(var(--background))',
         foreground: 'hsl(var(--foreground))',
         card: {

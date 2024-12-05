@@ -26,7 +26,7 @@ export async function advisorRoutes(fastify: FastifyInstance) {
         }
     });
 
-    fastify.delete('/update', async (req: FastifyRequest<{ Body: deleteAdvisor }>, reply: FastifyReply) => {
+    fastify.delete('/delete', async (req: FastifyRequest<{ Body: deleteAdvisor }>, reply: FastifyReply) => {
         try {
             await controller.delete(req, reply);
         } catch (error: any) {
