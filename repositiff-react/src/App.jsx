@@ -1,4 +1,4 @@
-import { Routes, Route, useLocation } from "react-router-dom";
+import { Routes, Route, useLocation, Outlet } from "react-router-dom";
 import Header from "./components/header/header";
 import Rodape from "@/components/footer/footer";
 import Home from "./pages/home/home";
@@ -24,18 +24,29 @@ function App() {
         <Route path="/" element={<Home />} />
         <Route path="/login" element={<Login />} />
         <Route path="/admin" element={<AdminDashboard />} />
-        <Route path="/gerenciarOrientador" element={<ManageAdvisor />} />
         <Route
-          path="/bibliotecario"
+          path="/bibliotecario/*"
           element={
             <ProtectedRoute>
-              <LibrarianDashboard />
+              <LibrarianLayout />
             </ProtectedRoute>
           }
         />
       </Routes>
       <Rodape />
     </>
+  );
+}
+
+// Componente de Layout para o Bibliotecário
+function LibrarianLayout() {
+  return (
+    <div>
+      <Routes>
+        <Route path="/" element={<LibrarianDashboard />} />
+        <Route path="gerenciarOrientador" element={<ManageAdvisor />} />
+      </Routes>
+    </div>
   );
 }
 
