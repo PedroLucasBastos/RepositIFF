@@ -8,6 +8,7 @@ import LoggedInHeader from "./components/header/LoggedInHeader/loggedInHeader";
 import ProtectedRoute from "./components/protectedRoute/porotectedRoute";
 import NotFound from "./pages/error/404NotFound";
 import AdminDashboard from "./pages/adminDashboard/adminDashboard";
+import ManageAdvisor from "./pages/librarianDashboard/manageAdvisor/manageAdvisor";
 
 function App() {
   const location = useLocation();
@@ -23,6 +24,7 @@ function App() {
         <Route path="/" element={<Home />} />
         <Route path="/login" element={<Login />} />
         <Route path="/admin" element={<AdminDashboard />} />
+        <Route path="/gerenciarOrientador" element={<ManageAdvisor />} />
         <Route
           path="/bibliotecario"
           element={

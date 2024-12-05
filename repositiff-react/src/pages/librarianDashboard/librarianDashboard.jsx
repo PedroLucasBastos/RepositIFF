@@ -55,7 +55,7 @@ const LibrarianDashboard = () => {
                 loop={hoveredButton === "add"}
               />
             </div>
-            <p>Adicionar Orientador</p>
+            <p>Gerenciar Orientadores</p>
           </button>
         </div>
 
