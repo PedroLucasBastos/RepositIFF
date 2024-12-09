@@ -46,9 +46,9 @@ POST  http://localhost:3333/advisor/register
 Content-Type: application/json
 
 {
-    "name": "José",
-    "surname": "Astolpho",
-    "registrationNumber": "123445"
+    "name": "Ferando",
+    "surname": "asdf",
+    "registrationNumber": "1"
 }
 
 ###
