@@ -46,8 +46,8 @@ POST  http://localhost:3333/advisor/register
 Content-Type: application/json
 
 {
-    "name": "João",
-    "surname": "Peçanha",
+    "name": "pedrinho",
+    "surname": "Gameplay",
     "registrationNumber": "12345"
 }
 
@@ -56,7 +56,7 @@ PUT  http://localhost:3333/advisor/update
 Content-Type: application/json
 
 {
-   "advisorIdentification": "107266df-3200-4a6b-b7b3-22475882686c",
+   "advisorIdentification": "6e86e4e4-d239-4805-b37e-9a9fb5169c3e",
    "updateFields": {
         "name": "Arnaldo",
         "surname": "Cesar Pereira"
@@ -68,7 +68,7 @@ DELETE  http://localhost:3333/advisor/delete
 Content-Type: application/json
 
 {
-   "advisorIdentification": "1adb629d-68b4-44ad-aa85-0428cf993588"
+   "advisorIdentification": "6e86e4e4-d239-4805-b37e-9a9fb5169c3e"
 }
 
 

@@ -4,7 +4,7 @@ import { UserOutlined, LogoutOutlined } from "@ant-design/icons";
 import Cookies from "js-cookie"; // Importar js-cookie
 import { useNavigate } from "react-router-dom";
 import Lottie from "lottie-react";
-import FormTCC from "../../components/formTCC/formTCC";
+import FormTCC from "../../components/forms/formTCC";
 import plusAnimation from "../../assets/lotties/plusAnimation.json";
 //import editAnimation from "../../assets/lotties/editAnimation.json";
 //import addAnimation from "../../assets/lotties/addAnimation.json"; // Lottie para adicionar orientador
@@ -17,6 +17,7 @@ const LibrarianDashboard = () => {
   const [hoveredButton, setHoveredButton] = useState(null); // Hover state for each button
   const [isTCCModalOpen, setIsTCCModalOpen] = useState(false); // Modal para registrar TCC
   const [isOrientadorModalOpen, setIsOrientadorModalOpen] = useState(false); // Modal para adicionar orientador
+  const navigate = useNavigate();
 
   return (
     <div>
@@ -47,7 +48,7 @@ const LibrarianDashboard = () => {
             className="flex-1 h-25 bg-sky-500 hover:bg-blue-600 text-white text-center font-semibold rounded-md flex flex-col justify-center items-center"
             onMouseEnter={() => setHoveredButton("add")}
             onMouseLeave={() => setHoveredButton(null)}
-            onClick={() => setIsOrientadorModalOpen(true)} // Abre modal para Orientador
+            onClick={() => navigate("/bibliotecario/gerenciarOrientador")} // Redireciona para a página de gerenciar orientadores
           >
             <div className="w-10 h-10">
               <Lottie
@@ -55,7 +56,7 @@ const LibrarianDashboard = () => {
                 loop={hoveredButton === "add"}
               />
             </div>
-            <p>Adicionar Orientador</p>
+            <p>Gerenciar Orientadores</p>
           </button>
         </div>
 

@@ -21,7 +21,7 @@ CREATE TABLE "AcademicWork" (
 -- CreateTable
 CREATE TABLE "Author" (
     "id" TEXT NOT NULL,
-    "nome" TEXT NOT NULL,
+    "name" TEXT NOT NULL,
     "sobrenome" TEXT NOT NULL,
 
     CONSTRAINT "Author_pkey" PRIMARY KEY ("id")
@@ -30,8 +30,9 @@ CREATE TABLE "Author" (
 -- CreateTable
 CREATE TABLE "Advisor" (
     "id" TEXT NOT NULL,
-    "nome" TEXT NOT NULL,
-    "sobrenome" TEXT NOT NULL,
+    "name" TEXT NOT NULL,
+    "surname" TEXT NOT NULL,
+    "registrationNumber" TEXT NOT NULL,
 
     CONSTRAINT "Advisor_pkey" PRIMARY KEY ("id")
 );
@@ -58,6 +59,9 @@ CREATE TABLE "_AcademicWorkToAuthor" (
     "A" TEXT NOT NULL,
     "B" TEXT NOT NULL
 );
+
+-- CreateIndex
+CREATE UNIQUE INDEX "Advisor_registrationNumber_key" ON "Advisor"("registrationNumber");
 
 -- CreateIndex
 CREATE UNIQUE INDEX "Librarian_email_key" ON "Librarian"("email");

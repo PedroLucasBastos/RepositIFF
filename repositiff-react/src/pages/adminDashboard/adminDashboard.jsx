@@ -1,6 +1,6 @@
 import React, { useState } from "react";
 import { Button, Modal } from "antd";
-import RegisterLibrarian from "@/components/formTCC/librarianRegistrationForm/resgisterLibrarian/ResgisterLibrarian";
+import RegisterLibrarian from "@/components/forms/librarianRegistrationForm/resgisterLibrarian/ResgisterLibrarian";
 
 const AdminDashboard = () => {
   const [isModalOpen, setIsModalOpen] = useState(false);

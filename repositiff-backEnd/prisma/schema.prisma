@@ -28,7 +28,7 @@ model AcademicWork {
 
 model Author {
   id           String         @id @default(cuid())
-  nome         String
+  name         String
   sobrenome    String
   AcademicWork AcademicWork[] @relation("AcademicWorkToAuthor")
 }
