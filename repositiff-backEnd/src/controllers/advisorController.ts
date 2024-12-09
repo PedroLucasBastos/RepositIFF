@@ -92,6 +92,18 @@ export class AdvisorController {
         })
     }
 
+    async listAllAdvisors(
+        res: FastifyReply
+    ) {
+        const repo = new PrismaAdvisorRepository();
+        const listAdvisor = await repo.listAllAdvisors();
+        const countAdvisor = await repo.countAllAdvisors();
+        res.code(200).send({
+            Qtd: countAdvisor.value,
+            Advisors: listAdvisor
+        })
+    }
+
 
     sanitizeReceivedData(request: any): Either<string, void> {
         const parameters = Object.entries(request)

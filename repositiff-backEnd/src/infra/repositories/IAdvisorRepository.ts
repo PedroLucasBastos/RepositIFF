@@ -10,6 +10,8 @@ export interface IAdvisorRepository {
 
     countAllAdvisors(): Promise<Either<Error, number>>;
 
+    listAllAdvisors(): Promise<Advisor[]>;
+
     updateAdvisor(updateFields: UpdateFieldsDTO, id: string): Promise<Either<Error, Advisor>>;
 
     findAdvisorById(id: String): Promise<Either<null, Advisor>>;

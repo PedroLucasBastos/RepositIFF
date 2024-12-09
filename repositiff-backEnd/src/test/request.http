@@ -46,9 +46,9 @@ POST  http://localhost:3333/advisor/register
 Content-Type: application/json
 
 {
-    "name": "pedrinho",
-    "surname": "Gameplay",
-    "registrationNumber": "12345"
+    "name": "José",
+    "surname": "Astolpho",
+    "registrationNumber": "123445"
 }
 
 ###
@@ -68,7 +68,10 @@ DELETE  http://localhost:3333/advisor/delete
 Content-Type: application/json
 
 {
-   "advisorIdentification": "6e86e4e4-d239-4805-b37e-9a9fb5169c3e"
+   "advisorIdentification": "c4b2a33e-6bc5-45aa-9afe-7a940fafb6db"
 }
+
+###
+GET  http://localhost:3333/advisor/list
 
 

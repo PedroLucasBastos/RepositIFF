@@ -33,5 +33,11 @@ export async function advisorRoutes(fastify: FastifyInstance) {
             reply.code(500).send({ error: error.message, message: 'Delete has failed.' });
         }
     });
-
+    fastify.get('/list', async (req: FastifyRequest<{ Body: deleteAdvisor }>, reply: FastifyReply) => {
+        try {
+            await controller.listAllAdvisors(reply);
+        } catch (error: any) {
+            reply.code(500).send({ error: error.message, message: 'Delete has failed.' });
+        }
+    });
 }

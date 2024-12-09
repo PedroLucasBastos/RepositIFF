@@ -52,6 +52,19 @@ export class PrismaAdvisorRepository implements IAdvisorRepository {
         }
         // throw new Error("Method not implemented.");
     }
+
+    async listAllAdvisors(): Promise<Advisor[]> {
+        try {
+            const result = await this._prismaCli.advisor.findMany()
+            let listAdvisor = result.map((advisor) => {
+                return this.mapperToAdvisor(advisor);
+            });
+            return listAdvisor;
+        } catch (error: any) {
+            return (error)
+        }
+    }
+
     async countAllAdvisors(): Promise<Either<Error, number>> {
         try {
             return new Right(await this._prismaCli.advisor.count());
