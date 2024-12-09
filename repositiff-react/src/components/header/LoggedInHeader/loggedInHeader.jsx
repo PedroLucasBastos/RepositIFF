@@ -38,7 +38,7 @@ const LoggedInHeader = () => {
       </Menu.Item>
       <Menu.Item key="editProfile" className="flex items-center space-x-2">
         <EditOutlined />
-        <a href="#editarPerfil">Editar Perfil</a>
+        <Link to="/editarPerfil">Editar Perfil</Link>
       </Menu.Item>
       <Menu.Item key="logout" className="flex items-center space-x-2">
         <LogoutOutlined />
@@ -67,7 +67,7 @@ const LoggedInHeader = () => {
           </li>
           <li>
             <EditOutlined />
-            <a href="#editarPerfil"> Editar Perfil</a>
+            <Link to="/bibliotecario/editarPerfil"> Editar Perfil</Link>
           </li>
           <li>
             <LogoutOutlined />
