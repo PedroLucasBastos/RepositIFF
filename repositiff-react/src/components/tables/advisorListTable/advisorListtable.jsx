@@ -1,5 +1,6 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { Table, Input, Button, Space, Tooltip, message } from "antd";
+import axios from "axios";
 import {
   SearchOutlined,
   EyeOutlined,
@@ -9,33 +10,29 @@ import {
 
 const AdvisorListTable = () => {
   const [searchText, setSearchText] = useState("");
-  const [dataSource, setDataSource] = useState([
-    {
-      key: "1",
-      name: "João",
-      surname: "Silva",
-      registrationNumber: "12345",
-    },
-    {
-      key: "2",
-      name: "Maria",
-      surname: "Pereira",
-      registrationNumber: "67890",
-    },
-    {
-      key: "3",
-      name: "Carlos",
-      surname: "Souza",
-      registrationNumber: "11223",
-    },
-    {
-      key: "4",
-      name: "Ana",
-      surname: "Lima",
-      registrationNumber: "44556",
-    },
-  ]);
+  const [dataSource, setDataSource] = useState([]);
   const [filteredData, setFilteredData] = useState([]);
+
+  // Função para buscar dados da API
+  const fetchAdvisors = async () => {
+    try {
+      const response = await axios.get("http://localhost:3333/advisor/list");
+      const advisors = response.data.Advisors.map((advisor) => ({
+        key: advisor._id,
+        name: advisor._props.name,
+        surname: advisor._props.surname,
+        registrationNumber: advisor._props.registrationNumber,
+      }));
+      setDataSource(advisors);
+    } catch (error) {
+      message.error("Erro ao buscar os orientadores: " + error.message);
+    }
+  };
+
+  // Chamada da função de busca ao montar o componente
+  useEffect(() => {
+    fetchAdvisors();
+  }, []);
 
   // Função para filtrar os dados com base no texto de pesquisa
   const handleSearch = () => {
