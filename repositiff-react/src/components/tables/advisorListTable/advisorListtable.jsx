@@ -1,17 +1,20 @@
 import React, { useState, useEffect } from "react";
 import { Table, Input, Button, Space, Tooltip, message } from "antd";
-import axios from "axios";
 import {
   SearchOutlined,
   EyeOutlined,
   EditOutlined,
   DeleteOutlined,
 } from "@ant-design/icons";
+import axios from "axios";
+import AdvisorDetailsModal from "./optionsComponents/advisorDetailsModal";
 
 const AdvisorListTable = () => {
   const [searchText, setSearchText] = useState("");
   const [dataSource, setDataSource] = useState([]);
   const [filteredData, setFilteredData] = useState([]);
+  const [selectedAdvisorId, setSelectedAdvisorId] = useState(null);
+  const [isModalVisible, setIsModalVisible] = useState(false);
 
   // Função para buscar dados da API
   const fetchAdvisors = async () => {
@@ -45,18 +48,16 @@ const AdvisorListTable = () => {
     setFilteredData(filtered);
   };
 
-  // Funções para as ações dos botões
+  // Função para abrir o modal
   const handleView = (record) => {
-    message.info(`Visualizando orientador: ${record.name} ${record.surname}`);
+    setSelectedAdvisorId(record.key);
+    setIsModalVisible(true);
   };
 
-  const handleEdit = (record) => {
-    message.success(`Editando orientador: ${record.name} ${record.surname}`);
-  };
-
-  const handleDelete = (record) => {
-    message.error(`Excluindo orientador: ${record.name} ${record.surname}`);
-    setDataSource(dataSource.filter((item) => item.key !== record.key));
+  // Função para fechar o modal
+  const handleCancel = () => {
+    setIsModalVisible(false);
+    setSelectedAdvisorId(null);
   };
 
   // Configuração das colunas da tabela
@@ -94,13 +95,19 @@ const AdvisorListTable = () => {
           <Tooltip title="Editar">
             <EditOutlined
               style={{ color: "#52c41a", cursor: "pointer" }}
-              onClick={() => handleEdit(record)}
+              onClick={() =>
+                message.info("Função de edição ainda não implementada.")
+              }
             />
           </Tooltip>
           <Tooltip title="Apagar">
             <DeleteOutlined
               style={{ color: "#ff4d4f", cursor: "pointer" }}
-              onClick={() => handleDelete(record)}
+              onClick={() =>
+                setDataSource(
+                  dataSource.filter((item) => item.key !== record.key)
+                )
+              }
             />
           </Tooltip>
         </Space>
@@ -110,7 +117,6 @@ const AdvisorListTable = () => {
 
   return (
     <div className="p-4">
-      {/* Barra de pesquisa */}
       <div className="mb-4 flex items-center gap-4">
         <Input
           placeholder="Pesquisar Orientador"
@@ -123,13 +129,21 @@ const AdvisorListTable = () => {
         </Button>
       </div>
 
-      {/* Tabela */}
       <Table
         dataSource={filteredData.length > 0 ? filteredData : dataSource}
         columns={columns}
         pagination={{ pageSize: 5 }}
         rowKey="key"
       />
+
+      {/* Modal */}
+      {isModalVisible && (
+        <AdvisorDetailsModal
+          advisorId={selectedAdvisorId}
+          isVisible={isModalVisible}
+          handleCancel={handleCancel}
+        />
+      )}
     </div>
   );
 };
