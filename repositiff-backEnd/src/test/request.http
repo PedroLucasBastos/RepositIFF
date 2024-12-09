@@ -64,7 +64,7 @@ Content-Type: application/json
 }
 
 ###
-DELETE  http://localhost:3333/advisor/update
+DELETE  http://localhost:3333/advisor/delete
 Content-Type: application/json
 
 {
