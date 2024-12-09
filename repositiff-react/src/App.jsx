@@ -9,6 +9,7 @@ import ProtectedRoute from "./components/protectedRoute/porotectedRoute";
 import NotFound from "./pages/error/404NotFound";
 import AdminDashboard from "./pages/adminDashboard/adminDashboard";
 import ManageAdvisor from "./pages/librarianDashboard/manageAdvisor/manageAdvisor";
+import EditProfile from "./components/editProfile/editProfile";
 
 function App() {
   const location = useLocation();
@@ -45,6 +46,7 @@ function LibrarianLayout() {
       <Routes>
         <Route path="/" element={<LibrarianDashboard />} />
         <Route path="gerenciarOrientador" element={<ManageAdvisor />} />
+        <Route path="editarPerfil" element={<EditProfile />} />
       </Routes>
     </div>
   );
