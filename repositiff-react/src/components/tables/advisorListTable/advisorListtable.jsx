@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from "react";
-import { Table, Input, Button, Space, Tooltip, message } from "antd";
+import { Table, Input, Button, Space, Tooltip, message, Modal } from "antd";
 import {
   SearchOutlined,
   EyeOutlined,
@@ -8,15 +8,20 @@ import {
 } from "@ant-design/icons";
 import axios from "axios";
 import AdvisorDetailsModal from "./optionsComponents/advisorDetailsModal";
+import UpdateAdvisorModal from "./optionsComponents/updateAdvisorModal";
 
 const AdvisorListTable = () => {
   const [searchText, setSearchText] = useState("");
   const [dataSource, setDataSource] = useState([]);
   const [filteredData, setFilteredData] = useState([]);
   const [selectedAdvisorId, setSelectedAdvisorId] = useState(null);
-  const [isModalVisible, setIsModalVisible] = useState(false);
+  const [advisorMatricula, setAdvisorMatricula] = useState("");
+  const [matriculaToConfirm, setMatriculaToConfirm] = useState("");
+  const [isDeleteModalVisible, setDeleteModalVisible] = useState(false);
+  const [isConfirmDeleteVisible, setConfirmDeleteVisible] = useState(false);
+  const [isDetailsModalVisible, setIsDetailsModalVisible] = useState(false);
+  const [isUpdateModalVisible, setIsUpdateModalVisible] = useState(false);
 
-  // Função para buscar dados da API
   const fetchAdvisors = async () => {
     try {
       const response = await axios.get("http://localhost:3333/advisor/list");
@@ -32,35 +37,71 @@ const AdvisorListTable = () => {
     }
   };
 
-  // Chamada da função de busca ao montar o componente
   useEffect(() => {
     fetchAdvisors();
   }, []);
 
-  // Função para filtrar os dados com base no texto de pesquisa
-  const handleSearch = () => {
-    const filtered = dataSource.filter(
-      (item) =>
-        item.name.toLowerCase().includes(searchText.toLowerCase()) ||
-        item.surname.toLowerCase().includes(searchText.toLowerCase()) ||
-        item.registrationNumber.includes(searchText)
-    );
-    setFilteredData(filtered);
-  };
-
-  // Função para abrir o modal
   const handleView = (record) => {
     setSelectedAdvisorId(record.key);
-    setIsModalVisible(true);
+    setIsDetailsModalVisible(true);
   };
 
-  // Função para fechar o modal
-  const handleCancel = () => {
-    setIsModalVisible(false);
+  const handleEdit = (record) => {
+    setSelectedAdvisorId(record.key);
+    setIsUpdateModalVisible(true);
+  };
+
+  const handleCancelDetails = () => {
+    setIsDetailsModalVisible(false);
     setSelectedAdvisorId(null);
   };
 
-  // Configuração das colunas da tabela
+  const handleCancelUpdate = () => {
+    setIsUpdateModalVisible(false);
+    setSelectedAdvisorId(null);
+  };
+
+  const showDeleteModal = (advisorId, matricula) => {
+    setSelectedAdvisorId(advisorId);
+    setAdvisorMatricula(matricula);
+    setDeleteModalVisible(true);
+    setMatriculaToConfirm("");
+  };
+
+  const showConfirmDeleteModal = () => {
+    setDeleteModalVisible(false);
+    setConfirmDeleteVisible(true);
+  };
+
+  const handleCancelDelete = () => {
+    setDeleteModalVisible(false);
+    setConfirmDeleteVisible(false);
+    setAdvisorMatricula("");
+    setMatriculaToConfirm("");
+  };
+
+  const handleMatriculaChange = (e) => {
+    setMatriculaToConfirm(e.target.value);
+  };
+
+  const handleDelete = async () => {
+    try {
+      const dataToSend = {
+        advisorIdentification: selectedAdvisorId,
+      };
+
+      await axios.delete("http://localhost:3333/advisor/delete", {
+        data: dataToSend,
+      });
+
+      message.success("Orientador excluído com sucesso!");
+      setConfirmDeleteVisible(false);
+      fetchAdvisors();
+    } catch (error) {
+      message.error("Erro ao excluir o orientador: " + error.message);
+    }
+  };
+
   const columns = [
     {
       title: "Nome",
@@ -88,25 +129,21 @@ const AdvisorListTable = () => {
         <Space size="middle">
           <Tooltip title="Visualizar">
             <EyeOutlined
-              style={{ color: "#1890ff", cursor: "pointer" }}
+              className="text-blue-500 cursor-pointer"
               onClick={() => handleView(record)}
             />
           </Tooltip>
           <Tooltip title="Editar">
             <EditOutlined
-              style={{ color: "#52c41a", cursor: "pointer" }}
-              onClick={() =>
-                message.info("Função de edição ainda não implementada.")
-              }
+              className="text-green-500 cursor-pointer"
+              onClick={() => handleEdit(record)}
             />
           </Tooltip>
           <Tooltip title="Apagar">
             <DeleteOutlined
-              style={{ color: "#ff4d4f", cursor: "pointer" }}
+              className="text-red-500 cursor-pointer"
               onClick={() =>
-                setDataSource(
-                  dataSource.filter((item) => item.key !== record.key)
-                )
+                showDeleteModal(record.key, record.registrationNumber)
               }
             />
           </Tooltip>
@@ -124,7 +161,7 @@ const AdvisorListTable = () => {
           onChange={(e) => setSearchText(e.target.value)}
           className="w-full"
         />
-        <Button type="primary" icon={<SearchOutlined />} onClick={handleSearch}>
+        <Button type="primary" icon={<SearchOutlined />}>
           Pesquisar
         </Button>
       </div>
@@ -136,14 +173,71 @@ const AdvisorListTable = () => {
         rowKey="key"
       />
 
-      {/* Modal */}
-      {isModalVisible && (
+      {isDetailsModalVisible && (
         <AdvisorDetailsModal
           advisorId={selectedAdvisorId}
-          isVisible={isModalVisible}
-          handleCancel={handleCancel}
+          isVisible={isDetailsModalVisible}
+          handleCancel={handleCancelDetails}
         />
       )}
+      {isUpdateModalVisible && (
+        <UpdateAdvisorModal
+          advisorId={selectedAdvisorId}
+          isVisible={isUpdateModalVisible}
+          handleCancel={handleCancelUpdate}
+          fetchAdvisors={fetchAdvisors}
+        />
+      )}
+
+      <Modal
+        title="Deseja Deletar?"
+        open={isDeleteModalVisible}
+        onOk={showConfirmDeleteModal}
+        onCancel={handleCancelDelete}
+        okText="Sim"
+        cancelText="Cancelar"
+        okButtonProps={{
+          style: {
+            backgroundColor: "#ff4d4f", // Cor vermelha do botão
+            borderColor: "#ff4d4f",
+            color: "white",
+          },
+        }}
+        cancelButtonProps={{
+          style: {
+            backgroundColor: "#f0f0f0", // Cor neutra do botão
+            borderColor: "#f0f0f0",
+            color: "black",
+          },
+        }}
+      >
+        <p>Você tem certeza que deseja excluir este orientador?</p>
+      </Modal>
+
+      <Modal
+        title="Confirmação de Exclusão"
+        open={isConfirmDeleteVisible}
+        onOk={handleDelete}
+        onCancel={handleCancelDelete}
+        okText="Confirmar Exclusão"
+        cancelText="Cancelar"
+        okButtonProps={{
+          className: "bg-red-500 border-none text-white",
+          disabled: matriculaToConfirm !== advisorMatricula,
+        }}
+        cancelButtonProps={{ className: "bg-gray-200 border-none" }}
+      >
+        <p>
+          Após confirmar, esta ação não poderá ser desfeita. Para confirmar,
+          digite o número de matrícula do orientador:
+        </p>
+        <Input
+          value={matriculaToConfirm}
+          onChange={handleMatriculaChange}
+          placeholder="Digite o número de matrícula"
+        />
+        <p> Matrícula: {advisorMatricula}</p>
+      </Modal>
     </div>
   );
 };
