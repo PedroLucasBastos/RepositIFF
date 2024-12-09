@@ -11,7 +11,7 @@ import plusAnimation from "../../assets/lotties/plusAnimation.json";
 //import deleteAnimation from "../../assets/lotties/binAnimation.json";
 
 import CardsLibrarian from "@/components/dashboardCharts/cardsLibrarian";
-import TCCListTable from "@/components/tccListTable/tccListTable";
+import TCCListTable from "@/components/tables/tccListtable/tccListTable";
 
 const LibrarianDashboard = () => {
   const [hoveredButton, setHoveredButton] = useState(null); // Hover state for each button

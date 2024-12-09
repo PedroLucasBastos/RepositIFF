@@ -3,7 +3,8 @@ import React, { useState } from "react";
 import AdvisorForm from "../../../components/forms/advisorForm/advisorForm";
 import plusAnimation from "../../../assets/lotties/plusAnimation.json";
 import CardsLibrarian from "@/components/dashboardCharts/cardsLibrarian";
-import TCCListTable from "@/components/tccListTable/tccListTable";
+import TCCListTable from "@/components/tables/tccListtable/tccListTable";
+import AdvisorListTable from "@/components/tables/advisorListTable/advisorListtable";
 
 const ManageAdvisor = () => {
   const [hoveredButton, setHoveredButton] = useState(null); // Hover state for each button
@@ -53,6 +54,9 @@ const ManageAdvisor = () => {
             </div>
           </div>
         )}
+        <div>
+          <AdvisorListTable />
+        </div>
       </div>
     </div>
   );
