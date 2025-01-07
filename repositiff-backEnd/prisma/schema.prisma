@@ -15,7 +15,8 @@ model AcademicWork {
   year               Int
   qtdPag             Int
   description        String
-  course             String
+  course             Course                 @relation(fields: [courseId], references: [id])
+  courseId           String
   keyWords           String[]
   academicWorkStatus String
   cutterNumber       String?
@@ -55,4 +56,12 @@ model Librarian {
   email              String @unique
   registrationNumber String @unique
   pass               String
+}
+
+model Course {
+  id           String         @id
+  courseCode   String         @unique
+  name         String
+  degreeType   String // Ex: "Bacharelado", "Licenciatura"
+  AcademicWork AcademicWork[]
 }

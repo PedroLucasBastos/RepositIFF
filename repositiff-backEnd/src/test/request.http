@@ -75,3 +75,38 @@ Content-Type: application/json
 GET  http://localhost:3333/advisor/list
 
 
+###
+GET  http://localhost:3333/course/list
+
+###
+POST  http://localhost:3333/course/register
+Content-Type: application/json
+
+{
+    "name": "Sistemas de Informação",
+    "courseCode": "CO1025",
+    "degreeType": "BACHELOR"
+}
+
+
+###
+PUT  http://localhost:3333/course/update
+Content-Type: application/json
+
+{
+    "courseId": "e550b557-9709-48ba-8c33-e1616052ceb5",
+    "updateFields": {
+        "name": "Engenharia da Computaria",
+        "courseCode": "ENG005"
+    }
+    
+}
+
+###
+DELETE  http://localhost:3333/course/delete
+Content-Type: application/json
+
+{
+    "courseId": "17e2d58c-ddb7-4d09-a7b9-82896ed52344"
+}
+

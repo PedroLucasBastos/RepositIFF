@@ -1,11 +1,9 @@
 import { UpdateFieldsDTO } from "@src/domain/application/advisor-useCases/updateAdvisor.js";
 import { Advisor, AdvisorProps } from "@src/domain/entities/advisor.js";
 import { IAdvisorRepository } from "../IAdvisorRepository.js";
-import { Prisma, PrismaClient } from "@prisma/client";
-import { AdvisorFactory } from "@src/domain/entities/factories/advisorFactory.js";
+import { PrismaClient } from "@prisma/client";
 import { Either, Left, Right } from "@src/error_handling/either.js";
 import { DomainError, ErrorCategory } from "@src/error_handling/domainServicesErrors.js";
-import { AdvisorErrors } from "@src/domain/errorsDomain/advisorErrorDomain.js";
 
 
 export class PrismaAdvisorRepository implements IAdvisorRepository {

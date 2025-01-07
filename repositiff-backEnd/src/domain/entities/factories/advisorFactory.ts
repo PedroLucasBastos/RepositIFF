@@ -14,7 +14,7 @@ export class AdvisorFactory {
             .map((error) => error.value.details)
             .flat()
         if (errorList.length > 0) {
-            return new Left(AdvisorErrors.InvalidCreateAdvisorError(errorList));
+            return new Left(AdvisorErrors.InvalidCreateAdvisorError(errorList.join("\n")));
         }
 
         return new Right(new Advisor(props));

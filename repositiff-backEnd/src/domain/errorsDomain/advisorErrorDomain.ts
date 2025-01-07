@@ -6,7 +6,7 @@ export class AdvisorErrors extends DomainError {
         return new DomainError(ErrorCategory.Application, "Error when registering advisor", "Advisor already exists on the platform");
     }
 
-    static InvalidCreateAdvisorError(errorList: string[]): DomainError {
+    static InvalidCreateAdvisorError(errorList: string): DomainError {
         return new DomainError(
             ErrorCategory.Domain,
             "Error to instatiate the classe Advisor",
@@ -53,11 +53,11 @@ export class AdvisorErrors extends DomainError {
         );
     }
 
-    static AdvisorMappingError(errorList: string | string[]): DomainError {
+    static AdvisorMappingError(errorList: string): DomainError {
         return new DomainError(
             ErrorCategory.Persistence,
-            "Unexpected error to instatiate a advisor class with informatinos bring the database",
-            []
+            "Unexpected error to instatiate a advisor class with informations bring the database",
+            errorList
         );
     }
 
