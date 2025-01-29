@@ -23,22 +23,13 @@ export class UpdateAdvisorUseCase {
         const updateFields = updateAdvisorProps.updateFields;
         const advisorIdentification = updateAdvisorProps.advisorIdentification;
 
-        // filtra os valores que não são undfined, deixando apenas o que será atualizado
-        // const advisorDefinedFields = Object.entries(updateFields)
-        // .filter(([key, value]) => value !== undefined); // Garante que as chaves correspondem ao tipo UpdateFields
-
-        // Verificação para saber se todos os campos para upload não foram passados
-        // if (advisorDefinedFields.length === 0) {
-        //     return new Left(AdvisorErrors.AdvisorInvalidParameters());
-        // }
-
         // Seleciona o orientador que terá seus dados atualizados
         const advisorExisting = await this.advisorRepository.advisorExisting(advisorIdentification);
         if (!advisorExisting) {
             return new Left(AdvisorErrors.AdvisorNotFound());
         }
 
-        // Faz a validação para garantir que os novos dados do orientador siguam as regras de negócio
+        // Faz a validação para garantir que os novos dados do orientador sigam as regras de negócio
         const advisorDefinedFields = Object.entries(updateFields)
         let validFieldsToUpdate: UpdateFieldsDTO = {};
         for (let i = 0; i < advisorDefinedFields.length; i++) {
@@ -60,7 +51,6 @@ export class UpdateAdvisorUseCase {
     }
 
     private updateValidateFields(key: string, value: string): Either<DomainError, Partial<UpdateFieldsDTO>> {
-
         switch (key) {
             case "name": {
                 const updatedNameToApplyOrNot = AdvisorFactory.validateNameField(value);

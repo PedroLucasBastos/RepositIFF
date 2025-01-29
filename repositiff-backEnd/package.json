@@ -7,8 +7,8 @@
   "scripts": {
     "dev": "tsx watch src/server.ts",
     "test": "vitest",
-    "test-domain": "vitest src/domain/tests/",
-    "test:useCase": "vitest src/test/createProject-useCase.test.ts",
+    "test-domain": "vitest src/domain/entities/tests/",
+    "test-useCase-course": "vitest src/domain/application/course-use-case/tests/course-use-case.test.ts",
     "integrationTest": "vitest src/infra/prisma/academicWork-integration.test.ts"
   },
   "keywords": [],

@@ -84,11 +84,11 @@ describe("Test the guiding actor use cases", () => {
         expect(advisorOrError.isRight()).toBeTruthy();
         const advisorToDelete = advisorOrError.value as Advisor
 
-        const domainError = await deleteUseCase.execute({ advisorIdentification: advisorToDelete.id });
+        const deleteOrError = await deleteUseCase.execute({ advisorIdentification: advisorToDelete.id });
         // console.log(domainError.value);
         // console.log(domainError.isLeft());
         // console.log(domainError.isRight());
-        expect(domainError.isRight()).toBeTruthy();
+        expect(deleteOrError.isRight()).toBeTruthy();
         const verification = await repo.findAdvisorByRegistrationNumber(advisorToDelete.registrationNumber);
         expect(verification.isLeft()).toBeTruthy();
         expect(verification.value).toBeNull;

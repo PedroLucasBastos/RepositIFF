@@ -5,15 +5,26 @@ export enum ErrorCategory {
 }
 
 export class DomainError extends Error {
-    private readonly _descriptionError: string | string[];
+    private readonly _details: string;
+    private readonly _code?: string;
+    private readonly _cause?: Error;
 
-    constructor(category: ErrorCategory, message: string, descriptionError: string | string[]) {
+    constructor(category: ErrorCategory, message: string, details: string, cause?: Error, code?: string) {
         super(message);
         this.name = category;
-        this._descriptionError = descriptionError;
-        // Object.setPrototypeOf(this, new.target.prototype); // Corrige o prototype para instanceof funcionar corretamente
+        this._details = details;
+        this._cause = cause;
+        this._code = code;
     }
 
+
+    get code(): undefined | string {
+        return this._code;
+    }
+
+    get cause(): undefined | Error {
+        return this._cause;
+    }
 
     get category(): string {
         return this.name;
@@ -23,15 +34,15 @@ export class DomainError extends Error {
         return this.message;
     }
 
-    get details(): string | string[] {
-        return this._descriptionError;
+    get details(): string {
+        return this._details;
     }
 
     get show() {
         return {
             category: this.name,
             message: this.message,
-            details: this._descriptionError
+            details: this._details,
         };
     }
 }
