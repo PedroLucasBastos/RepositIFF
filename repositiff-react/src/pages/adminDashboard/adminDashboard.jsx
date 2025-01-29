@@ -1,11 +1,11 @@
 import React, { useState } from "react";
 import { Button, Modal } from "antd";
 import RegisterLibrarian from "@/components/forms/librarianRegistrationForm/resgisterLibrarian/ResgisterLibrarian";
-import CourseRegister from "@/components/forms/courseRegistrationForm/courseregister";
+import { useNavigate } from "react-router-dom"; // Importa o hook de navegação
 
 const AdminDashboard = () => {
   const [isLibrarianModalOpen, setIsLibrarianModalOpen] = useState(false);
-  const [isCourseModalOpen, setIsCourseModalOpen] = useState(false);
+  const navigate = useNavigate(); // Usando o hook de navegação
 
   const showLibrarianModal = () => {
     setIsLibrarianModalOpen(true);
@@ -20,17 +20,8 @@ const AdminDashboard = () => {
     console.log("Cadastro de Bibliotecário Cancelado");
   };
 
-  const showCourseModal = () => {
-    setIsCourseModalOpen(true);
-  };
-
-  const handleCourseOk = () => {
-    setIsCourseModalOpen(false);
-  };
-
-  const handleCourseCancel = () => {
-    setIsCourseModalOpen(false);
-    console.log("Cadastro de Curso Cancelado");
+  const goToCourseManagement = () => {
+    navigate("/admin/course-management");
   };
 
   return (
@@ -58,28 +49,15 @@ const AdminDashboard = () => {
         </div>
       </Modal>
 
-      {/* Botão para cadastrar curso */}
+      {/* Botão para gerenciar curso */}
       <Button
         type="primary"
         size="large"
-        onClick={showCourseModal}
+        onClick={goToCourseManagement} // Agora redireciona para a tela de gerenciamento
         className="bg-green-500 hover:bg-green-600 text-white"
       >
-        Cadastrar Curso
+        Gerenciar Curso
       </Button>
-
-      {/* Modal para curso */}
-      <Modal
-        title="Cadastrar Curso"
-        open={isCourseModalOpen}
-        onOk={handleCourseOk}
-        onCancel={handleCourseCancel}
-        footer={null}
-      >
-        <div>
-          <CourseRegister handleCancel={handleCourseCancel} />
-        </div>
-      </Modal>
     </div>
   );
 };

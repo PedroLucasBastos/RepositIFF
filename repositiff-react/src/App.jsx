@@ -5,11 +5,11 @@ import Home from "./pages/home/home";
 import Login from "./pages/login/login";
 import LibrarianDashboard from "./pages/librarianDashboard/librarianDashboard";
 import LoggedInHeader from "./components/header/LoggedInHeader/loggedInHeader";
-import ProtectedRoute from "./components/protectedRoute/porotectedRoute";
 import NotFound from "./pages/error/404NotFound";
 import AdminDashboard from "./pages/adminDashboard/adminDashboard";
 import ManageAdvisor from "./pages/librarianDashboard/manageAdvisor/manageAdvisor";
 import EditProfile from "./components/editProfile/editProfile";
+import CourseManagement from "./pages/adminDashboard/courseManagement/courseManagement";
 
 function App() {
   const location = useLocation();
@@ -25,14 +25,11 @@ function App() {
         <Route path="/" element={<Home />} />
         <Route path="/login" element={<Login />} />
         <Route path="/admin" element={<AdminDashboard />} />
-        <Route
-          path="/bibliotecario/*"
-          element={
-            <ProtectedRoute>
-              <LibrarianLayout />
-            </ProtectedRoute>
-          }
-        />
+
+        {/* Rota para gerenciamento de cursos dentro de admin */}
+        <Route path="/admin/course-management" element={<CourseManagement />} />
+
+        <Route path="/bibliotecario/*" element={<LibrarianLayout />} />
       </Routes>
       <Rodape />
     </>
