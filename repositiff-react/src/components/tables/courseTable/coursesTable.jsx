@@ -14,6 +14,10 @@ const CourseTable = () => {
   const [filteredData, setFilteredData] = useState([]);
   const [selectedCourseId, setSelectedCourseId] = useState(null);
   const [isEditModalVisible, setEditModalVisible] = useState(false);
+  const [isDeleteModalVisible, setDeleteModalVisible] = useState(false);
+  const [isConfirmDeleteVisible, setConfirmDeleteVisible] = useState(false);
+  const [courseCode, setCourseCode] = useState("");
+  const [codeToConfirm, setCodeToConfirm] = useState("");
 
   const fetchCourses = async () => {
     try {
@@ -42,6 +46,39 @@ const CourseTable = () => {
   const handleCancelEdit = () => {
     setEditModalVisible(false);
     setSelectedCourseId(null);
+  };
+
+  const showDeleteModal = (courseId, code) => {
+    setSelectedCourseId(courseId);
+    setCourseCode(code);
+    setDeleteModalVisible(true);
+    setCodeToConfirm("");
+  };
+
+  const showConfirmDeleteModal = () => {
+    setDeleteModalVisible(false);
+    setConfirmDeleteVisible(true);
+  };
+
+  const handleCancelDelete = () => {
+    setDeleteModalVisible(false);
+    setConfirmDeleteVisible(false);
+    setCourseCode("");
+    setCodeToConfirm("");
+  };
+
+  const handleDelete = async () => {
+    try {
+      await axios.delete("http://localhost:3333/course/delete", {
+        data: { courseId: selectedCourseId },
+      });
+
+      message.success("Curso excluído com sucesso!");
+      setConfirmDeleteVisible(false);
+      fetchCourses();
+    } catch (error) {
+      message.error("Erro ao excluir o curso: " + error.message);
+    }
   };
 
   const columns = [
@@ -76,7 +113,7 @@ const CourseTable = () => {
           <Tooltip title="Apagar">
             <DeleteOutlined
               className="text-red-500 cursor-pointer"
-              // Adicione a lógica de deletar aqui se necessário
+              onClick={() => showDeleteModal(record.key, record.courseCode)}
             />
           </Tooltip>
         </Space>
@@ -105,13 +142,44 @@ const CourseTable = () => {
         rowKey="key"
       />
 
-      {/* Modal de Edição */}
       <EditCourse
         courseId={selectedCourseId}
         isVisible={isEditModalVisible}
         handleCancel={handleCancelEdit}
         fetchCourses={fetchCourses}
       />
+
+      <Modal
+        title="Deseja Deletar?"
+        open={isDeleteModalVisible}
+        onOk={showConfirmDeleteModal}
+        onCancel={handleCancelDelete}
+        okText="Sim"
+        cancelText="Cancelar"
+      >
+        <p>Você tem certeza que deseja excluir este curso?</p>
+      </Modal>
+
+      <Modal
+        title="Confirmação de Exclusão"
+        open={isConfirmDeleteVisible}
+        onOk={handleDelete}
+        onCancel={handleCancelDelete}
+        okText="Confirmar Exclusão"
+        cancelText="Cancelar"
+        okButtonProps={{ disabled: codeToConfirm !== courseCode }}
+      >
+        <p>
+          Após confirmar, esta ação não poderá ser desfeita. Para confirmar,
+          digite o código do curso:
+        </p>
+        <Input
+          value={codeToConfirm}
+          onChange={(e) => setCodeToConfirm(e.target.value)}
+          placeholder="Digite o código do curso"
+        />
+        <p>Código do Curso: {courseCode}</p>
+      </Modal>
     </div>
   );
 };
