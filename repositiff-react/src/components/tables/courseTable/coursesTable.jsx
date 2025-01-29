@@ -80,6 +80,10 @@ const CourseTable = () => {
       message.error("Erro ao excluir o curso: " + error.message);
     }
   };
+  const degreeTypeMapping = {
+    BACHELOR: "Bacharelado",
+    LICENTIATE: "Licenciatura",
+  };
 
   const columns = [
     {
@@ -98,6 +102,7 @@ const CourseTable = () => {
       title: "Tipo de Grau",
       dataIndex: "degreeType",
       key: "degreeType",
+      render: (text) => degreeTypeMapping[text] || text, // Converte ou mantém o original se não estiver no mapeamento
     },
     {
       title: "Ações",
