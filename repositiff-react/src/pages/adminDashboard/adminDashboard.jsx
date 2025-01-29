@@ -1,45 +1,83 @@
 import React, { useState } from "react";
 import { Button, Modal } from "antd";
 import RegisterLibrarian from "@/components/forms/librarianRegistrationForm/resgisterLibrarian/ResgisterLibrarian";
+import CourseRegister from "@/components/forms/courseRegistrationForm/courseregister";
 
 const AdminDashboard = () => {
-  const [isModalOpen, setIsModalOpen] = useState(false);
+  const [isLibrarianModalOpen, setIsLibrarianModalOpen] = useState(false);
+  const [isCourseModalOpen, setIsCourseModalOpen] = useState(false);
 
-  const showModal = () => {
-    setIsModalOpen(true);
+  const showLibrarianModal = () => {
+    setIsLibrarianModalOpen(true);
   };
 
-  const handleOk = () => {
-    setIsModalOpen(false);
+  const handleLibrarianOk = () => {
+    setIsLibrarianModalOpen(false);
   };
 
-  const handleCancel = () => {
-    setIsModalOpen(false);
-    console.log("Cancelado");
+  const handleLibrarianCancel = () => {
+    setIsLibrarianModalOpen(false);
+    console.log("Cadastro de Bibliotecário Cancelado");
+  };
+
+  const showCourseModal = () => {
+    setIsCourseModalOpen(true);
+  };
+
+  const handleCourseOk = () => {
+    setIsCourseModalOpen(false);
+  };
+
+  const handleCourseCancel = () => {
+    setIsCourseModalOpen(false);
+    console.log("Cadastro de Curso Cancelado");
   };
 
   return (
-    <div className="flex items-center justify-center h-screen">
-      {/* Botão centralizado */}
+    <div className="flex items-center justify-center gap-4 h-screen">
+      {/* Botão para cadastrar bibliotecário */}
       <Button
         type="primary"
         size="large"
-        onClick={showModal}
+        onClick={showLibrarianModal}
         className="bg-blue-500 hover:bg-blue-600 text-white"
       >
         Cadastrar Bibliotecário
       </Button>
 
-      {/* Modal */}
+      {/* Modal para bibliotecário */}
       <Modal
         title="Cadastrar Bibliotecário"
-        open={isModalOpen}
-        onOk={handleOk}
-        onCancel={handleCancel}
-        footer={null} // Se preferir, pode adicionar botões personalizados.
+        open={isLibrarianModalOpen}
+        onOk={handleLibrarianOk}
+        onCancel={handleLibrarianCancel}
+        footer={null}
       >
         <div>
-          <RegisterLibrarian handleCancel={handleCancel} />
+          <RegisterLibrarian handleCancel={handleLibrarianCancel} />
+        </div>
+      </Modal>
+
+      {/* Botão para cadastrar curso */}
+      <Button
+        type="primary"
+        size="large"
+        onClick={showCourseModal}
+        className="bg-green-500 hover:bg-green-600 text-white"
+      >
+        Cadastrar Curso
+      </Button>
+
+      {/* Modal para curso */}
+      <Modal
+        title="Cadastrar Curso"
+        open={isCourseModalOpen}
+        onOk={handleCourseOk}
+        onCancel={handleCourseCancel}
+        footer={null}
+      >
+        <div>
+          <CourseRegister handleCancel={handleCourseCancel} />
         </div>
       </Modal>
     </div>
