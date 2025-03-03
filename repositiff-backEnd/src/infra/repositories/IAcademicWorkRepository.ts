@@ -1,7 +1,7 @@
-import { TrabalhoAcademico } from "../../domain/entities/academicWork.js";
+import { AcademicWork } from "../../domain/entities/academicWork.js";
 
 export interface IAcademicWorkRepository {
-    registerAcademicWork(project: TrabalhoAcademico): Promise<void>;
-    findByIdDoc(id: String): Promise<TrabalhoAcademico | void>;
-    listAllProjects(): Promise<TrabalhoAcademico[] | void>;
+    registerAcademicWork(project: AcademicWork): Promise<void>;
+    findByIdDoc(id: String): Promise<AcademicWork | void>;
+    listAllProjects(): Promise<AcademicWork[] | void>;
 }

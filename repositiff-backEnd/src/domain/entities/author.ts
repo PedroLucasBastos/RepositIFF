@@ -1,4 +1,4 @@
-export type authorsProps = {
+export type AuthorsProps = {
     registrationNumber: number,
     name: string,
     surName: string,
@@ -6,8 +6,8 @@ export type authorsProps = {
 
 export class Author {
     private _id: string;
-    private _props: authorsProps;
-    constructor(props: authorsProps, id?: string) {
+    private _props: AuthorsProps;
+    constructor(props: AuthorsProps, id?: string) {
         this._id = id || crypto.randomUUID();
         this._props = props;
     }

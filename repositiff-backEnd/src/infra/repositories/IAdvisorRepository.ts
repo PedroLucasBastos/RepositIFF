@@ -1,22 +1,20 @@
 import { UpdateFieldsDTO } from "@src/domain/application/advisor-useCases/updateAdvisor.js";
 import { Advisor } from "@src/domain/entities/advisor.js";
-import { DomainError } from "@src/error_handling/domainServicesErrors.js";
-import { Either } from "@src/error_handling/either.js";
 
 export interface IAdvisorRepository {
-    cadastrationNewAdvisor(advisor: Advisor): Promise<Either<DomainError, Advisor>>;
-
-    deleteAdvisor(idAdvisor: string): Promise<Either<Error, Advisor>>;
-
-    countAllAdvisors(): Promise<Either<Error, number>>;
-
+    addAdvisor(advisor: Advisor): Promise<Error | Advisor>;
     listAllAdvisors(): Promise<Advisor[]>;
+    updateAdvisor(updateFields: UpdateFieldsDTO, id: string): Promise<Error | Advisor>;
+    deleteAdvisor(idAdvisor: string): Promise<Error | Advisor>;
 
-    updateAdvisor(updateFields: UpdateFieldsDTO, id: string): Promise<Either<Error, Advisor>>;
-
-    findAdvisorById(id: String): Promise<Either<null, Advisor>>;
-
-    advisorExisting(id: String): Promise<Error | boolean>;
-
-    findAdvisorByRegistrationNumber(registrationNumber: string): Promise<Either<null, Advisor>>;
+    countAllAdvisors(): Promise<null | number>;
+    findAdvisorById(id: String): Promise<null | Advisor>;
+    advisorExisting(id: String): Promise<boolean>;
+    findAdvisorByRegistrationNumber(registrationNumber: string): Promise<null | Advisor>;
 }
+// addCourse(newCourse: Course): Promise<Error | Advisor>;
+// deleteCourse(courseId: string): Promise<Error | Advisor>;
+// updateCourse(courseId: string, updateFields: ICourseUpdateFields): Promise<Error | Advisor>;
+// findCourseById(courseId: string): Promise<null | Advisor>;
+// findCourseByCode(code: string): Promise<null | Advisor>;
+// listAllCourses(): Promise<Advisor[]>;

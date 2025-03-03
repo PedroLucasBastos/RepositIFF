@@ -5,7 +5,7 @@ import { AdvisorErrors } from "@src/domain/errorsDomain/advisorErrorDomain.js";
 
 
 export class AdvisorFactory {
-    static createAdvisor(props: AdvisorProps): Either<DomainError, Advisor> {
+    static createAdvisor(props: AdvisorProps, id?: string): Either<DomainError, Advisor> {
         const errorList: string[] = [
             this.validateNameField(props.name),
             this.validateSurnameField(props.surname),
@@ -17,7 +17,7 @@ export class AdvisorFactory {
             return new Left(AdvisorErrors.InvalidCreateAdvisorError(errorList.join("\n")));
         }
 
-        return new Right(new Advisor(props));
+        return new Right(new Advisor(props, id));
     }
 
     // static updateAdvisor(updateAdvisorProps: updateAdvisorProps): Either<DomainError, Advisor>{

@@ -1,5 +1,5 @@
 
-import { CreateProjectUseCase } from "@src/domain/application/academicWork-useCases/createProject-useCase.js";
+import { CreateProjectUseCase } from "@src/domain/application/academicWork-useCases/createAcademicWork-useCase.js";
 import { describe, it, expect } from "vitest";
 import { Project_InMemory_Repository } from "../../../test/inMemory/project-inMemory-repository.js";
 import { fileStorageFake } from "../../../test/inMemory/fileStorageFake.js";
@@ -30,7 +30,7 @@ describe("Executing a useCase to create and regist a academicWork", () => {
         }
         const inMemoryRepo = new Project_InMemory_Repository();
         const inMemoryStorage = new fileStorageFake();
-        const sup = new CreateProjectUseCase(inMemoryRepo, inMemoryStorage);
+        // const sup = new CreateProjectUseCase(inMemoryRepo, inMemoryStorage);
 
         // sup.execute(info);
 

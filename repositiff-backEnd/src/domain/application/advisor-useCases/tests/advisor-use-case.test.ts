@@ -42,7 +42,7 @@ describe("Test the guiding actor use cases", () => {
         const errorDomain = advisorUseCaseOrError.value as DomainError;
         expect(errorDomain).toBeInstanceOf(DomainError);
         expect(errorDomain.name).toEqual("ApplicationError");
-        expect(errorDomain.details).toEqual("Advisor already exists on the platform");
+        expect(errorDomain.details).toEqual("Duplicate value for unique field(s) - PRISMA ERROR CODE P2002");
 
     });
 
@@ -53,9 +53,9 @@ describe("Test the guiding actor use cases", () => {
 
         const advisorOrError = await repo.findAdvisorByRegistrationNumber(registrationNumber);
 
-        expect(advisorOrError.isRight()).toBeTruthy();
+        expect(advisorOrError).instanceOf(Advisor);
 
-        const advisorToBeUpdated = advisorOrError.value as Advisor;
+        const advisorToBeUpdated = advisorOrError as Advisor;
 
         const resultOrError = await updateUseCase.execute({
             advisorIdentification: advisorToBeUpdated.id,
@@ -68,9 +68,9 @@ describe("Test the guiding actor use cases", () => {
         const advisorWithNewSurname = await repo.findAdvisorById(
             advisorToBeUpdated.id
         )
-        expect(advisorWithNewSurname.isRight()).toBeTruthy();
+        expect(advisorWithNewSurname).instanceOf(Advisor);
 
-        const advisor = advisorWithNewSurname.value as Advisor
+        const advisor = advisorWithNewSurname as Advisor
         expect(advisor.surname).toEqual(surname);
 
     });
@@ -81,16 +81,16 @@ describe("Test the guiding actor use cases", () => {
 
         const advisorOrError = await repo.findAdvisorByRegistrationNumber(registrationNumber);
 
-        expect(advisorOrError.isRight()).toBeTruthy();
-        const advisorToDelete = advisorOrError.value as Advisor
+        expect(advisorOrError).instanceOf(Advisor);
 
-        const deleteOrError = await deleteUseCase.execute({ advisorIdentification: advisorToDelete.id });
+        const advisorToDelete = advisorOrError as Advisor
+
+        const deleteOrError = await deleteUseCase.execute(advisorToDelete.id);
         // console.log(domainError.value);
         // console.log(domainError.isLeft());
         // console.log(domainError.isRight());
         expect(deleteOrError.isRight()).toBeTruthy();
         const verification = await repo.findAdvisorByRegistrationNumber(advisorToDelete.registrationNumber);
-        expect(verification.isLeft()).toBeTruthy();
-        expect(verification.value).toBeNull;
+        expect(verification).toBeNull();
     })
 })

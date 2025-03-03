@@ -1,4 +1,4 @@
-import { academicWorkStatus, TrabalhoAcademico } from "@src/domain/entities/academicWork.js";
+import { academicWorkVisibility, AcademicWork } from "@src/domain/entities/academicWork.js";
 import { IAcademicWorkRepository } from "@src/infra/repositories/IAcademicWorkRepository.js";
 import { Advisor, Author, PrismaClient } from "@prisma/client";
 
@@ -7,7 +7,7 @@ export class academicPrismaRepository implements IAcademicWorkRepository {
     constructor() {
         this._prismaCli = new PrismaClient();
     }
-    async registerAcademicWork(project: TrabalhoAcademico): Promise<void> {
+    async registerAcademicWork(project: AcademicWork): Promise<void> {
         try {
             const academicRegisted = await this._prismaCli.academicWork.create({
                 data: {
@@ -50,7 +50,7 @@ export class academicPrismaRepository implements IAcademicWorkRepository {
         }
     }
 
-    async findByIdDoc(id: string): Promise<TrabalhoAcademico | void> {
+    async findByIdDoc(id: string): Promise<AcademicWork | void> {
         console.log(`Está buscando id: ${id}`)
         try {
             console.log("Começo do try")
@@ -69,7 +69,7 @@ export class academicPrismaRepository implements IAcademicWorkRepository {
         }
         console.log('Não foi nenhum')
     }
-    async listAllProjects(): Promise<TrabalhoAcademico[] | void> {
+    async listAllProjects(): Promise<AcademicWork[] | void> {
         try {
             const listPrismaAcademicWork = await this._prismaCli.academicWork.findMany();
             const listAcademicWork = listPrismaAcademicWork.map((prismaAcademicWork) => (this.mapperAcademicWork(prismaAcademicWork)));
@@ -78,8 +78,8 @@ export class academicPrismaRepository implements IAcademicWorkRepository {
 
         }
     }
-    private mapperAcademicWork(prismaData: any): TrabalhoAcademico {
-        return new TrabalhoAcademico(
+    private mapperAcademicWork(prismaData: any): AcademicWork {
+        return new AcademicWork(
             {
                 title: prismaData.title,
                 typeWork: prismaData.typeWork,

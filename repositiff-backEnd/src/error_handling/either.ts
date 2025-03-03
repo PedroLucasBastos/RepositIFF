@@ -1,4 +1,9 @@
+import { DomainError } from "./domainServicesErrors.js";
+
 export abstract class Either<L, R> {
+    static left(arg0: DomainError): Either<import("./domainServicesErrors.js").DomainError, true> {
+        throw new Error("Method not implemented.");
+    }
     abstract value: L | R;
     abstract isLeft(): this is Left<L, R>;
     abstract isRight(): this is Right<L, R>;

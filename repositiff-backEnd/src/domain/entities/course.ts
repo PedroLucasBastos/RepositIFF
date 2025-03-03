@@ -1,25 +1,22 @@
 import { Either, Left, Right } from "@src/error_handling/either.js";
 import { CourseErrorDomain } from "../errorsDomain/courseErrorDomain.js";
 import { DomainError } from "@src/error_handling/domainServicesErrors.js";
-import { CourseValidator } from "./factories/course-validators.js";
+import { CourseValidator } from "./validators/course-validators.js";
 export enum degreeType {
     Bachelor = "BACHELOR",
     Licentiate = "LICENTIATE",
 }
-
 export interface ICourseProps {
     courseCode: string;
     name: string;
     degreeType: degreeType
 }
-
 export class Course {
     private _id: string;
 
     private constructor(private _props: ICourseProps, id?: string) {
         this._id = id || crypto.randomUUID();
     }
-
     static createCourse(props: ICourseProps, id?: string): Either<DomainError, Course> {
         const errorList: string[] = [
             CourseValidator.validateNameField(props.name),
@@ -41,7 +38,6 @@ export class Course {
         this._props.name = name;
         return new Right(undefined);
     }
-
     public updateCourseCode(courseCode: string): Either<DomainError, void> {
         const isValidOrNot = CourseValidator.validateCourseCodeField(courseCode);
         if (isValidOrNot.isLeft())
@@ -49,7 +45,6 @@ export class Course {
         this._props.courseCode = courseCode;
         return new Right(undefined);
     }
-
     public updateDegreeType(newDegreeType: degreeType): Either<DomainError, void> {
         const isValidOrNot = CourseValidator.validateDegreeType(newDegreeType);
         if (isValidOrNot.isLeft())

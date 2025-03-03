@@ -1,18 +1,18 @@
-import { TrabalhoAcademico } from "@src/domain/entities/academicWork.js";
+import { AcademicWork } from "@src/domain/entities/academicWork.js";
 
 export class db_inMemory {
-    private _db: TrabalhoAcademico[];
+    private _db: AcademicWork[];
     constructor() {
         this._db = []
     }
 
     // Adiciona um novo trabalho acadêmico ao "banco de dados"
-    add(work: TrabalhoAcademico): void {
+    add(work: AcademicWork): void {
         this._db.push(work);
     }
 
     // Retorna todos os trabalhos acadêmicos
-    getAll(): TrabalhoAcademico[] {
+    getAll(): AcademicWork[] {
         return this._db;
     }
 

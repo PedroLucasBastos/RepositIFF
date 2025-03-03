@@ -1,5 +1,5 @@
 import { Course, degreeType, ICourseProps } from "@src/domain/entities/course.js";
-import { CourseValidator } from "@src/domain/entities/factories/course-validators.js";
+import { CourseValidator } from "@src/domain/entities/validators/course-validators.js";
 import { CourseErrorDomain } from "@src/domain/errorsDomain/courseErrorDomain.js";
 import { DomainError, ErrorCategory } from "@src/error_handling/domainServicesErrors.js";
 import { Either, Left, Right } from "@src/error_handling/either.js";
