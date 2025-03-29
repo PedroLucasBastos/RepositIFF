@@ -18,6 +18,7 @@ export class Advisor {
     }
     //====================================================================
     //                              Setters
+
     setRegistrationNumber(registrationNumber: string) {
         this._props.registrationNumber = registrationNumber;
     }
@@ -27,7 +28,6 @@ export class Advisor {
     setSurname(surname: string) {
         this._props.surname = surname;
     }
-
     //====================================================================
     get id(): string {
         return this._id;

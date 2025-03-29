@@ -1,11 +1,11 @@
-import { Either, Left, Right } from "@src/error_handling/either.js";
+import { EitherOO, Left, Right } from "@src/error_handling/either.js";
 import { DomainError, ErrorCategory } from "@src/error_handling/domainServicesErrors.js";
 import { Advisor, AdvisorProps } from "../advisor.js";
 import { AdvisorErrors } from "@src/domain/errorsDomain/advisorErrorDomain.js";
 
 
 export class AdvisorFactory {
-    static createAdvisor(props: AdvisorProps, id?: string): Either<DomainError, Advisor> {
+    static createAdvisor(props: AdvisorProps, id?: string): EitherOO<DomainError, Advisor> {
         const errorList: string[] = [
             this.validateNameField(props.name),
             this.validateSurnameField(props.surname),
@@ -22,7 +22,7 @@ export class AdvisorFactory {
 
     // static updateAdvisor(updateAdvisorProps: updateAdvisorProps): Either<DomainError, Advisor>{
 
-    static updateName(name: string, advisor: Advisor): Either<DomainError, void> {
+    static updateName(name: string, advisor: Advisor): EitherOO<DomainError, void> {
         const validatedOrNot = this.validateNameField(name);
         if (validatedOrNot.isLeft()) {
             return new Left(validatedOrNot.value);
@@ -32,7 +32,7 @@ export class AdvisorFactory {
         return new Right(undefined); // Retorna um Right<void> após o sucesso
     }
 
-    static updateSurname(surname: string, advisor: Advisor): Either<DomainError, void> {
+    static updateSurname(surname: string, advisor: Advisor): EitherOO<DomainError, void> {
         const validatedOrNot = this.validateSurnameField(surname);
         if (validatedOrNot.isLeft()) {
             return new Left(validatedOrNot.value);
@@ -42,7 +42,7 @@ export class AdvisorFactory {
         return new Right(undefined); // Retorna um Right<void> após o sucesso
     }
 
-    static updateRegistrationNumber(registrationNumber: string, advisor: Advisor): Either<DomainError, void> {
+    static updateRegistrationNumber(registrationNumber: string, advisor: Advisor): EitherOO<DomainError, void> {
         const validatedOrNot = this.validateRegistrationNumberField(registrationNumber);
         if (validatedOrNot.isLeft()) {
             return new Left(validatedOrNot.value);
@@ -54,19 +54,19 @@ export class AdvisorFactory {
 
     // static updateSurname(name)
     // }/ Método de validação retornando Either (Left ou Right)
-    static validateNameField(name: string): Either<DomainError, string> {
+    static validateNameField(name: string): EitherOO<DomainError, string> {
         if (!name || name.length === 0)
             return new Left(AdvisorErrors.InvalidNameAdvisorField());
         return new Right(name);
     }
 
-    static validateSurnameField(surname: string): Either<DomainError, string> {
+    static validateSurnameField(surname: string): EitherOO<DomainError, string> {
         if (!surname || surname.length === 0)
             return new Left(AdvisorErrors.InvalidSurnameAdvisorField());
         return new Right(surname);
     }
 
-    static validateRegistrationNumberField(registrationNumber: string): Either<DomainError, string> {
+    static validateRegistrationNumberField(registrationNumber: string): EitherOO<DomainError, string> {
         if (!registrationNumber || registrationNumber.length === 0)
             return new Left(AdvisorErrors.InvalidRegistrationNumberField());
         return new Right(registrationNumber);

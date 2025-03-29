@@ -3,9 +3,9 @@ import { AdvisorFactory } from "@src/domain/entities/factories/advisorFactory.js
 import { IAdvisorRepository } from "@src/infra/repositories/IAdvisorRepository.js";
 import { DomainError, ErrorCategory } from "@src/error_handling/domainServicesErrors.js";
 import { AdvisorErrors } from "@src/domain/errorsDomain/advisorErrorDomain.js";
-import { Either, Left, Right } from "@src/error_handling/either.js";
+import { EitherOO, Left, Right } from "@src/error_handling/either.js";
 
-type response = Either<DomainError, Advisor>;
+type response = EitherOO<DomainError, Advisor>;
 
 export class CreateAdvisorUseCase {
     constructor(

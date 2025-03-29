@@ -9,7 +9,7 @@ export class Project_InMemory_Repository implements IAcademicWorkRepository {
     findByIdDoc(id: String): Promise<AcademicWork> {
         throw new Error("Method not implemented.");
     }
-    registerAcademicWork(project: AcademicWork): Promise<void> {
+    addAcademicWork(project: AcademicWork): Promise<void> {
         this._db.add(project);
         return Promise.resolve();
     }

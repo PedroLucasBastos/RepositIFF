@@ -15,23 +15,27 @@ model AcademicWork {
   year               Int
   qtdPag             Int
   description        String
-  course             Course                 @relation(fields: [courseId], references: [id])
   courseId           String
   keyWords           String[]
   academicWorkStatus String
+  course             Course                 @relation(fields: [courseId], references: [id])
+  ilustration        String
+  references         Int[]
   cutterNumber       String?
   cduCode            String?
   cddCode            String?
-  url                String?
-  authors            Author[]               @relation("AcademicWorkToAuthor")
+  authors            String[]
   advisors           Advisor_AcademicWork[]
+  fileId             String?                @unique
+  file               File?                  @relation(fields: [fileId], references: [id])
 }
 
-model Author {
-  id           String         @id @default(cuid())
-  name         String
-  sobrenome    String
-  AcademicWork AcademicWork[] @relation("AcademicWorkToAuthor")
+model File {
+  id           String        @id
+  title        String
+  createAt     String
+  updalaodAt   String
+  AcademicWork AcademicWork?
 }
 
 model Advisor {

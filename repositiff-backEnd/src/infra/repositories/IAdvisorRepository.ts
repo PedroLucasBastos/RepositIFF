@@ -1,6 +1,14 @@
 import { UpdateFieldsDTO } from "@src/domain/application/advisor-useCases/updateAdvisor.js";
 import { Advisor } from "@src/domain/entities/advisor.js";
 
+
+export interface IReturnAdvisorDTO {
+    id: string;
+    name: string,
+    surname: string
+    registrationNumber: string
+}
+
 export interface IAdvisorRepository {
     addAdvisor(advisor: Advisor): Promise<Error | Advisor>;
     listAllAdvisors(): Promise<Advisor[]>;
@@ -11,6 +19,7 @@ export interface IAdvisorRepository {
     findAdvisorById(id: String): Promise<null | Advisor>;
     advisorExisting(id: String): Promise<boolean>;
     findAdvisorByRegistrationNumber(registrationNumber: string): Promise<null | Advisor>;
+    deleteAll(): Promise<void>;
 }
 // addCourse(newCourse: Course): Promise<Error | Advisor>;
 // deleteCourse(courseId: string): Promise<Error | Advisor>;

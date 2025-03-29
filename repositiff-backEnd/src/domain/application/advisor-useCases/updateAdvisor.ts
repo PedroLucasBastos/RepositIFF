@@ -1,7 +1,7 @@
 import { Advisor } from "@src/domain/entities/advisor.js";
 import { AdvisorFactory } from "@src/domain/entities/factories/advisorFactory.js";
 import { DomainError, ErrorCategory } from "@src/error_handling/domainServicesErrors.js";
-import { Either, Left, Right } from "@src/error_handling/either.js";
+import { EitherOO, Left, Right } from "@src/error_handling/either.js";
 import { IAdvisorRepository } from "@src/infra/repositories/IAdvisorRepository.js";
 import { AdvisorErrors } from "../../errorsDomain/advisorErrorDomain.js";
 
@@ -19,7 +19,7 @@ export class UpdateAdvisorUseCase {
     constructor(
         private advisorRepository: IAdvisorRepository,
     ) { }
-    async execute(updateAdvisorProps: UpdateAdvisorPropsDTO): Promise<Either<Error, Advisor>> {
+    async execute(updateAdvisorProps: UpdateAdvisorPropsDTO): Promise<EitherOO<Error, Advisor>> {
         const { updateFields, advisorIdentification } = updateAdvisorProps;
 
         // Faz a validação para garantir que os novos dados do orientador sigam as regras de negócio
@@ -49,7 +49,7 @@ export class UpdateAdvisorUseCase {
         return new Right(result as Advisor);
     }
 
-    private updateValidateFields(key: string, value: string): Either<DomainError, Partial<UpdateFieldsDTO>> {
+    private updateValidateFields(key: string, value: string): EitherOO<DomainError, Partial<UpdateFieldsDTO>> {
         switch (key) {
             case "name": {
                 const updatedNameToApplyOrNot = AdvisorFactory.validateNameField(value);

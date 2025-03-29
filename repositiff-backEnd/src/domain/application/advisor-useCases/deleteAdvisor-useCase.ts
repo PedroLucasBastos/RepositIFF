@@ -1,13 +1,13 @@
 import { DomainError, ErrorCategory } from "@src/error_handling/domainServicesErrors.js";
 import { IAdvisorRepository } from "@src/infra/repositories/IAdvisorRepository.js";
 import { AdvisorErrors } from "../../errorsDomain/advisorErrorDomain.js";
-import { Either, Left, Right } from "@src/error_handling/either.js";
+import { EitherOO, Left, Right } from "@src/error_handling/either.js";
 export interface deleteAdvisor {
     advisorIdentification: string;
 }
 export class DeleteAdvisorUseCase {
     constructor(private _repo: IAdvisorRepository) { }
-    async execute(id: string): Promise<Either<DomainError, void>> {
+    async execute(id: string): Promise<EitherOO<DomainError, void>> {
         const advisor = await this._repo.deleteAdvisor(id);
         if (advisor instanceof Error)
             return new Left(

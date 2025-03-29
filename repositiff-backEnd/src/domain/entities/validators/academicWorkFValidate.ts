@@ -1,4 +1,4 @@
-import { Either, Left, Right } from "@src/error_handling/either.js";
+import { EitherOO, Left, Right } from "@src/error_handling/either.js";
 import { academicWorkProps } from "../academicWork.js";
 import { DomainError, ErrorCategory } from "@src/error_handling/domainServicesErrors.js";
 import { Author } from "@src/domain/entities/author.js";
@@ -7,7 +7,7 @@ import { Course } from "../course.js";
 import { Advisor } from "../advisor.js";
 
 export class AcademicWorkValitador {
-    static validateInitiateProps(props: academicWorkProps): Either<DomainError, void> {
+    static validateInitiateProps(props: academicWorkProps): EitherOO<DomainError, void> {
         const errorList: string[] = [
             AcademicWorkValitador.validateTitle(props.title),
             AcademicWorkValitador.validateYear(props.year),
@@ -32,49 +32,49 @@ export class AcademicWorkValitador {
         return new Right(undefined);
     }
 
-    static validateQtdPag(qtdPag: number): Either<DomainError, void> {
+    static validateQtdPag(qtdPag: number): EitherOO<DomainError, void> {
         if (qtdPag <= 0) {
             return new Left(AcademicWorkErros.InvalidParameters("The number of pages is invalid"));
         }
         return new Right(undefined);
     }
 
-    static validateAdvisors(advisors: Advisor[]): Either<DomainError, void> {
+    static validateAdvisors(advisors: Advisor[]): EitherOO<DomainError, void> {
         if (advisors.length === 0) {
             return new Left(AcademicWorkErros.InvalidParameters("At least one advisor is required"));
         }
         return new Right(undefined);
     }
 
-    static validateTypeWork(typeWork: string): Either<DomainError, void> {
+    static validateTypeWork(typeWork: string): EitherOO<DomainError, void> {
         if (!typeWork || typeWork.trim().length === 0) {
             return new Left(AcademicWorkErros.InvalidParameters("The type of work is invalid"));
         }
         return new Right(undefined);
     }
 
-    static validateDescription(description: string): Either<DomainError, void> {
+    static validateDescription(description: string): EitherOO<DomainError, void> {
         if (!description || description.trim().length === 0) {
             return new Left(AcademicWorkErros.InvalidParameters("The description is invalid"));
         }
         return new Right(undefined);
     }
 
-    static validateCourse(course: Course): Either<DomainError, void> {
+    static validateCourse(course: Course): EitherOO<DomainError, void> {
         if (!course) {
             return new Left(AcademicWorkErros.InvalidParameters("The course is invalid"));
         }
         return new Right(undefined);
     }
 
-    static validateKeyWords(keyWords: string[]): Either<DomainError, void> {
+    static validateKeyWords(keyWords: string[]): EitherOO<DomainError, void> {
         if (!keyWords || keyWords.length === 0) {
             return new Left(AcademicWorkErros.InvalidParameters("At least one keyword is required"));
         }
         return new Right(undefined);
     }
 
-    static validateTitle(title: string): Either<DomainError, void> {
+    static validateTitle(title: string): EitherOO<DomainError, void> {
         if (!title || title.trim().length === 0) {
             return new Left(
                 AcademicWorkErros.InvalidParameters(
@@ -85,7 +85,7 @@ export class AcademicWorkValitador {
         return new Right(undefined);
     }
 
-    static validateYear(year: number): Either<DomainError, void> {
+    static validateYear(year: number): EitherOO<DomainError, void> {
         if (year < 1900 || year > new Date().getFullYear()) {
             return new Left(
                 AcademicWorkErros.InvalidParameters(
@@ -96,7 +96,7 @@ export class AcademicWorkValitador {
         return new Right(undefined);
     }
 
-    static validateqtdPag(qtdPag: number): Either<DomainError, void> {
+    static validateqtdPag(qtdPag: number): EitherOO<DomainError, void> {
         if (qtdPag <= 0) {
             return new Left(
                 AcademicWorkErros.InvalidParameters(
@@ -107,7 +107,7 @@ export class AcademicWorkValitador {
         return new Right(undefined);
     }
 
-    static validateAuthors(authors: Author[]): Either<DomainError, void> {
+    static validateAuthors(authors: string[]): EitherOO<DomainError, void> {
         if (authors.length === 0) {
             return new Left(
                 AcademicWorkErros.InvalidParameters(
@@ -118,7 +118,7 @@ export class AcademicWorkValitador {
         return new Right(undefined);
     }
 
-    static validateUrl(url?: string): Either<DomainError, void> {
+    static validateUrl(url?: string): EitherOO<DomainError, void> {
         if (!url)
             return new Left(
                 AcademicWorkErros.InvalidParameters(
@@ -137,7 +137,7 @@ export class AcademicWorkValitador {
         }
     }
 
-    static validateCutterNumber(cutterNumber?: string): Either<DomainError, void> {
+    static validateCutterNumber(cutterNumber?: string): EitherOO<DomainError, void> {
 
         if (!cutterNumber || !/^[A-Z]\d{3}$/i.test(cutterNumber)) {
             return new Left(
@@ -149,7 +149,7 @@ export class AcademicWorkValitador {
         return new Right(undefined);
     }
 
-    static validateCduCode(cduCode?: string): Either<DomainError, void> {
+    static validateCduCode(cduCode?: string): EitherOO<DomainError, void> {
         if (!cduCode || !/^\d+(\.\d+)*$/.test(cduCode)) {
             return new Left(
                 AcademicWorkErros.InvalidParameters(
@@ -161,7 +161,7 @@ export class AcademicWorkValitador {
         return new Right(undefined);
     }
 
-    static validateCddCode(cddCode?: string): Either<DomainError, void> {
+    static validateCddCode(cddCode?: string): EitherOO<DomainError, void> {
         if (!cddCode || !/^\d+(\.\d+)*$/.test(cddCode)) {
             return new Left(
                 AcademicWorkErros.InvalidParameters(
@@ -173,7 +173,7 @@ export class AcademicWorkValitador {
         return new Right(undefined);
     }
 
-    static validateChangeVisibility(props: academicWorkProps): Either<DomainError, void> {
+    static validateChangeVisibility(props: academicWorkProps): EitherOO<DomainError, void> {
         const errorList: string[] = [
             AcademicWorkValitador.validateTitle(props.title),
             AcademicWorkValitador.validateYear(props.year),

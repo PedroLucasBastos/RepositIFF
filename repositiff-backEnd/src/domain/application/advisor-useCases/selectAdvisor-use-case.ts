@@ -1,6 +1,6 @@
 import { Advisor } from "@src/domain/entities/advisor.js";
 import { IAdvisorRepository } from "@src/infra/repositories/IAdvisorRepository.js";
-import { Either } from '@src/error_handling/either.js';
+import { EitherOO } from '@src/error_handling/either.js';
 
 
 export class SelectAdvisorUseCase {

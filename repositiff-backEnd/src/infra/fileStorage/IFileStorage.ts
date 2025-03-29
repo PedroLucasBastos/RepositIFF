@@ -1,5 +1,7 @@
-import { Either } from "@src/error_handling/either.js";
+import { AcademicWorkFile } from "@src/domain/entities/academicWorkFile.js";
+import { EitherOO } from "@src/error_handling/either.js";
 
 export interface IFileStorage {
-    uploadAcademicFile(academicFile: File): Promise<Either<Error, string>>;
+    upload(fileDTO: AcademicWorkFile, file: Buffer): Promise<Error | void>;
+    download(key: string): Promise<Error | string>;
 }

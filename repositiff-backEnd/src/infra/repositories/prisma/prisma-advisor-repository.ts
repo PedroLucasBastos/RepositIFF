@@ -2,7 +2,7 @@ import { UpdateFieldsDTO } from "@src/domain/application/advisor-useCases/update
 import { Advisor, AdvisorProps } from "@src/domain/entities/advisor.js";
 import { IAdvisorRepository } from "../IAdvisorRepository.js";
 import { Prisma, PrismaClient } from "@prisma/client";
-import { Either, Left, Right } from "@src/error_handling/either.js";
+import { EitherOO, Left, Right } from "@src/error_handling/either.js";
 import { DomainError, ErrorCategory } from "@src/error_handling/domainServicesErrors.js";
 import { AdvisorFactory } from "@src/domain/entities/factories/advisorFactory.js";
 
@@ -21,6 +21,9 @@ export class PrismaAdvisorRepository implements IAdvisorRepository {
     private _prismaCli: PrismaClient;
     constructor() {
         this._prismaCli = new PrismaClient();
+    }
+    async deleteAll(): Promise<void> {
+        await this._prismaCli.advisor.deleteMany();
     }
     async addAdvisor(advisor: Advisor): Promise<Error | Advisor> {
         try {

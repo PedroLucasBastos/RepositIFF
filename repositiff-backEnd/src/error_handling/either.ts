@@ -1,14 +1,14 @@
 import { DomainError } from "./domainServicesErrors.js";
 
-export abstract class Either<L, R> {
-    static left(arg0: DomainError): Either<import("./domainServicesErrors.js").DomainError, true> {
+export abstract class EitherOO<L, R> {
+    static left(arg0: DomainError): EitherOO<import("./domainServicesErrors.js").DomainError, true> {
         throw new Error("Method not implemented.");
     }
     abstract value: L | R;
     abstract isLeft(): this is Left<L, R>;
     abstract isRight(): this is Right<L, R>;
 }
-export class Left<L, R> extends Either<L, R> {
+export class Left<L, R> extends EitherOO<L, R> {
 
     constructor(public value: L) {
         super(); // Chama o construtor da classe base (Either).
@@ -30,7 +30,7 @@ export class Left<L, R> extends Either<L, R> {
     // }
 }
 
-export class Right<L, R> extends Either<L, R> {
+export class Right<L, R> extends EitherOO<L, R> {
     // readonly value: R;
 
     constructor(public value: R) {
