@@ -5,7 +5,41 @@ import { MapperCourse } from "./mapperCourse.js";
 import { AcademicWork, Illustration, typeWork } from "@src/domain/entities/academicWork.js";
 
 export class MapperAcademicWork {
-    static dbToCode(data: IReturnAcademicWorkDTO): DomainError | AcademicWork {
+
+    static toDTO(data: any): IReturnAcademicWorkDTO {
+        console.log(data)
+        return {
+            id: data.id,
+            academicWorkStatus: data.academicWorkStatus,
+            authors: data.authors,
+            advisors: data.advisors.map((advisor: any) => ({
+                id: advisor.id,
+                name: advisor.Advisor.name,
+                surname: advisor.Advisor.surname,
+                registrationNumber: advisor.Advisor.registrationNumber
+            })),
+            course: {
+                id: data.courseId,
+                degreeType: data.course.degreeType,
+                name: data.course.name,
+                courseCode: data.course.courseCode
+            },
+            title: data.title,
+            typeWork: data.typeWork,
+            year: data.year,
+            qtdPag: data.qtdPag,
+            description: data.description,
+            keyWords: data.keyWords,
+            ilustration: data.ilustration,
+            references: data.references,
+            cutterNumber: data.cutterNumber,
+            cduCode: data.cduCode,
+            cddCode: data.cddCode,
+            file: data.file
+        };
+    }
+
+    static dtoToEntity(data: IReturnAcademicWorkDTO): DomainError | AcademicWork {
         const { advisors, course, ...academicWorkDATA } = data;
         console.log("asdfasdjfasdjfkasd")
         console.log(academicWorkDATA.file)

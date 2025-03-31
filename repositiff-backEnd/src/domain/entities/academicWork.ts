@@ -40,7 +40,7 @@ export interface academicWorkProps {
     keyWords: string[],
     illustration: Illustration,
     references: number[],
-    file?: AcademicWorkFile,
+    file?: string,
     cutterNumber?: string,
     cduCode?: string,
     cddCode?: string,
@@ -77,7 +77,7 @@ export class AcademicWork {
         }
     }
 
-    public set file(file: AcademicWorkFile) {
+    public set file(file: string) {
         this._props.file = file;
     }
 
@@ -142,7 +142,7 @@ export class AcademicWork {
         return this._props.cddCode;
     }
 
-    get file(): AcademicWorkFile | undefined {
+    get file(): string | undefined {
         return this._props.file;
     }
 

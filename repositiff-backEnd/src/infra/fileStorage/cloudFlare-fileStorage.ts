@@ -30,16 +30,16 @@ export class CloudFlareFileStorage implements IFileStorage {
             },
         });
     }
-    async upload(fileDTO: AcademicWorkFile, file: Buffer): Promise<Error | void> {
-        console.log(fileDTO);
+    async upload(key: string, file: Buffer): Promise<Error | void> {
+        console.log(key);
         try {
-            if (fileDTO.id === undefined) {
+            if (key === undefined) {
                 throw new Error("File key not found");
             }
             const result: PutObjectCommandOutput = await this._r2.send(
                 new PutObjectCommand({
                     Bucket: process.env.CLOUDFLARE_BUCKET_NAME,
-                    Key: fileDTO.id,
+                    Key: key,
                     Body: file,
                     ContentType: "application/pdf",
                 })

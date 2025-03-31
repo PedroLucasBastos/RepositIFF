@@ -119,13 +119,14 @@ export class CreateProjectUseCase {
             ))
         const academicWorkEntity = academicWorkOrError.value as AcademicWork;
         if (file) {
+            const fileId = crypto.randomUUID();
             console.log()
             newFile = new AcademicWorkFile({
                 title: title,
                 key: academicWorkEntity.id,
             });
-            await this._fileStorage.upload(newFile, file);
-            academicWorkEntity.file = newFile;
+            await this._fileStorage.upload(fileId, file);
+            academicWorkEntity.file = fileId;
         }
 
         const resultDB = await this._academicRepo.addAcademicWork({
@@ -157,7 +158,7 @@ export class CreateProjectUseCase {
             ))
         console.log("Result")
         console.log(resultDB);
-        const academicWorkResult = MapperAcademicWork.dbToCode(resultDB);
+        const academicWorkResult = MapperAcademicWork.dtoToEntity(resultDB);
         if (academicWorkResult instanceof DomainError)
             return new Left(new DomainError(
                 ErrorCategory.Application,

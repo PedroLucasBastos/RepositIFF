@@ -1,4 +1,5 @@
 import { CreateProjectUseCase } from "@src/domain/application/academicWork-useCases/createAcademicWork-useCase.js";
+import { DownloadFileUseCase } from "@src/domain/application/academicWork-useCases/dowloadFile-use-case.ts.js";
 import { Either, Left, Right } from "@src/error_handling/either.Funcional.js";
 import { CloudFlareFileStorage } from "@src/infra/fileStorage/cloudFlare-fileStorage.js";
 import { PrismaAcademicWorkRepository } from "@src/infra/repositories/prisma/prisma-academicWork-repository.js";
@@ -82,8 +83,26 @@ export class academicWorkController {
 
     async list(req: FastifyRequest, res: FastifyReply): Promise<void> {
         const repo = await new PrismaAcademicWorkRepository().listAllProjects();
+        console.log("askldjfasdfasdjkfasdfa")
+        console.log(repo)
         res.code(200).send({
             result: repo
+        });
+    }
+
+    async find(
+        req: string,
+        res: FastifyReply
+    ): Promise<void> {
+        const repo = new PrismaAcademicWorkRepository();
+        const academicWork = await repo.findByIdDoc(req);
+        if (!academicWork) {
+            res.code(400).send({
+                Error: "AcademicWork not found"
+            })
+        }
+        res.code(200).send({
+            result: academicWork
         });
     }
 
@@ -92,10 +111,17 @@ export class academicWorkController {
         req: string,
         res: FastifyReply
     ): Promise<void> {
+        const repo = new PrismaAcademicWorkRepository();
         const flare = new CloudFlareFileStorage();
-        const link = await flare.download(req);
+        const useCase = new DownloadFileUseCase(repo, flare);
+        const result = await useCase.execute(req);
+        if ((result).isLeft()) {
+            res.code(400).send({
+                Error: result
+            })
+        }
         res.code(200).send({
-            link: link
+            result: result
         });
     }
 

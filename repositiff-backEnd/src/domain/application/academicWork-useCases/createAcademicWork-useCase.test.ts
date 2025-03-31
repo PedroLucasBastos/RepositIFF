@@ -57,7 +57,7 @@ import path from "path";
                 const academicWork = resultUseCase.value;
                 // console.log(`Key: ${academicWork.file?.key}`);
 
-                const resultDownload = await cloudFlare.download(academicWork.file?.id || "");
+                const resultDownload = await cloudFlare.download(academicWork.file || "");
                 console.log('\n\nLINK PARA DOWNLOAD')
                 console.log(resultDownload);
             }

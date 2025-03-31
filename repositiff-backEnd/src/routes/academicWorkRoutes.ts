@@ -6,7 +6,7 @@ export async function academicWorkRoutes(fastify: FastifyInstance) {
 
     // Define a rota que recebe o arquivo
     fastify.post(
-        "/upload",
+        "/create",
         async (req, res) => {
             try {
                 const parts = req.parts();
@@ -65,7 +65,6 @@ export async function academicWorkRoutes(fastify: FastifyInstance) {
         async (request, res) => {
             try {
                 await controller.list(request, res);
-                // Agora `req.body` é do tipo IRequestAcademicWorkController
             } catch (error: any) {
                 res.code(500).send({
                     error: error.message,
@@ -80,13 +79,29 @@ export async function academicWorkRoutes(fastify: FastifyInstance) {
         async (request, res) => {
             const { id } = request.params as { id: string }; // Pegando o parâmetro da URL
             try {
+                await controller.find(id, res);
+
+                // Agora `req.body` é do tipo IRequestAcademicWorkController
+            } catch (error: any) {
+                res.code(500).send({
+                    error: error.message,
+                    message: 'Get has failed'
+                });
+            }
+        });
+
+    fastify.get(
+        "/:id/download",
+        async (request, res) => {
+            const { id } = request.params as { id: string }; // Pegando o parâmetro da URL
+            try {
                 await controller.download(id, res);
 
                 // Agora `req.body` é do tipo IRequestAcademicWorkController
             } catch (error: any) {
                 res.code(500).send({
                     error: error.message,
-                    message: 'Registration has failed'
+                    message: 'Get has failed'
                 });
             }
         });

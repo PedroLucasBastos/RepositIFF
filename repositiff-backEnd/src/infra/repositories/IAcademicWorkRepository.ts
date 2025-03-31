@@ -20,7 +20,7 @@ export interface addAcademicWorkDTO {
     cutterNumber?: string,
     cduCode?: string,
     cddCode?: string,
-    file?: AcademicWorkFile
+    file?: string
 }
 
 export interface IReturnAcademicWorkDTO {
@@ -45,7 +45,8 @@ export interface IReturnAcademicWorkDTO {
 
 export interface IAcademicWorkRepository {
     addAcademicWork(project: addAcademicWorkDTO): Promise<Error | IReturnAcademicWorkDTO>;
-    findByIdDoc(id: String): Promise<null | AcademicWork>;
+    findByIdDoc(id: String): Promise<null | IReturnAcademicWorkDTO>;
+    getFile(idAcademicWork: string): Promise<null | string>;
     listAllProjects(): Promise<IReturnAcademicWorkDTO[]>;
     deleteAll(): Promise<void>
 }

@@ -24,19 +24,18 @@ model AcademicWork {
   cutterNumber       String?
   cduCode            String?
   cddCode            String?
+  file               String?                @unique
   authors            String[]
   advisors           Advisor_AcademicWork[]
-  fileId             String?                @unique
-  file               File?                  @relation(fields: [fileId], references: [id])
 }
 
-model File {
-  id           String        @id
-  title        String
-  createAt     String
-  updalaodAt   String
-  AcademicWork AcademicWork?
-}
+// model File {
+//   id           String        @id
+//   title        String
+//   createAt     String
+//   updalaodAt   String
+//   AcademicWork AcademicWork?
+// }
 
 model Advisor {
   id                   String                 @id
