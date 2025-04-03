@@ -1,0 +1,22 @@
+POST  http://localhost:3333/advisor/register
+Content-Type: application/json
+
+{
+    "name": "Ferando",
+    "surname": "asdf",
+    "registrationNumber": "1"
+}
+
+###
+POST  http://localhost:3333/course/register
+Content-Type: application/json
+
+{
+    "name": "Sistemas de Informação",
+    "courseCode": "CO1025",
+    "degreeType": "BACHELOR"
+}
+
+
+###
+POST localhost:3333/academicWork/create

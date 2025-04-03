@@ -99,7 +99,6 @@ Content-Type: application/json
         "name": "Engenharia da Computaria",
         "courseCode": "ENG005"
     }
-    
 }
 
 ###
@@ -109,4 +108,7 @@ Content-Type: application/json
 {
     "courseId": "17e2d58c-ddb7-4d09-a7b9-82896ed52344"
 }
+
+# TESTE PARA ACADEMIC WORK
+
 

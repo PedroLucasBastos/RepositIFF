@@ -1,107 +1,160 @@
 import * as crypto from "crypto";
 import { Advisor } from "@src/domain/entities/advisor.js";
+import { Course } from "@src/domain/entities/course.js";
+import { EitherOO, Left, Right } from "@src/error_handling/either.js";
+import { DomainError } from "@src/error_handling/domainServicesErrors.js";
+import { AcademicWorkValitador } from "./validators/academicWorkFValidate.js";
+import { Author } from "./author.js";
+import { AcademicWorkFile } from "./academicWorkFile.js";
 
-export type author = {
-    nome: string;
-    sobrenome: string;
-}
+// export type author = {
+//     nome: string;
+//     sobrenome: string;
+// }
 
-export enum academicWorkStatus {
+export enum academicWorkVisibility {
     Public = "public",
     Private = "private"
 }
 
+export enum typeWork {
+    Undergraduate = "Undergraduate thesis"
+}
+
+export enum Illustration {
+    NOT = "Does not have",
+    COLOR = "Colorful",
+    MONOCHROME = "Black and white"
+}
+
 
 export interface academicWorkProps {
-    authors: author[],
+    authors: string[],
     advisors: Advisor[],
     title: string,
-    typeWork: string,
     year: number,
     qtdPag: number,
     description: string,
-    course: string,
+    course: Course,
+    typeWork: typeWork,
     keyWords: string[],
-    url?: string,
+    illustration: Illustration,
+    references: number[],
+    file?: string,
     cutterNumber?: string,
     cduCode?: string,
     cddCode?: string,
 }
 
-
-export class TrabalhoAcademico {
+export class AcademicWork {
     private _id: string;
-    private _academicWorkStatus: academicWorkStatus;
-    constructor(
+    private _academicWorkVisibility: academicWorkVisibility;
+    private constructor(
         private _props: academicWorkProps,
         id?: string,
-        academicWorkStatusParams?: academicWorkStatus
+        academicWorkStatus?: academicWorkVisibility,
     ) {
         this._id = id || crypto.randomUUID();
-        this._academicWorkStatus = academicWorkStatusParams || academicWorkStatus.Private;
+        this._academicWorkVisibility = academicWorkStatus ?? academicWorkVisibility.Private;
+    }
+
+    static createAcademicWorkFactory(props: academicWorkProps, id?: string, academicWorkStatus?: academicWorkVisibility): EitherOO<DomainError, AcademicWork> {
+        const result = AcademicWorkValitador.validateInitiateProps(props);
+        if (result.isLeft())
+            return new Left(result.value);
+        return new Right(new AcademicWork(props, id, academicWorkStatus));
+    }
+
+    public changeVisibility(): void {
+        if (this._academicWorkVisibility === academicWorkVisibility.Public)
+            this._academicWorkVisibility = academicWorkVisibility.Private;
+        if (
+            this._academicWorkVisibility === academicWorkVisibility.Private
+            &&
+            AcademicWorkValitador.validateChangeVisibility(this._props).isRight()
+        ) {
+            this._academicWorkVisibility === academicWorkVisibility.Private
+        }
+    }
+
+    public set file(file: string) {
+        this._props.file = file;
     }
 
     // Getters
-    public getId(): string {
+
+    public get ilustration(): Illustration {
+        return this._props.illustration;
+    }
+
+    public get status(): academicWorkVisibility {
+        return this._academicWorkVisibility;
+    }
+
+    public get id(): string {
         return this._id;
     }
-    public getAuthors(): author[] {
+    public get authors(): string[] {
         return this._props.authors;
     }
 
-    public getAdvisors(): Advisor[] {
+    public get advisors(): Advisor[] {
         return this._props.advisors;
     }
 
-    public getTitle(): string {
+    public get title(): string {
         return this._props.title;
     }
 
-    public getTypeWork(): string {
+    public get typeWork(): string {
         return this._props.typeWork;
     }
 
-    public getYear(): number {
+    public get year(): number {
         return this._props.year;
     }
 
-    public getQtdPag(): number {
+    public get qtdPag(): number {
         return this._props.qtdPag;
     }
 
-    public getDescription(): string {
+    public get description(): string {
         return this._props.description;
     }
 
-    public getCourse(): string {
+    public get course(): Course {
         return this._props.course;
     }
 
-    public getKeyWords(): string[] {
+    public get keyWords(): string[] {
         return this._props.keyWords;
     }
 
-    public getCutterNumber(): string | void {
+    public get cutterNumber(): string | undefined {
         return this._props.cutterNumber;
     }
 
-    public getCduCode(): string | void {
+    public get cduCode(): string | undefined {
         return this._props.cduCode;
     }
 
-    public getCddCode(): string | void {
+    public get cddCode(): string | undefined {
         return this._props.cddCode;
     }
 
-    get getUrl(): string | void {
-        return this._props.url;
+    get file(): string | undefined {
+        return this._props.file;
     }
 
-    public setUrl(url: string): void {
-        this._props.url = url;
+    // public setUrl(newFile: string): void {
+    //     this._props.file = url;
+    // }
+
+    public get academicWorkStatus(): academicWorkVisibility {
+        return this._academicWorkVisibility;
     }
 
-    public getacademicWorkStatus(): string {
-        return this._academicWorkStatus;
+    public get references(): number[] {
+        return this._props.references;
     }
 }

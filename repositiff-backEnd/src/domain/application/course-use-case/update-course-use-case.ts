@@ -1,8 +1,8 @@
 import { Course, degreeType, ICourseProps } from "@src/domain/entities/course.js";
-import { CourseValidator } from "@src/domain/entities/factories/course-validators.js";
+import { CourseValidator } from "@src/domain/entities/validators/course-validators.js";
 import { CourseErrorDomain } from "@src/domain/errorsDomain/courseErrorDomain.js";
 import { DomainError, ErrorCategory } from "@src/error_handling/domainServicesErrors.js";
-import { Either, Left, Right } from "@src/error_handling/either.js";
+import { EitherOO, Left, Right } from "@src/error_handling/either.js";
 import { ICourseRepository } from "@src/infra/repositories/ICourse-repository.js";
 export interface ICourseUpdateProps {
     courseId: string,
@@ -17,7 +17,7 @@ export class UpdateCourseUseCase {
     constructor(
         private _repo: ICourseRepository
     ) { }
-    async execute(props: ICourseUpdateProps): Promise<Either<DomainError, Course>> {
+    async execute(props: ICourseUpdateProps): Promise<EitherOO<DomainError, Course>> {
         const { courseId, updateFields } = props;
         // const course = await this._repo.findCourseById(courseId);
         // if (!course)
@@ -38,7 +38,7 @@ export class UpdateCourseUseCase {
         return new Right(resultOrError as Course);
     }
 
-    updateEntityProps(props: ICourseUpdateFields): Either<DomainError, void> {
+    updateEntityProps(props: ICourseUpdateFields): EitherOO<DomainError, void> {
         const { name, courseCode: courseCode, degreeType } = props;
         const resultList = []
         if (name)

@@ -1,11 +1,11 @@
 import { describe, it, expect } from "vitest";
 import { Advisor } from "../advisor.js";
 import { AdvisorFactory } from "../factories/advisorFactory.js";
-import { Either } from "@src/error_handling/either.js";
+import { EitherOO } from "@src/error_handling/either.js";
 import { DomainError } from "@src/error_handling/domainServicesErrors.js";
 describe("instantiate the advisor class", () => {
     it("Should be able to create a obj of Advisor class with required attributes", () => {
-        const advisorOrError: Either<DomainError, Advisor> = AdvisorFactory.createAdvisor({
+        const advisorOrError: EitherOO<DomainError, Advisor> = AdvisorFactory.createAdvisor({
             name: "Juciaryus",
             surname: "Alm`ida",
             registrationNumber: "24242424"

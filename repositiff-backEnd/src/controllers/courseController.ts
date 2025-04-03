@@ -2,7 +2,7 @@ import { CreateCourseUseCase } from "@src/domain/application/course-use-case/cre
 import { DeleteCourseUseCase, IDeleteProps } from "@src/domain/application/course-use-case/delete-course-use-case.js";
 import { ICourseUpdateFields, ICourseUpdateProps, UpdateCourseUseCase } from "@src/domain/application/course-use-case/update-course-use-case.js";
 import { ICourseProps } from "@src/domain/entities/course.js";
-import { Either, Left, Right } from "@src/error_handling/either.js";
+import { EitherOO, Left, Right } from "@src/error_handling/either.js";
 import { PrismaCourseRepostory } from "@src/infra/repositories/prisma/prisma-course-repostory.js";
 import { FastifyReply, FastifyRequest } from "fastify";
 
@@ -107,7 +107,7 @@ export class CourseController {
     }
 
 
-    private sanitizeReceivedData(request: any): Either<string, void> {
+    private sanitizeReceivedData(request: any): EitherOO<string, void> {
         const parameters = Object.entries(request)
             .filter(([key, value]) => value === undefined);
         if (parameters.length > 0)
@@ -115,7 +115,7 @@ export class CourseController {
         return new Right(undefined);
     }
 
-    private sanitizeReceivedDataToUpdateCourse(request: any): Either<string, void> {
+    private sanitizeReceivedDataToUpdateCourse(request: any): EitherOO<string, void> {
         const parameters = Object.entries(request)
             .filter(([key, value]) => value === undefined);
         if (parameters.length === 3)

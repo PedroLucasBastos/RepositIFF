@@ -1,26 +1,23 @@
-import { Either, Left, Right } from "@src/error_handling/either.js";
+import { EitherOO, Left, Right } from "@src/error_handling/either.js";
 import { CourseErrorDomain } from "../errorsDomain/courseErrorDomain.js";
 import { DomainError } from "@src/error_handling/domainServicesErrors.js";
-import { CourseValidator } from "./factories/course-validators.js";
+import { CourseValidator } from "./validators/course-validators.js";
 export enum degreeType {
     Bachelor = "BACHELOR",
     Licentiate = "LICENTIATE",
 }
-
 export interface ICourseProps {
     courseCode: string;
     name: string;
     degreeType: degreeType
 }
-
 export class Course {
     private _id: string;
 
     private constructor(private _props: ICourseProps, id?: string) {
         this._id = id || crypto.randomUUID();
     }
-
-    static createCourse(props: ICourseProps, id?: string): Either<DomainError, Course> {
+    static createCourse(props: ICourseProps, id?: string): EitherOO<DomainError, Course> {
         const errorList: string[] = [
             CourseValidator.validateNameField(props.name),
             CourseValidator.validateCourseCodeField(props.courseCode),
@@ -34,23 +31,21 @@ export class Course {
         return new Right(new Course(props, id));
     }
     //------------------ PUBLIC METHODS -----------------------
-    public updateName(name: string): Either<DomainError, void> {
+    public updateName(name: string): EitherOO<DomainError, void> {
         const isValidOrNot = CourseValidator.validateNameField(name);
         if (isValidOrNot.isLeft())
             return new Left(isValidOrNot.value);
         this._props.name = name;
         return new Right(undefined);
     }
-
-    public updateCourseCode(courseCode: string): Either<DomainError, void> {
+    public updateCourseCode(courseCode: string): EitherOO<DomainError, void> {
         const isValidOrNot = CourseValidator.validateCourseCodeField(courseCode);
         if (isValidOrNot.isLeft())
             return new Left(isValidOrNot.value);
         this._props.courseCode = courseCode;
         return new Right(undefined);
     }
-
-    public updateDegreeType(newDegreeType: degreeType): Either<DomainError, void> {
+    public updateDegreeType(newDegreeType: degreeType): EitherOO<DomainError, void> {
         const isValidOrNot = CourseValidator.validateDegreeType(newDegreeType);
         if (isValidOrNot.isLeft())
             return new Left(isValidOrNot.value);
@@ -63,16 +58,16 @@ export class Course {
         return this._props;
     }
 
-    get getId(): string {
+    get id(): string {
         return this._id;
     }
-    get getName(): string {
+    get name(): string {
         return this._props.name;
     }
-    get getCourseCode(): string {
+    get courseCode(): string {
         return this._props.courseCode;
     }
-    get getDegreeType(): string {
+    get degreeType(): string {
         return this._props.degreeType;
     }
 }

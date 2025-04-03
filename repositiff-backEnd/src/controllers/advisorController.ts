@@ -1,6 +1,6 @@
 import { CreateAdvisorUseCase } from "@src/domain/application/advisor-useCases/createAdvisor-useCase.js";
 import { AdvisorProps } from "@src/domain/entities/advisor.js";
-import { Either, Left, Right } from "@src/error_handling/either.js";
+import { EitherOO, Left, Right } from "@src/error_handling/either.js";
 import { PrismaAdvisorRepository } from "@src/infra/repositories/prisma/prisma-advisor-repository.js";
 import { FastifyReply, FastifyRequest } from "fastify";
 import { UpdateAdvisorPropsDTO, UpdateAdvisorUseCase } from '@src/domain/application/advisor-useCases/updateAdvisor.js';
@@ -80,7 +80,7 @@ export class AdvisorController {
             });
         const repo = new PrismaAdvisorRepository()
         const deleteUseCase = new DeleteAdvisorUseCase(repo);
-        const deleteOrError = await deleteUseCase.execute({ advisorIdentification });
+        const deleteOrError = await deleteUseCase.execute(advisorIdentification);
         if (deleteOrError.isLeft())
             res.code(400).send({
                 Message: "Unable to delete advisor",
@@ -98,20 +98,20 @@ export class AdvisorController {
         const listAdvisor = await repo.listAllAdvisors();
         const countAdvisor = await repo.countAllAdvisors();
         res.code(200).send({
-            Qtd: countAdvisor.value,
+            Qtd: countAdvisor,
             Advisors: listAdvisor
         })
     }
 
 
-    sanitizeReceivedData(request: any): Either<string, void> {
+    sanitizeReceivedData(request: any): EitherOO<string, void> {
         const parameters = Object.entries(request)
             .filter(([key, value]) => value === undefined);
         if (parameters.length > 0)
             return new Left("All parameters must be provided");
         return new Right(undefined);
     }
-    sanitizeReceivedDataToUpdateFields(request: any): Either<string, void> {
+    sanitizeReceivedDataToUpdateFields(request: any): EitherOO<string, void> {
         const parameters = Object.entries(request)
             .filter(([key, value]) => value !== undefined);
         if (parameters.length === 0)

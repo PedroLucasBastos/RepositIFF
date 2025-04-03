@@ -1,5 +1,4 @@
 import { describe, it, expect } from "vitest";
-import { CourseFactory } from "../factories/couseFatory.js";
 import { Course, degreeType } from "../course.js";
 
 describe("Instatiate a Course entity", () => {

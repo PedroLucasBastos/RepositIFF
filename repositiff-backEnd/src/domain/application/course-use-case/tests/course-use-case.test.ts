@@ -17,9 +17,9 @@ describe("Test the guiding actor use cases", () => {
         const result = await useCase.execute(sut);
         const course = result.value as Course;
         expect(result.isRight()).toBeTruthy();
-        expect(course.getName).equal(sut.name);
-        expect(course.getCourseCode).equal(sut.courseCode);
-        expect(course.getDegreeType).equal(sut.degreeType);
+        expect(course.name).equal(sut.name);
+        expect(course.courseCode).equal(sut.courseCode);
+        expect(course.degreeType).equal(sut.degreeType);
     })
     it("Should not be able to create and registred a course in database with a same course code", async () => {
         const sut = CoursesToTests.Correctly();
@@ -38,21 +38,21 @@ describe("Test the guiding actor use cases", () => {
         const update = new UpdateCourseUseCase(repo);
         const course = findResult as Course
         const resultOrError = await update.execute({
-            courseId: course.getId,
+            courseId: course.id,
             updateFields: {
                 name: "Engenharia da Computação",
                 courseCode: "Eng1045",
             }
         })
         const updatedCourse = resultOrError.value as Course;
-        expect(updatedCourse.getName).equal("Engenharia da Computação");
-        expect(updatedCourse.getCourseCode).equal("Eng1045");
+        expect(updatedCourse.name).equal("Engenharia da Computação");
+        expect(updatedCourse.courseCode).equal("Eng1045");
     })
     it("Should be able to delete a course in database", async () => {
         const findResult = await repo.findCourseByCode("Eng1045");
         const del = new DeleteCourseUseCase(repo);
         const course = findResult as Course
-        const deleteOrError = await del.execute({ courseId: course.getId })
+        const deleteOrError = await del.execute({ courseId: course.id })
 
         expect(deleteOrError.isRight()).toBeTruthy()
         const verification = await repo.findCourseByCode("Eng1045");

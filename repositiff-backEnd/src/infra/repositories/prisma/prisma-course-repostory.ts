@@ -20,14 +20,19 @@ export class PrismaCourseRepostory implements ICourseRepository {
     constructor() {
         this._prismaCli = new PrismaClient();
     }
+
+    async deleteAll(): Promise<void> {
+        await this._prismaCli.course.deleteMany();
+    }
+
     async addCourse(newCourse: Course): Promise<Error | Course> {
         try {
             const course = await this._prismaCli.course.create({
                 data: {
-                    id: newCourse.getId,
-                    name: newCourse.getName,
-                    courseCode: newCourse.getCourseCode,
-                    degreeType: newCourse.getDegreeType,
+                    id: newCourse.id,
+                    name: newCourse.name,
+                    courseCode: newCourse.courseCode,
+                    degreeType: newCourse.degreeType,
                 }
             })
             // const courseMapped = this.mapperToCourseEntity(course);
@@ -154,6 +159,29 @@ export class PrismaCourseRepostory implements ICourseRepository {
         } catch (error) {
             throw new Error("Method not implemented.");
         }
+    }
+
+
+    async existing(courseId: string): Promise<boolean> {
+        try {
+            const exists = await this._prismaCli.advisor.count({
+                where: {
+                    id: "254"
+                }
+            })
+            if (exists > 0) {
+                return true;
+            }
+            return false;
+        } catch (error) {
+            if (error instanceof Prisma.PrismaClientKnownRequestError) {
+                // The .code property can be accessed in a type-safe manner
+                const customMessage = prismaErrorMessages[error.code] || 'Unknown database error occurred';
+                console.log(customMessage);
+                throw new Error(customMessage);
+            }
+        }
+        return false;
     }
 
     private mapperToCourseEntity(databaseEntity: any): Error | Course {

@@ -1,11 +1,9 @@
 import { Course, ICourseProps } from "@src/domain/entities/course.js";
-import { CourseFactory } from "@src/domain/entities/factories/couseFatory.js";
-import { CourseErrorDomain } from "@src/domain/errorsDomain/courseErrorDomain.js";
 import { DomainError, ErrorCategory } from "@src/error_handling/domainServicesErrors.js";
-import { Either, Left, Right } from "@src/error_handling/either.js";
+import { EitherOO, Left, Right } from "@src/error_handling/either.js";
 import { ICourseRepository } from "@src/infra/repositories/ICourse-repository.js";
 
-type response = Either<DomainError, Course>
+type response = EitherOO<DomainError, Course>
 
 export class CreateCourseUseCase {
     constructor(

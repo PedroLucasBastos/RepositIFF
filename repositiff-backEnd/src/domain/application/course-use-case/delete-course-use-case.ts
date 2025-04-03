@@ -1,7 +1,7 @@
 import { Course } from "@src/domain/entities/course.js";
 import { CourseErrorDomain } from "@src/domain/errorsDomain/courseErrorDomain.js";
 import { DomainError } from "@src/error_handling/domainServicesErrors.js";
-import { Either, Left, Right } from "@src/error_handling/either.js";
+import { EitherOO, Left, Right } from "@src/error_handling/either.js";
 import { ICourseRepository } from "@src/infra/repositories/ICourse-repository.js";
 
 export interface IDeleteProps {
@@ -13,7 +13,7 @@ export class DeleteCourseUseCase {
         private _repo: ICourseRepository
     ) { }
 
-    async execute(props: IDeleteProps): Promise<Either<DomainError, Course>> {
+    async execute(props: IDeleteProps): Promise<EitherOO<DomainError, Course>> {
         const course = await this._repo.deleteCourse(props.courseId);
         if (!course)
             return new Left(CourseErrorDomain.CourseNotFound());
