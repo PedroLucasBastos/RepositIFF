@@ -126,7 +126,10 @@ export class PrismaAcademicWorkRepository implements IAcademicWorkRepository {
             //     cduCode: prismaData.cduCode,
             //     cddCode: prismaData.cddCode,
             // }
-            console.log("Academic Work successfully registered!");
+            // console.log("Academic Work successfully registered!");
+            // console.log(`ID SALVO NO BANCO DE DADOS ${prismaData.id}`)
+            // console.log(prismaData);
+            // console.log("=========================================================")
             return MapperAcademicWork.toDTO(prismaData);
         } catch (error) {
             // console.log("\n\n\n")
