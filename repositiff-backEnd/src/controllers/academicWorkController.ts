@@ -30,7 +30,6 @@ export class academicWorkController {
         req: IRequestAcademicWorkController,
         res: FastifyReply
     ): Promise<void> {
-        // console.log(req);
 
         const resultSanitize = this.sanitizeReceivedData(req);
         if (resultSanitize.isLeft()) {
@@ -77,8 +76,6 @@ export class academicWorkController {
             isRight: result,
             Message: "DEU BOM AKI",
         });
-
-
     }
 
     async list(req: FastifyRequest, res: FastifyReply): Promise<void> {
@@ -106,7 +103,6 @@ export class academicWorkController {
         });
     }
 
-
     async download(
         req: string,
         res: FastifyReply
@@ -125,14 +121,14 @@ export class academicWorkController {
         });
     }
 
-
     sanitizeReceivedData(request: IRequestAcademicWorkController): Either<string, void> {
         const { optinalParameters, ...parameters } = request;
+        console.log("Tipo recebido:", typeof request.type, request.type);
         const verify = Object.entries(parameters)
             .filter(([key, value]) => value === undefined);
         if (verify.length > 0)
             return new Left("All parameters must be provided");
-        // console.log(request);
+
         const {
             authors,
             idAdvisors,
@@ -148,16 +144,52 @@ export class academicWorkController {
         } = request;
 
         // Validate authors
-        if (!Array.isArray(authors) || authors.some((author) => typeof author !== 'string')) {
+        let parsedAuthors: string[] = [];
+        try {
+            parsedAuthors = JSON.parse(authors as any); // Parse the JSON string
+            if (!Array.isArray(parsedAuthors) || parsedAuthors.some((author) => typeof author !== 'string')) {
+                return new Left('Authors must be an array of strings.');
+            }
+        } catch (error) {
             return new Left('Authors must be an array of strings.');
         }
+        request.authors = parsedAuthors; //replace the original authors string for the parsed array.
 
         // Validate idAdvisors
-        if (!Array.isArray(idAdvisors) || idAdvisors.some((id) => typeof id !== 'string')) {
-            console.log(idAdvisors[0]);
-            console.log(Array.isArray(idAdvisors));
+        let parsedAdvisors: string[] = [];
+        try {
+            parsedAdvisors = JSON.parse(idAdvisors as any); // Parse the JSON string
+            if (!Array.isArray(parsedAdvisors) || parsedAdvisors.some((advisor) => typeof advisor !== 'string')) {
+                return new Left('Advisors must be an array of strings.');
+            }
+        } catch (error) {
             return new Left('Advisors must be an array of strings.');
         }
+        request.idAdvisors = parsedAdvisors; //replace the original advisors string for the parsed array.
+
+        // Validate keyWords
+        let parsedKeyWords: string[] = [];
+        try {
+            parsedKeyWords = JSON.parse(keyWords as any); // Parse the JSON string
+            if (!Array.isArray(parsedKeyWords) || parsedKeyWords.some((keyword) => typeof keyword !== 'string')) {
+                return new Left('Keywords must be an array of strings.');
+            }
+        } catch (error) {
+            return new Left('Keywords must be an array of strings.');
+        }
+        request.keyWords = parsedKeyWords; //replace the original keywords string for the parsed array.
+
+        // Validate references
+        let parsedReferences: number[] = [];
+        try {
+            parsedReferences = JSON.parse(references as any); // Parse the JSON string
+            if (!Array.isArray(parsedReferences) || parsedReferences.some((reference) => typeof reference !== 'number')) {
+                return new Left('References must be an array of numbers.');
+            }
+        } catch (error) {
+            return new Left('References must be an array of numbers.');
+        }
+        request.references = parsedReferences; //replace the original references string for the parsed array.
 
         // Validate title
         if (typeof title !== 'string') {
@@ -189,20 +221,9 @@ export class academicWorkController {
             return new Left('Course ID must be a string.');
         }
 
-        // Validate keyWords
-        if (!Array.isArray(keyWords) || keyWords.some((keyword) => typeof keyword !== 'string')) {
-            return new Left('Keywords must be an array of strings.');
-        }
-
         // Validate ilustration
-
         if (typeof ilustration !== 'string') {
             return new Left('Illustration must be a string.');
-        }
-
-        // Validate references
-        if (!Array.isArray(references) || references.some((reference) => typeof reference !== 'number')) {
-            return new Left('References must be an array of numbers.');
         }
 
         // Validate cduCode (optional)
@@ -221,5 +242,6 @@ export class academicWorkController {
         }
 
         return new Right(undefined);
+        
     }
 }
