@@ -120,7 +120,7 @@ export class CreateProjectUseCase {
         const academicWorkEntity = academicWorkOrError.value as AcademicWork;
         if (file) {
             const fileId = crypto.randomUUID();
-            console.log()
+            // console.log()
             newFile = new AcademicWorkFile({
                 title: title,
                 key: academicWorkEntity.id,
@@ -156,8 +156,8 @@ export class CreateProjectUseCase {
                 resultDB,
                 resultDB.name
             ))
-        console.log("Result")
-        console.log(resultDB);
+        console.log("Result depois de criar a entidade - ")
+
         const academicWorkResult = MapperAcademicWork.dtoToEntity(resultDB);
         if (academicWorkResult instanceof DomainError)
             return new Left(new DomainError(
@@ -167,7 +167,10 @@ export class CreateProjectUseCase {
                 academicWorkResult,
                 academicWorkResult.name
             ))
-        // console.log(academicWorkResult.advisors);
+        console.log("VERIFICAÇÃO")
+        console.log(`ID DA ENTIDADE: ${resultDB.id}`);
+        console.log(`ID da volta do DB: ${academicWorkResult.id}`);
+        console.log("==============================================================")
         return new Right(academicWorkResult);
     }
 
