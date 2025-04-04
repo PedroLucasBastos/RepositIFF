@@ -31,7 +31,7 @@ Content-Type: application/json
 {
     "name": "Pedro Lucas",
     "email": "pedrinho@luca.com",
-    "registrationNumber": "558646846",
+    "registrationNumber": "123456789",
     "password": "admin",
     "confirmPassword": "admin"
 }
