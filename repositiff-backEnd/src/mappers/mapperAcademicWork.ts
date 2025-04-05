@@ -7,8 +7,10 @@ import { AcademicWork, Illustration, typeWork } from "@src/domain/entities/acade
 export class MapperAcademicWork {
 
     static toDTO(data: any): IReturnAcademicWorkDTO {
-        console.log(data)
-        return {
+        console.log("================================================ toDTO =====================================================================================")
+        console.log(data.id)
+        console.log("=======================================================")
+        const mapper = {
             id: data.id,
             academicWorkStatus: data.academicWorkStatus,
             authors: data.authors,
@@ -37,9 +39,11 @@ export class MapperAcademicWork {
             cddCode: data.cddCode,
             file: data.file
         };
+        console.log(`Depois de mapear: ${mapper.id}`)
+        return mapper;
     }
 
-    static dtoToEntity(data: IReturnAcademicWorkDTO): DomainError | AcademicWork {
+    static dtoToEntity(data: any): DomainError | AcademicWork {
         const { advisors, course, ...academicWorkDATA } = data;
         console.log("asdfasdjfasdjfkasd")
         console.log(academicWorkDATA.file)
@@ -50,20 +54,21 @@ export class MapperAcademicWork {
         const courseEntity = MapperCourse.mapping(course);
         if (courseEntity instanceof DomainError)
             return courseEntity;
-        const result = AcademicWork.createAcademicWorkFactory({
-            authors: academicWorkDATA.authors,
-            advisors: advisorsEntity,
-            title: academicWorkDATA.title,
-            typeWork: academicWorkDATA.typeWork as typeWork,
-            year: academicWorkDATA.year,
-            qtdPag: academicWorkDATA.qtdPag,
-            description: academicWorkDATA.description,
-            course: courseEntity,
-            keyWords: academicWorkDATA.keyWords,
-            illustration: academicWorkDATA.ilustration as Illustration,
-            references: academicWorkDATA.references,
-            file: academicWorkDATA.file || undefined
-        })
+        const result = AcademicWork.createAcademicWorkFactory(
+            {
+                authors: academicWorkDATA.authors,
+                advisors: advisorsEntity,
+                title: academicWorkDATA.title,
+                typeWork: academicWorkDATA.typeWork as typeWork,
+                year: academicWorkDATA.year,
+                qtdPag: academicWorkDATA.qtdPag,
+                description: academicWorkDATA.description,
+                course: courseEntity,
+                keyWords: academicWorkDATA.keyWords,
+                illustration: academicWorkDATA.ilustration as Illustration,
+                references: academicWorkDATA.references,
+                file: academicWorkDATA.file || undefined
+            }, data.id)
         return result.value;
     }
 }

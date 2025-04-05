@@ -37,7 +37,7 @@ function Header() {
     <div className="container-Header">
       {/* Logo e informações */}
       <div className="logo-IFF">
-        <img src="./logos/logoIFF.png" alt="logo-IFF" />
+        <img src="/logos/logoIFF.png" alt="logo-IFF" />
         <div className="text-info">
           <p>Instituto Federal Fluminense</p>
           <p>Campus Bom Jesus do Itabapoana</p>

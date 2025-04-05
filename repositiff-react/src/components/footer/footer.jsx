@@ -79,12 +79,12 @@ function Footer() {
           {/* Logos */}
           <div className="flex items-center space-x-4 flex-wrap justify-center">
             <img
-              src="./logos/logoIFF.png"
+              src="/logos/logoIFF.png"
               alt="Instituto Federal Fluminense"
               className="w-[150px] md:w-[170px] h-[50px] md:h-[60px]"
             />
             <img
-              src="./logos/repositIffLogo.svg"
+              src="/logos/repositIffLogo.svg"
               alt="Instituto Federal Fluminense"
               className="w-[150px] md:w-[170px] h-[50px] md:h-[60px]"
             />
