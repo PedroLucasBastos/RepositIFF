@@ -109,6 +109,19 @@ const FormTCC = () => {
         console.error(error);
         message.error("Erro inesperado");
       });
+      console.log("Dados enviados:", {
+        authors: authorsArray,
+        idAdvisors: advisors,
+        title: values.title,
+        type: values.type,
+        year: moment(values.year).year(),
+        qtdPag: values.qtdPag,
+        description: values.description,
+        idCourse: values.idCourse,
+        keyWords: values.keyWords.filter((kw) => kw && kw.trim()),
+        ilustration: values.ilustration,
+        references: referencesArray,
+      });
   };
 
   // Configurações do componente Dragger para captura do arquivo
