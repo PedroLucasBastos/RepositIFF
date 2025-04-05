@@ -6,6 +6,7 @@ import { PrismaAcademicWorkRepository } from "@src/infra/repositories/prisma/pri
 import { PrismaAdvisorRepository } from "@src/infra/repositories/prisma/prisma-advisor-repository.js";
 import { PrismaCourseRepostory } from "@src/infra/repositories/prisma/prisma-course-repostory.js";
 import { FastifyReply, FastifyRequest } from "fastify";
+import { J } from "vitest/dist/chunks/reporters.66aFHiyX.js";
 
 export interface IRequestAcademicWorkController {
     authors: string[],
@@ -39,6 +40,7 @@ export class academicWorkController {
                 detail: resultSanitize.value
             });
         }
+        const parameters= resultSanitize.value;
 
         const repo = new PrismaAcademicWorkRepository();
         const courseRepo = new PrismaCourseRepostory();
@@ -50,22 +52,24 @@ export class academicWorkController {
             courseRepo,
             flare
         )
-
+console.log("PARAMETROS DO CONTROLLER")
+        console.log(parameters)
         const result = await useCase.execute({
-            authors: req.authors,
-            idAdvisors: req.idAdvisors,
-            title: req.title,
-            type: req.type,
-            year: req.year,
-            qtdPag: req.qtdPag,
-            description: req.description,
-            idCourse: req.idCourse,
-            keyWords: req.keyWords,
-            ilustration: req.ilustration,
-            references: req.references,
-            cddCode: req.optinalParameters.cddCode,
-            cduCode: req.optinalParameters.cduCode,
-            file: req.optinalParameters.file
+            
+            authors: parameters.authors,
+            idAdvisors: parameters.idAdvisors,
+            title: parameters.title,
+            type: parameters.type,
+            year: parameters.year,
+            qtdPag: parameters.qtdPag,
+            description: parameters.description,
+            idCourse: parameters.idCourse,
+            keyWords: parameters.keyWords,
+            ilustration: parameters.ilustration,
+            references: parameters.references,
+            cddCode: parameters.optinalParameters.cddCode,
+            cduCode: parameters.optinalParameters.cduCode,
+            file: parameters.optinalParameters.file
         })
 
         if (result.isLeft())
@@ -126,13 +130,13 @@ export class academicWorkController {
     }
 
 
-    sanitizeReceivedData(request: IRequestAcademicWorkController): Either<string, void> {
+    sanitizeReceivedData(request: any): Either<string, IRequestAcademicWorkController> {
         const { optinalParameters, ...parameters } = request;
         const verify = Object.entries(parameters)
             .filter(([key, value]) => value === undefined);
         if (verify.length > 0)
             return new Left("All parameters must be provided");
-        // console.log(request);
+        console.log(request);
         const {
             authors,
             idAdvisors,
@@ -148,14 +152,16 @@ export class academicWorkController {
         } = request;
 
         // Validate authors
-        if (!Array.isArray(authors) || authors.some((author) => typeof author !== 'string')) {
+        const parseAuthors = JSON.parse(authors);
+        if (!Array.isArray(parseAuthors) || parseAuthors.some((author) => typeof author !== 'string')) {
             return new Left('Authors must be an array of strings.');
         }
 
         // Validate idAdvisors
-        if (!Array.isArray(idAdvisors) || idAdvisors.some((id) => typeof id !== 'string')) {
-            console.log(idAdvisors[0]);
-            console.log(Array.isArray(idAdvisors));
+        const parseidAdvisors = JSON.parse(idAdvisors);
+        if (!Array.isArray(parseidAdvisors) || parseidAdvisors.some((id) => typeof id !== 'string')) {
+            console.log(parseidAdvisors[0]);
+            console.log(Array.isArray(parseidAdvisors));
             return new Left('Advisors must be an array of strings.');
         }
 
@@ -190,7 +196,8 @@ export class academicWorkController {
         }
 
         // Validate keyWords
-        if (!Array.isArray(keyWords) || keyWords.some((keyword) => typeof keyword !== 'string')) {
+        const parseKeyWords = JSON.parse(keyWords);
+        if (!Array.isArray(parseKeyWords) || parseKeyWords.some((keyword) => typeof keyword !== 'string')) {
             return new Left('Keywords must be an array of strings.');
         }
 
@@ -201,7 +208,8 @@ export class academicWorkController {
         }
 
         // Validate references
-        if (!Array.isArray(references) || references.some((reference) => typeof reference !== 'number')) {
+        const parseReferences = JSON.parse(references);
+        if (!Array.isArray(parseReferences) || parseReferences.some((reference) => typeof reference !== 'number')) {
             return new Left('References must be an array of numbers.');
         }
 
@@ -220,6 +228,23 @@ export class academicWorkController {
             return new Left('File, if provided, must be an instance of File.');
         }
 
-        return new Right(undefined);
+        return new Right({
+            authors: parseAuthors,
+            idAdvisors: parseidAdvisors,
+            title,
+            type,
+            year,
+            qtdPag,
+            description,
+            idCourse,
+            keyWords: parseKeyWords,
+            ilustration,
+            references: parseReferences,
+            optinalParameters: {
+                cduCode: optinalParameters.cduCode,
+                cddCode: optinalParameters.cddCode,
+                file: optinalParameters.file
+            }
+        });
     }
 }

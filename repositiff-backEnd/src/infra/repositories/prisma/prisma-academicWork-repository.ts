@@ -42,7 +42,9 @@ export class PrismaAcademicWorkRepository implements IAcademicWorkRepository {
                 // The .code property can be accessed in a type-safe manner
                 const customMessage = prismaErrorMessages[error.code] || 'Unknown database error occurred';
                 console.log(customMessage);
+                console.log(error);
                 throw new Error(customMessage);
+
             }
             return null;
         }
@@ -50,6 +52,8 @@ export class PrismaAcademicWorkRepository implements IAcademicWorkRepository {
     async addAcademicWork(project: addAcademicWorkDTO): Promise<Error | IReturnAcademicWorkDTO> {
         // console.log(project.idAdvisors)
         // console.log(project.idCourse)
+        console.log("Entrou no addAcademicWork");
+        console.log(project);
         try {
             const prismaData = await this._prismaCli.academicWork.create({
                 data: {
@@ -136,6 +140,7 @@ export class PrismaAcademicWorkRepository implements IAcademicWorkRepository {
                 // The .code property can be accessed in a type-safe manner
                 const customMessage = prismaErrorMessages[error.code] || `Unknown database error occurred - CODE:${error.code}`;
                 console.log(customMessage);
+                console.log(error);
                 return new Error(customMessage, error);
             }
             return new Error("Unexpected Error to database");
