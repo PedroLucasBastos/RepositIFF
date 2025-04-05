@@ -6,6 +6,7 @@ import { PrismaAcademicWorkRepository } from "@src/infra/repositories/prisma/pri
 import { PrismaAdvisorRepository } from "@src/infra/repositories/prisma/prisma-advisor-repository.js";
 import { PrismaCourseRepostory } from "@src/infra/repositories/prisma/prisma-course-repostory.js";
 import { FastifyReply, FastifyRequest } from "fastify";
+import { J } from "vitest/dist/chunks/reporters.66aFHiyX.js";
 
 export interface IRequestAcademicWorkController {
     authors: string[],
@@ -30,6 +31,7 @@ export class academicWorkController {
         req: IRequestAcademicWorkController,
         res: FastifyReply
     ): Promise<void> {
+        // console.log(req);
 
         const resultSanitize = this.sanitizeReceivedData(req);
         if (resultSanitize.isLeft()) {
@@ -38,6 +40,7 @@ export class academicWorkController {
                 detail: resultSanitize.value
             });
         }
+        const parameters= resultSanitize.value;
 
         const repo = new PrismaAcademicWorkRepository();
         const courseRepo = new PrismaCourseRepostory();
@@ -49,22 +52,24 @@ export class academicWorkController {
             courseRepo,
             flare
         )
-
+console.log("PARAMETROS DO CONTROLLER")
+        console.log(parameters)
         const result = await useCase.execute({
-            authors: req.authors,
-            idAdvisors: req.idAdvisors,
-            title: req.title,
-            type: req.type,
-            year: req.year,
-            qtdPag: req.qtdPag,
-            description: req.description,
-            idCourse: req.idCourse,
-            keyWords: req.keyWords,
-            ilustration: req.ilustration,
-            references: req.references,
-            cddCode: req.optinalParameters.cddCode,
-            cduCode: req.optinalParameters.cduCode,
-            file: req.optinalParameters.file
+            
+            authors: parameters.authors,
+            idAdvisors: parameters.idAdvisors,
+            title: parameters.title,
+            type: parameters.type,
+            year: parameters.year,
+            qtdPag: parameters.qtdPag,
+            description: parameters.description,
+            idCourse: parameters.idCourse,
+            keyWords: parameters.keyWords,
+            ilustration: parameters.ilustration,
+            references: parameters.references,
+            cddCode: parameters.optinalParameters.cddCode,
+            cduCode: parameters.optinalParameters.cduCode,
+            file: parameters.optinalParameters.file
         })
 
         if (result.isLeft())
@@ -76,6 +81,8 @@ export class academicWorkController {
             isRight: result,
             Message: "DEU BOM AKI",
         });
+
+
     }
 
     async list(req: FastifyRequest, res: FastifyReply): Promise<void> {
@@ -103,6 +110,7 @@ export class academicWorkController {
         });
     }
 
+
     async download(
         req: string,
         res: FastifyReply
@@ -121,14 +129,14 @@ export class academicWorkController {
         });
     }
 
-    sanitizeReceivedData(request: IRequestAcademicWorkController): Either<string, void> {
+
+    sanitizeReceivedData(request: any): Either<string, IRequestAcademicWorkController> {
         const { optinalParameters, ...parameters } = request;
-        console.log("Tipo recebido:", typeof request.type, request.type);
         const verify = Object.entries(parameters)
             .filter(([key, value]) => value === undefined);
         if (verify.length > 0)
             return new Left("All parameters must be provided");
-
+        console.log(request);
         const {
             authors,
             idAdvisors,
@@ -144,52 +152,18 @@ export class academicWorkController {
         } = request;
 
         // Validate authors
-        let parsedAuthors: string[] = [];
-        try {
-            parsedAuthors = JSON.parse(authors as any); // Parse the JSON string
-            if (!Array.isArray(parsedAuthors) || parsedAuthors.some((author) => typeof author !== 'string')) {
-                return new Left('Authors must be an array of strings.');
-            }
-        } catch (error) {
+        const parseAuthors = JSON.parse(authors);
+        if (!Array.isArray(parseAuthors) || parseAuthors.some((author) => typeof author !== 'string')) {
             return new Left('Authors must be an array of strings.');
         }
-        request.authors = parsedAuthors; //replace the original authors string for the parsed array.
 
         // Validate idAdvisors
-        let parsedAdvisors: string[] = [];
-        try {
-            parsedAdvisors = JSON.parse(idAdvisors as any); // Parse the JSON string
-            if (!Array.isArray(parsedAdvisors) || parsedAdvisors.some((advisor) => typeof advisor !== 'string')) {
-                return new Left('Advisors must be an array of strings.');
-            }
-        } catch (error) {
+        const parseidAdvisors = JSON.parse(idAdvisors);
+        if (!Array.isArray(parseidAdvisors) || parseidAdvisors.some((id) => typeof id !== 'string')) {
+            console.log(parseidAdvisors[0]);
+            console.log(Array.isArray(parseidAdvisors));
             return new Left('Advisors must be an array of strings.');
         }
-        request.idAdvisors = parsedAdvisors; //replace the original advisors string for the parsed array.
-
-        // Validate keyWords
-        let parsedKeyWords: string[] = [];
-        try {
-            parsedKeyWords = JSON.parse(keyWords as any); // Parse the JSON string
-            if (!Array.isArray(parsedKeyWords) || parsedKeyWords.some((keyword) => typeof keyword !== 'string')) {
-                return new Left('Keywords must be an array of strings.');
-            }
-        } catch (error) {
-            return new Left('Keywords must be an array of strings.');
-        }
-        request.keyWords = parsedKeyWords; //replace the original keywords string for the parsed array.
-
-        // Validate references
-        let parsedReferences: number[] = [];
-        try {
-            parsedReferences = JSON.parse(references as any); // Parse the JSON string
-            if (!Array.isArray(parsedReferences) || parsedReferences.some((reference) => typeof reference !== 'number')) {
-                return new Left('References must be an array of numbers.');
-            }
-        } catch (error) {
-            return new Left('References must be an array of numbers.');
-        }
-        request.references = parsedReferences; //replace the original references string for the parsed array.
 
         // Validate title
         if (typeof title !== 'string') {
@@ -221,9 +195,22 @@ export class academicWorkController {
             return new Left('Course ID must be a string.');
         }
 
+        // Validate keyWords
+        const parseKeyWords = JSON.parse(keyWords);
+        if (!Array.isArray(parseKeyWords) || parseKeyWords.some((keyword) => typeof keyword !== 'string')) {
+            return new Left('Keywords must be an array of strings.');
+        }
+
         // Validate ilustration
+
         if (typeof ilustration !== 'string') {
             return new Left('Illustration must be a string.');
+        }
+
+        // Validate references
+        const parseReferences = JSON.parse(references);
+        if (!Array.isArray(parseReferences) || parseReferences.some((reference) => typeof reference !== 'number')) {
+            return new Left('References must be an array of numbers.');
         }
 
         // Validate cduCode (optional)
@@ -241,7 +228,23 @@ export class academicWorkController {
             return new Left('File, if provided, must be an instance of File.');
         }
 
-        return new Right(undefined);
-        
+        return new Right({
+            authors: parseAuthors,
+            idAdvisors: parseidAdvisors,
+            title,
+            type,
+            year,
+            qtdPag,
+            description,
+            idCourse,
+            keyWords: parseKeyWords,
+            ilustration,
+            references: parseReferences,
+            optinalParameters: {
+                cduCode: optinalParameters.cduCode,
+                cddCode: optinalParameters.cddCode,
+                file: optinalParameters.file
+            }
+        });
     }
 }
