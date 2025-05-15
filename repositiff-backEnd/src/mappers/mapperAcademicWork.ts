@@ -8,7 +8,8 @@ export class MapperAcademicWork {
 
     static toDTO(data: any): IReturnAcademicWorkDTO {
         console.log("================================================ toDTO =====================================================================================")
-        console.log(data.id)
+        console.log(data)
+        console.log(data.advisors)
         console.log("=======================================================")
         const mapper = {
             id: data.id,
@@ -67,7 +68,7 @@ export class MapperAcademicWork {
                 keyWords: academicWorkDATA.keyWords,
                 illustration: academicWorkDATA.ilustration as Illustration,
                 references: academicWorkDATA.references,
-                file: academicWorkDATA.file || undefined
+                file: academicWorkDATA.file
             }, data.id)
         return result.value;
     }

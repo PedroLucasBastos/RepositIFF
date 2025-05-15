@@ -20,3 +20,4 @@ Content-Type: application/json
 
 ###
 POST localhost:3333/academicWork/create
+Content-Type: multipart/form-data

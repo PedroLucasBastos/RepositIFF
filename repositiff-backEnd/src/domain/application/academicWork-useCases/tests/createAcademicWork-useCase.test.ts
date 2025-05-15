@@ -34,7 +34,7 @@ import path from "path";
                     advisor.id
                 ],
                 title: "Análise de Dados em Grandes Corporações",
-                type: "Undergraduate thesis",
+                typeWork: "Undergraduate thesis",
                 idCourse: course.id,
                 year: 2023,
                 qtdPag: 150,

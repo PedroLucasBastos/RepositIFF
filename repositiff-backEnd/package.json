@@ -12,7 +12,8 @@
     "test-useCase-advisor": "vitest src/domain/application/advisor-useCases/tests/advisor-use-case.test.ts",
     "test-useCase-academicWork": "vitest src/domain/application/academicWork-useCases/createAcademicWork-useCase.test.ts",
     "test-file": "vitest src/infra/fileStorage/tests/cloudFlare.test.ts",
-    "integrationTest": "vitest src/infra/prisma/academicWork-integration.test.ts"
+    "integrationTest": "vitest src/infra/prisma/academicWork-integration.test.ts",
+    "cutterTest": "vitest /src/infra/cutter-number/cutterNumber.test.ts"
   },
   "keywords": [],
   "author": "",

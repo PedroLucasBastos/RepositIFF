@@ -49,12 +49,14 @@ export interface academicWorkProps {
 export class AcademicWork {
     private _id: string;
     private _academicWorkVisibility: academicWorkVisibility;
+    private _file: string;
     private constructor(
         private _props: academicWorkProps,
         id?: string,
         academicWorkStatus?: academicWorkVisibility,
     ) {
         this._id = id || crypto.randomUUID();
+        this._file = this._props.file || crypto.randomUUID();
         this._academicWorkVisibility = academicWorkStatus ?? academicWorkVisibility.Private;
     }
 
@@ -77,9 +79,9 @@ export class AcademicWork {
         }
     }
 
-    public set file(file: string) {
-        this._props.file = file;
-    }
+    // public set file(file: string) {
+    //     this._props.file = file;
+    // }
 
     // Getters
 
@@ -142,8 +144,8 @@ export class AcademicWork {
         return this._props.cddCode;
     }
 
-    get file(): string | undefined {
-        return this._props.file;
+    get file(): string {
+        return this._file;
     }
 
     // public setUrl(newFile: string): void {

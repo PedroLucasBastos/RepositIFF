@@ -1,5 +1,5 @@
 import { academicWorkVisibility, AcademicWork } from "@src/domain/entities/academicWork.js";
-import { addAcademicWorkDTO, IAcademicWorkRepository, IReturnAcademicWorkDTO } from "@src/infra/repositories/IAcademicWorkRepository.js";
+import { addAcademicWorkDTO, IAcademicWorkRepository, IReturnAcademicWorkDTO, updateAcademicWorkDTO } from "@src/infra/repositories/IAcademicWorkRepository.js";
 import { Prisma, PrismaClient } from "@prisma/client";
 import { Author } from '@src/domain/entities/author.js';
 import { AdvisorFactory } from "@src/domain/entities/factories/advisorFactory.js";
@@ -8,6 +8,7 @@ import { Advisor } from '@src/domain/entities/advisor.js';
 import { IReturnCourseDTO } from "../ICourse-repository.js";
 import { IReturnAdvisorDTO } from "../IAdvisorRepository.js";
 import { MapperAcademicWork } from '@src/mappers/mapperAcademicWork.js';
+import { IUpdateAcademicWorkUseCaseDTO } from "@src/domain/application/academicWork-useCases/updateAcademicWork-use-case.js";
 
 
 const prismaErrorMessages: Record<string, string> = {
@@ -23,6 +24,91 @@ export class PrismaAcademicWorkRepository implements IAcademicWorkRepository {
     private _prismaCli: PrismaClient;
     constructor() {
         this._prismaCli = new PrismaClient();
+    }
+    async updateAcademicWork(project: updateAcademicWorkDTO, id: string): Promise<Error | IReturnAcademicWorkDTO> {
+        const { idAdvisors, ...props } = project;
+        console.log(project)
+        try {
+            console.log("até tentou")
+            const operations: Prisma.PrismaPromise<unknown>[] = [];
+
+
+            // Limpa os campos que são undefined ou inválidos para o Prisma
+            const cleanedData = Object.fromEntries(
+                Object.entries(props).filter(([_, v]) =>
+                    v !== undefined &&
+                    v !== null &&
+                    v !== '' &&
+                    !(typeof v === 'number' && isNaN(v))
+                )
+            );
+            console.log("Limpo")
+            console.log(cleanedData)
+
+            if (idAdvisors && idAdvisors.length) {
+                operations.push(
+                    this._prismaCli.advisor_AcademicWork.deleteMany({
+                        where: { academicWorkId: id }
+                    }),
+                );
+                const newLinks = idAdvisors.map((advisorId) => ({
+                    advisorId,
+                    academicWorkId: id,
+                }));
+
+                operations.push(
+                    this._prismaCli.advisor_AcademicWork.createMany({
+                        data: newLinks,
+                    })
+                );
+            }
+
+            // // Se houver advisors, adiciona o createMany na transação
+            // if (idAdvisors?.length) {
+            //     operations.push(
+            //         this._prismaCli.advisor_AcademicWork.createMany({
+            //             data: idAdvisors.map((advisorId) => ({
+            //                 advisorId,
+            //                 academicWorkId: id,
+            //             })),
+            //         })
+            //     );
+            // }
+
+            operations.push(this._prismaCli.academicWork.update({
+                where: {
+                    id: id
+                },
+                data: cleanedData,
+                include: {
+                    advisors: {
+                        select: {
+                            Advisor: true
+
+                        }
+                    },
+                    course: true  // Inclui todos os orientadores associados ao trabalho acadêmico
+                },
+            }))
+            console.log("antes da transação")
+            const result = await this._prismaCli.$transaction(operations);
+            console.log("depois da transação")
+            console.log("===============================================")
+            console.log(result)
+            console.log("===============================================")
+            return MapperAcademicWork.toDTO(result[0]);
+        } catch (error) {
+            if (error instanceof Prisma.PrismaClientKnownRequestError) {
+                // The .code property can be accessed in a type-safe manner
+                const customMessage = prismaErrorMessages[error.code] || 'Unknown database error occurred';
+                console.log(customMessage);
+                console.log(error);
+                throw new Error(customMessage);
+
+            }
+            console.log(error);
+        }
+        throw new Error("Method not implemented. - updateeeeeeeee");
     }
     async getFile(idAcademicWork: string): Promise<null | string> {
         try {
@@ -95,22 +181,22 @@ export class PrismaAcademicWorkRepository implements IAcademicWorkRepository {
                     course: true  // Inclui todos os orientadores associados ao trabalho acadêmico
                 },
             })
-            // console.log(prismaData);
-            // console.log(prismaData.advisors[0].Advisor);
+            console.log(prismaData);
+            console.log(prismaData.advisors[0].Advisor);
 
-            // const courseDTO: IReturnCourseDTO = {
-            //     id: prismaData.courseId,
-            //     degreeType: prismaData.course.degreeType,
-            //     name: prismaData.course.name,
-            //     courseCode: prismaData.course.courseCode,
-            // }
+            const courseDTO: IReturnCourseDTO = {
+                id: prismaData.courseId,
+                degreeType: prismaData.course.degreeType,
+                name: prismaData.course.name,
+                courseCode: prismaData.course.courseCode,
+            }
 
-            // const advisorDTO: IReturnAdvisorDTO[] = prismaData.advisors.map(advisor => ({
-            //     id: advisor.id,
-            //     name: advisor.Advisor.name,
-            //     surname: advisor.Advisor.surname,
-            //     registrationNumber: advisor.Advisor.registrationNumber
-            // }))
+            const advisorDTO: IReturnAdvisorDTO[] = prismaData.advisors.map(advisor => ({
+                id: advisor.id,
+                name: advisor.Advisor.name,
+                surname: advisor.Advisor.surname,
+                registrationNumber: advisor.Advisor.registrationNumber
+            }))
 
             // const dto: IReturnAcademicWorkDTO = {
             //     id: prismaData.id,
@@ -130,10 +216,10 @@ export class PrismaAcademicWorkRepository implements IAcademicWorkRepository {
             //     cduCode: prismaData.cduCode,
             //     cddCode: prismaData.cddCode,
             // }
-            // console.log("Academic Work successfully registered!");
-            // console.log(`ID SALVO NO BANCO DE DADOS ${prismaData.id}`)
-            // console.log(prismaData);
-            // console.log("=========================================================")
+            console.log("Academic Work successfully registered!");
+            console.log(`ID SALVO NO BANCO DE DADOS ${prismaData.id}`)
+            console.log(prismaData);
+            console.log("=========================================================")
             return MapperAcademicWork.toDTO(prismaData);
         } catch (error) {
             // console.log("\n\n\n")

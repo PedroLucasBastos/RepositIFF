@@ -1,4 +1,5 @@
 import { academicWorkController, IRequestAcademicWorkController } from "@src/controllers/academicWorkController.js";
+import { IUpdateAcademicWorkUseCaseDTO } from "@src/domain/application/academicWork-useCases/updateAcademicWork-use-case.js";
 import { FastifyInstance } from "fastify";
 
 export async function academicWorkRoutes(fastify: FastifyInstance) {
@@ -35,7 +36,7 @@ export async function academicWorkRoutes(fastify: FastifyInstance) {
                     authors: body.authors,
                     idAdvisors: body.idAdvisors,
                     title: body.title,
-                    type: body.type,
+                    typeWork: body.typeWork,
                     year: Number(body.year),
                     qtdPag: Number(body.qtdPag),
                     description: body.description,
@@ -51,6 +52,61 @@ export async function academicWorkRoutes(fastify: FastifyInstance) {
                 }
                 // Agora `req.body` é do tipo IRequestAcademicWorkController
                 await controller.cadastrated(requestObj, res); // Pode usar `req.body` já tipado
+            } catch (error: any) {
+                res.code(500).send({
+                    error: error.message,
+                    message: 'Registration has failed'
+                });
+            }
+        }
+    );
+
+    fastify.post(
+        "/update",
+        async (req, res) => {
+            try {
+                const parts = req.parts();
+                console.log(parts);
+                const body: Record<string, any> = {};
+                let fileBuffer;
+
+                console.log("📌 Iniciando processamento do multipart...");
+                // console.log(parts)
+                for await (const part of parts) {
+                    // console.log(part)
+                    // console.log(`O NÚMERO DE VOLTAS FOI ${cont}`)
+                    // console.log("Recebido:", part);
+                    if (part.type === 'file') {
+                        fileBuffer = {
+                            buffer: await part.toBuffer(), // Lê a stream do arquivo corretamente
+                        };
+                    } else {
+                        // console.log(part.value)
+                        body[part.fieldname] = part.value;
+                    }
+                    // cont++;
+                }
+
+
+                console.log(body)
+                const requestObj: IUpdateAcademicWorkUseCaseDTO = {
+                    authors: body.authors,
+                    idAdvisors: body.idAdvisors,
+                    title: body.title,
+                    typeWork: body.typeWork,
+                    year: Number(body.year),
+                    qtdPag: Number(body.qtdPag),
+                    description: body.description,
+                    idCourse: body.idCourse,
+                    keyWords: body.keyWords,
+                    ilustration: body.ilustration,
+                    references: body.references,
+                    cduCode: body.cduCode,
+                    cddCode: body.cddCode,
+                    file: fileBuffer?.buffer,
+                }
+                console.log(requestObj)
+                await controller.update({ id: body.id, body: requestObj }, res); // Pode usar `req.body` já tipado
             } catch (error: any) {
                 res.code(500).send({
                     error: error.message,

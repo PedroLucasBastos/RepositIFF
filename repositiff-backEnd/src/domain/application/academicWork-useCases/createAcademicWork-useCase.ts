@@ -5,7 +5,7 @@ import { IFileStorage } from "@src/infra/fileStorage/IFileStorage.js";
 import { Author, AuthorsProps } from "@src/domain/entities/author.js";
 import { IAdvisorRepository } from "@src/infra/repositories/IAdvisorRepository.js";
 import { ICourseRepository } from "@src/infra/repositories/ICourse-repository.js";
-import { IGenerateCutterNumber } from "@src/infra/cutterNumber/IGenerateCutterNumber.js";
+import { IGenerateCutterNumber } from "@src/infra/cutter-number/IGenerateCutterNumber.js";
 import { Advisor } from "@src/domain/entities/advisor.js";
 import { DomainError, ErrorCategory } from "@src/error_handling/domainServicesErrors.js";
 import { EitherOO, Left, Right } from "@src/error_handling/either.js";
@@ -24,7 +24,7 @@ export interface CreateProjectUseCaseDTO {
     authors: string[],
     idAdvisors: string[],
     title: string,
-    type: string,
+    typeWork: string,
     year: number,
     qtdPag: number,
     description: string,
@@ -63,7 +63,7 @@ export class CreateProjectUseCase {
     // salvar no banco de dados                 [ ]
     // gerar o cutterNumber                     [ ]
     async execute(newAcademicWorkDTO: CreateProjectUseCaseDTO): Promise<response> {
-        const { authors, file, idCourse, idAdvisors, type, title } = newAcademicWorkDTO;
+        const { authors, file, idCourse, idAdvisors, typeWork: type, title } = newAcademicWorkDTO;
         let newFile: AcademicWorkFile;
         let cutterNumber = "cutter-number-test"
         let key = "www.localhost.com.br"
@@ -102,7 +102,7 @@ export class CreateProjectUseCase {
             authors: authors,
             advisors: advisorsList,
             title: newAcademicWorkDTO.title,
-            typeWork: newAcademicWorkDTO.type as typeWork,
+            typeWork: newAcademicWorkDTO.typeWork as typeWork,
             year: newAcademicWorkDTO.year,
             qtdPag: newAcademicWorkDTO.qtdPag,
             description: newAcademicWorkDTO.description,
@@ -118,16 +118,6 @@ export class CreateProjectUseCase {
                 academicWorkOrError.value.details
             ))
         const academicWorkEntity = academicWorkOrError.value as AcademicWork;
-        if (file) {
-            const fileId = crypto.randomUUID();
-            // console.log()
-            newFile = new AcademicWorkFile({
-                title: title,
-                key: academicWorkEntity.id,
-            });
-            await this._fileStorage.upload(fileId, file);
-            academicWorkEntity.file = fileId;
-        }
 
         const resultDB = await this._academicRepo.addAcademicWork({
             idAcademicWork: academicWorkEntity.id,
@@ -157,6 +147,16 @@ export class CreateProjectUseCase {
                 resultDB.name
             ))
         console.log("Result depois de criar a entidade - ")
+
+        if (file) {
+            // console.log()
+            newFile = new AcademicWorkFile({
+                title: title,
+                key: academicWorkEntity.id,
+            });
+            await this._fileStorage.upload(academicWorkEntity.file, file);
+        }
+
 
         const academicWorkResult = MapperAcademicWork.dtoToEntity(resultDB);
         if (academicWorkResult instanceof DomainError)
