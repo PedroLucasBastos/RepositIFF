@@ -2,7 +2,7 @@ import { UpdateFieldsDTO } from "@src/domain/application/advisor-useCases/update
 import { Advisor } from "@src/domain/entities/advisor.js";
 
 
-export interface IReturnAdvisorDTO {
+export interface IAdvisorDTO {
     id: string;
     name: string,
     surname: string

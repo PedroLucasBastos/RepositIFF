@@ -58,6 +58,8 @@ export class Course {
         return this._props;
     }
 
+
+
     get id(): string {
         return this._id;
     }

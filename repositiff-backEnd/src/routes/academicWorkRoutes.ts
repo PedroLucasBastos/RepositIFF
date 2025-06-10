@@ -1,6 +1,9 @@
 import { academicWorkController, IRequestAcademicWorkController } from "@src/controllers/academicWorkController.js";
 import { IUpdateAcademicWorkUseCaseDTO } from "@src/domain/application/academicWork-useCases/updateAcademicWork-use-case.js";
-import { FastifyInstance } from "fastify";
+import { UpdateAcademicWorkBasicInfoPROPS } from "@src/domain/application/academicWork-useCases/UpdateAcademicWorkBasicInfoUse_case.js";
+import { AddAdvisorToAcademicWorkProps } from "@src/domain/application/academicWork_Advisors-useCases/addAdvisorToAcademickWork-useCase.js";
+import { IDelAdvisorProps } from "@src/domain/application/academicWork_Advisors-useCases/delAdvisorToAcademicWork-useCase.js";
+import { FastifyInstance, FastifyReply, FastifyRequest } from "fastify";
 
 export async function academicWorkRoutes(fastify: FastifyInstance) {
     const controller = new academicWorkController();
@@ -61,6 +64,19 @@ export async function academicWorkRoutes(fastify: FastifyInstance) {
         }
     );
 
+    fastify.post('/basicUpdate', async (req: FastifyRequest<{ Body: UpdateAcademicWorkBasicInfoPROPS }>, res: FastifyReply) => {
+        console.log(req.body)
+        try {
+            const body = req.body;
+            await controller.basicUpdate(body, res);
+        } catch (error: any) {
+            res.code(500).send({ error: error.message, message: 'Updation has failed' });
+        }
+    });
+
+
+
+    // ANTIGO UPDATE
     fastify.post(
         "/update",
         async (req, res) => {
@@ -161,4 +177,33 @@ export async function academicWorkRoutes(fastify: FastifyInstance) {
                 });
             }
         });
+
+
+
+    fastify.post("uploadFile", async (req: FastifyRequest<{ Body: UpdateAcademicWorkBasicInfoPROPS }>, res: FastifyReply) => {
+
+    })
+
+    fastify.post("addAdvisor", async (req: FastifyRequest<{ Body: AddAdvisorToAcademicWorkProps }>, res: FastifyReply) => {
+        console.log(req.body)
+        try {
+            const body = req.body;
+            await controller.addAdvisor(body, res);
+        } catch (error: any) {
+            res.code(500).send({ error: error.message, message: 'Add advsior has failed' });
+        }
+    })
+
+    fastify.post("deleteAdvisor", async (req: FastifyRequest<{ Body: IDelAdvisorProps }>, res: FastifyReply) => {
+        console.log(req.body)
+        try {
+            const body = req.body;
+            await controller.delAdvisor(body, res);
+        } catch (error: any) {
+            res.code(500).send({ error: error.message, message: 'Add advsior has failed' });
+        }
+    })
+    fastify.get("listAdvisors", async (req: any, res: any) => {
+
+    })
 }

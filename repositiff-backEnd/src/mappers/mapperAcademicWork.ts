@@ -1,16 +1,34 @@
 import { DomainError, ErrorCategory } from "@src/error_handling/domainServicesErrors.js";
-import { IReturnAcademicWorkDTO } from '@src/infra/repositories/IAcademicWorkRepository.js';
+import { IReturnAcademicWorkDTO, IReturnAcademicWorkUpdateFields } from '@src/infra/repositories/IAcademicWorkRepository.js';
 import { MapperAdvisor } from "./mapperAdvisor.js";
 import { MapperCourse } from "./mapperCourse.js";
 import { AcademicWork, Illustration, typeWork } from "@src/domain/entities/academicWork.js";
 
 export class MapperAcademicWork {
 
+    static mapBasicInfoToDTO(prismaData: any): IReturnAcademicWorkUpdateFields {
+        return {
+            id: prismaData.id,
+            title: prismaData.title,
+            typeWork: prismaData.typeWork,
+            year: prismaData.year,
+            qtdPag: prismaData.qtdPag,
+            description: prismaData.description,
+            keyWords: prismaData.keyWords,
+            ilustration: prismaData.ilustration,
+            references: prismaData.references,
+            cduCode: prismaData.cduCode || undefined,
+            cddCode: prismaData.cddCode || undefined,
+            cutterNumber: prismaData.cutterNumber,
+            academicWorkStatus: prismaData.academicWorkStatus,
+        }
+    }
+
     static toDTO(data: any): IReturnAcademicWorkDTO {
-        console.log("================================================ toDTO =====================================================================================")
-        console.log(data)
-        console.log(data.advisors)
-        console.log("=======================================================")
+        // console.log("================================================ toDTO =====================================================================================")
+        // console.log(data)
+        // console.log(data.advisors)
+        // console.log("=======================================================")
         const mapper = {
             id: data.id,
             academicWorkStatus: data.academicWorkStatus,

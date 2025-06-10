@@ -10,7 +10,7 @@
     "test-domain": "vitest src/domain/entities/tests/",
     "test-useCase-course": "vitest src/domain/application/course-use-case/tests/course-use-case.test.ts",
     "test-useCase-advisor": "vitest src/domain/application/advisor-useCases/tests/advisor-use-case.test.ts",
-    "test-useCase-academicWork": "vitest src/domain/application/academicWork-useCases/createAcademicWork-useCase.test.ts",
+    "test-useCase-academicWork": "vitest src/domain/application/academicWork-useCases/tests/crudAcademicWork.test.ts",
     "test-file": "vitest src/infra/fileStorage/tests/cloudFlare.test.ts",
     "integrationTest": "vitest src/infra/prisma/academicWork-integration.test.ts",
     "cutterTest": "vitest /src/infra/cutter-number/cutterNumber.test.ts"
@@ -48,7 +48,7 @@
     "fastify-multipart": "^5.4.0",
     "install": "^0.13.0",
     "jsonwebtoken": "^9.0.2",
-    "multer": "^1.4.5-lts.1",
+    "multer": "^2.0.0",
     "npm": "^11.2.0"
   }
 }

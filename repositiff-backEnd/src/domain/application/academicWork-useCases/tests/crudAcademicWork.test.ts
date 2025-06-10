@@ -6,24 +6,25 @@ import { DependeciesAcademicTest } from "./dependenciesAcademicTests.js";
 import { PrismaAcademicWorkRepository } from "@src/infra/repositories/prisma/prisma-academicWork-repository.js";
 import { PrismaCourseRepostory } from "@src/infra/repositories/prisma/prisma-course-repostory.js";
 import { CloudFlareFileStorage } from "@src/infra/fileStorage/cloudFlare-fileStorage.js";
-import fs from "fs/promises";
-import path from "path";
+import { AcademicWork } from "@src/domain/entities/academicWork.js";
+import { UpdateAcademicWorkBasicInfoUseCase } from "../UpdateAcademicWorkBasicInfoUse_case.js";
 
-describe("Executing a useCase to create and regist a academicWork", async () => {
+describe("asdfsadfasdf", async () => {
     const repo = new PrismaAcademicWorkRepository();
     const courseRepo = new PrismaCourseRepostory();
     const advisorRepo = new PrismaAdvisorRepository();
+
     it("Clear tables", async () => {
         await repo.deleteAll();
     })
 
-    it("It must be able to correctly execute the use case, related to the registration of an academic work, missing the file url and literary codes", async () => {
+    it("asdfasdfsadfasdfasdfsdf", async () => {
         const { advisor, course } = await DependeciesAcademicTest.allCorrectly();
 
-        const fileBuffer = await fs.readFile(path.join(__dirname,
-            "../../../infra/fileStorage/tests/",
-            "teste1.pdf"
-        ));
+        // const fileBuffer = await fs.readFile(path.join(__dirname,
+        //     "../../../infra/fileStorage/tests/",
+        //     "teste1.pdf"
+        // ));
 
         const info: CreateProjectUseCaseDTO = {
             authors: [
@@ -43,24 +44,29 @@ describe("Executing a useCase to create and regist a academicWork", async () => 
             cddCode: "123abc",
             ilustration: "Colorful",
             references: [1, 22, 55, 66, 99],
-            file: fileBuffer
         }
 
         const cloudFlare = new CloudFlareFileStorage();
 
-        const sup = new CreateProjectUseCase(repo, advisorRepo, courseRepo, cloudFlare);
+        const addAcademicWork = new CreateProjectUseCase(repo, advisorRepo, courseRepo, cloudFlare);
         console.log('CADASTRO DE TRABALHO ACADÉMICO\n');
-        const resultUseCase = await sup.execute(info);
+        const resultUseCase = await addAcademicWork.execute(info);
         expect(resultUseCase.isRight()).toBeTruthy();
-        if (resultUseCase.isRight()) {
-            const academicWork = resultUseCase.value;
-            // console.log(`Key: ${academicWork.file?.key}`);
+        const academicWork = resultUseCase.value as AcademicWork;
 
-            const resultDownload = await cloudFlare.download(academicWork.file || "");
-            console.log('\n\nLINK PARA DOWNLOAD')
-            console.log(resultDownload);
+        const newParams = {
+            title: "TITULO DE DEMONSTRAÇÃO, VEGETTI FEZ GOL CONTRA"
         }
+
+        const sup = new UpdateAcademicWorkBasicInfoUseCase(repo);
+
+        const params = {
+            id: academicWork.id,
+            fields: newParams
+        }
+
+        const result = await sup.execute(params);
+        expect(result.isRight()).toBeTruthy();
+        console.log(result.value);
     })
-
-
 });

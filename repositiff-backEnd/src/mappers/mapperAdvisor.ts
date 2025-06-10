@@ -2,12 +2,12 @@ import { Advisor } from "@src/domain/entities/advisor.js";
 import { AdvisorFactory } from "@src/domain/entities/factories/advisorFactory.js";
 import { DomainError, ErrorCategory } from "@src/error_handling/domainServicesErrors.js";
 import { Right } from "@src/error_handling/either.js";
-import { IReturnAdvisorDTO } from "@src/infra/repositories/IAdvisorRepository.js";
+import { IAdvisorDTO } from "@src/infra/repositories/IAdvisorRepository.js";
 
 
 export class MapperAdvisor {
 
-    static many(data: IReturnAdvisorDTO[]): DomainError | Advisor[] {
+    static many(data: IAdvisorDTO[]): DomainError | Advisor[] {
         let errorResult: {
             advisor: {
                 id: string,

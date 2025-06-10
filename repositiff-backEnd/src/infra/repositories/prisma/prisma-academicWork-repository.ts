@@ -1,12 +1,12 @@
 import { academicWorkVisibility, AcademicWork } from "@src/domain/entities/academicWork.js";
-import { addAcademicWorkDTO, IAcademicWorkRepository, IReturnAcademicWorkDTO, updateAcademicWorkDTO } from "@src/infra/repositories/IAcademicWorkRepository.js";
+import { addAcademicWorkDTO, IAcademicWorkRepository, IReturnAcademicWorkUpdateFields, IReturnAcademicWorkDTO, updateAcademicWorkDTO, updateAcademicWorkFieldsDTO, academicAssociativeAdvisors } from "@src/infra/repositories/IAcademicWorkRepository.js";
 import { Prisma, PrismaClient } from "@prisma/client";
 import { Author } from '@src/domain/entities/author.js';
 import { AdvisorFactory } from "@src/domain/entities/factories/advisorFactory.js";
 import { DomainError } from "@src/error_handling/domainServicesErrors.js";
 import { Advisor } from '@src/domain/entities/advisor.js';
 import { IReturnCourseDTO } from "../ICourse-repository.js";
-import { IReturnAdvisorDTO } from "../IAdvisorRepository.js";
+import { IAdvisorDTO } from "../IAdvisorRepository.js";
 import { MapperAcademicWork } from '@src/mappers/mapperAcademicWork.js';
 import { IUpdateAcademicWorkUseCaseDTO } from "@src/domain/application/academicWork-useCases/updateAcademicWork-use-case.js";
 
@@ -24,6 +24,132 @@ export class PrismaAcademicWorkRepository implements IAcademicWorkRepository {
     private _prismaCli: PrismaClient;
     constructor() {
         this._prismaCli = new PrismaClient();
+    }
+    async updateAcademicWorkFields(project: updateAcademicWorkFieldsDTO): Promise<Error | IReturnAcademicWorkUpdateFields> {
+        const { id, fields } = project;
+        const { idCourse, ...props } = fields;
+        console.log(project)
+        try {
+            console.log("até tentou")
+            // Limpa os campos que são undefined ou inválidos para o Prisma
+            const cleanedData = Object.fromEntries(
+                Object.entries(props).filter(([_, v]) =>
+                    v !== undefined &&
+                    v !== null &&
+                    v !== '' &&
+                    !(typeof v === 'number' && isNaN(v))
+                )
+            );
+            const prismaData = await this._prismaCli.academicWork.update({
+                where: { id },
+                data: cleanedData,
+            })
+
+            //     console.log("antes da transação")
+            // // const result = await this._prismaCli.$transaction(operations);
+            // console.log("depois da transação")
+            // console.log("===============================================")
+            // console.log(result)
+            // console.log("===============================================")
+
+            const result: IReturnAcademicWorkUpdateFields = {
+                id: prismaData.id,
+                title: prismaData.title,
+                typeWork: prismaData.typeWork,
+                year: prismaData.year,
+                qtdPag: prismaData.qtdPag,
+                description: prismaData.description,
+                keyWords: prismaData.keyWords,
+                ilustration: prismaData.ilustration,
+                references: prismaData.references,
+                cduCode: prismaData.cduCode || undefined,
+                cddCode: prismaData.cddCode || undefined,
+                cutterNumber: prismaData.cutterNumber,
+                academicWorkStatus: prismaData.academicWorkStatus,
+            }
+            return result;
+
+            // return MapperAcademicWork.toDTO(result[0]);
+        } catch (error) {
+            if (error instanceof Prisma.PrismaClientKnownRequestError) {
+                // The .code property can be accessed in a type-safe manner
+                const customMessage = prismaErrorMessages[error.code] || 'Unknown database error occurred';
+                console.log(customMessage);
+                console.log(error);
+                throw new Error(customMessage);
+
+            }
+            console.log(error);
+        }
+        throw new Error("Method not implemented. - updateeeeeeeee");
+    }
+
+    async addAdvisorToAcademicWork(academicWorkId: string, advisorId: string): Promise<Error | void> {
+        const fields = {}
+        try {
+            const prismaData = await this._prismaCli.advisor_AcademicWork.create({
+                data: {
+                    advisorId,
+                    academicWorkId
+                }
+            });
+        } catch (error) {
+            if (error instanceof Prisma.PrismaClientKnownRequestError) {
+                // The .code property can be accessed in a type-safe manner
+                const customMessage = prismaErrorMessages[error.code] || 'Unknown database error occurred';
+                console.log(customMessage);
+                console.log(error);
+                return new Error(customMessage, error);
+                // throw new Error(customMessage);
+            }
+            console.log(error);
+        }
+        throw new Error("Method not implemented. - updateeeeeeeee the advisor");
+    }
+    async deleteAdvisorToAcademicWork(academicWorkId: string, advisorId: string): Promise<Error | void> {
+        const fields = {}
+        try {
+            await this._prismaCli.advisor_AcademicWork.delete({
+                where: {
+                    advisorId: advisorId,
+                    academicWorkId: academicWorkId,
+                },
+            });
+        } catch (error) {
+            if (error instanceof Prisma.PrismaClientKnownRequestError) {
+                // The .code property can be accessed in a type-safe manner
+                const customMessage = prismaErrorMessages[error.code] || 'Unknown database error occurred';
+                console.log(customMessage);
+                console.log(error);
+                return new Error(customMessage);
+
+            }
+            console.log(error);
+        }
+        // throw new Error("Method not implemented. - updateeeeeeeee the advisor");
+        throw new Error("Method not implemented.");
+    }
+
+    async listAdvisors(academicWorkId: string): Promise<Error | academicAssociativeAdvisors[]> {
+        const fields = {}
+        try {
+            const prismaData = await this._prismaCli.advisor_AcademicWork.findMany({
+                where: {
+                    id: academicWorkId,
+                }
+            })
+            return prismaData;
+        } catch (error) {
+            if (error instanceof Prisma.PrismaClientKnownRequestError) {
+                // The .code property can be accessed in a type-safe manner
+                const customMessage = prismaErrorMessages[error.code] || 'Unknown database error occurred';
+                console.log(customMessage);
+                console.log(error);
+                throw new Error(customMessage);
+            }
+            console.log(error);
+        }
+        throw new Error("Method not implemented. - LIST ADVISOR IN ACADEMIC WORK");
     }
     async updateAcademicWork(project: updateAcademicWorkDTO, id: string): Promise<Error | IReturnAcademicWorkDTO> {
         const { idAdvisors, ...props } = project;
@@ -110,6 +236,57 @@ export class PrismaAcademicWorkRepository implements IAcademicWorkRepository {
         }
         throw new Error("Method not implemented. - updateeeeeeeee");
     }
+
+
+    async selectMainAdvisor(academicWorkId: string, advisorId: string): Promise<Error | (null | string)> {
+        try {
+            const operations = await this._prismaCli.advisor_AcademicWork.findUnique({
+                where: {
+                    academicWorkId: academicWorkId,
+                    advisorId: advisorId,
+                    isMain: true,
+                }
+            })
+            if (operations)
+                return operations.advisorId;
+        } catch (error) {
+            if (error instanceof Prisma.PrismaClientKnownRequestError) {
+                // The .code property can be accessed in a type-safe manner
+                const customMessage = prismaErrorMessages[error.code] || 'Unknown database error occurred';
+                console.log(customMessage);
+                console.log(error);
+                return new Error(customMessage, error);
+                // throw new Error(customMessage);
+            }
+        }
+        return null
+    }
+    async defineMainAdvisor(academicWorkId: string, advisorId: string): Promise<Error | void> {
+
+        try {
+
+            const operations = await this._prismaCli.advisor_AcademicWork.update({
+                data: {
+                    isMain: true,
+                },
+                where: {
+                    academicWorkId: academicWorkId,
+                    advisorId: advisorId,
+                }
+            })
+        } catch (error) {
+            if (error instanceof Prisma.PrismaClientKnownRequestError) {
+                // The .code property can be accessed in a type-safe manner
+                const customMessage = prismaErrorMessages[error.code] || 'Unknown database error occurred';
+                console.log(customMessage);
+                console.log(error);
+                return new Error(customMessage, error);
+                // throw new Error(customMessage);
+            }
+        }
+        // return
+    }
+
     async getFile(idAcademicWork: string): Promise<null | string> {
         try {
             // console.log("Começo do try")
@@ -141,6 +318,7 @@ export class PrismaAcademicWorkRepository implements IAcademicWorkRepository {
         console.log("Entrou no addAcademicWork");
         console.log(project);
         try {
+
             const prismaData = await this._prismaCli.academicWork.create({
                 data: {
                     id: project.idAcademicWork, // Pegando o id_doc do objeto project
@@ -166,8 +344,10 @@ export class PrismaAcademicWorkRepository implements IAcademicWorkRepository {
                         }
                     },
                     advisors: {
-                        create: project.idAdvisors.map(advisorId => ({
-                            Advisor: { connect: { id: advisorId } } // Conectando advisor existente
+                        create: project.idAdvisors.map((advisorId, index) => ({
+                            Advisor: {
+                                connect: { id: advisorId },
+                            }, isMain: index === 0 // Conectando advisor existente
                         }))
                     },
                 },
@@ -191,8 +371,8 @@ export class PrismaAcademicWorkRepository implements IAcademicWorkRepository {
                 courseCode: prismaData.course.courseCode,
             }
 
-            const advisorDTO: IReturnAdvisorDTO[] = prismaData.advisors.map(advisor => ({
-                id: advisor.id,
+            const advisorDTO = prismaData.advisors.map(advisor => ({
+                // id: advisor.id,
                 name: advisor.Advisor.name,
                 surname: advisor.Advisor.surname,
                 registrationNumber: advisor.Advisor.registrationNumber
@@ -408,8 +588,4 @@ export class PrismaAcademicWorkRepository implements IAcademicWorkRepository {
     //         academicWorkStatusParams: prismaData.academicWorkStatus,
     //     );
     // }
-
-
-
-
 }

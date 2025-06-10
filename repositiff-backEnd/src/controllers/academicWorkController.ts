@@ -1,6 +1,6 @@
 import { CreateProjectUseCase } from "@src/domain/application/academicWork-useCases/createAcademicWork-useCase.js";
 import { DownloadFileUseCase } from "@src/domain/application/academicWork-useCases/dowloadFile-use-case.ts.js";
-import { Either, Left, Right } from "@src/error_handling/either.Funcional.js";
+import { Either, Left, right, Right } from "@src/error_handling/either.Funcional.js";
 import { CloudFlareFileStorage } from "@src/infra/fileStorage/cloudFlare-fileStorage.js";
 import { PrismaAcademicWorkRepository } from "@src/infra/repositories/prisma/prisma-academicWork-repository.js";
 import { PrismaAdvisorRepository } from "@src/infra/repositories/prisma/prisma-advisor-repository.js";
@@ -9,6 +9,10 @@ import { FastifyReply, FastifyRequest } from "fastify";
 import { J } from "vitest/dist/chunks/reporters.66aFHiyX.js";
 import { IUpdateAcademicWorkUseCaseDTO, UpdateAcademicWork_useCase } from '@src/domain/application/academicWork-useCases/updateAcademicWork-use-case.js';
 import { typeWork } from '@src/domain/entities/academicWork.js';
+import { UpdateAcademicWorkBasicInfoPROPS, UpdateAcademicWorkBasicInfoUseCase } from "@src/domain/application/academicWork-useCases/UpdateAcademicWorkBasicInfoUse_case.js";
+import { AddAdvisorToAcademicWorkProps, AddAdvisorToAcademicWorkUseCase } from "@src/domain/application/academicWork_Advisors-useCases/addAdvisorToAcademickWork-useCase.js";
+import { DelAdvisorInAcademicWorkUseCase, IDelAdvisorProps } from "@src/domain/application/academicWork_Advisors-useCases/delAdvisorToAcademicWork-useCase.js";
+import { DefineMainAdvisorUseCase, DefineProps } from "@src/domain/application/academicWork_Advisors-useCases/defineMainAdvisor-use-case.js";
 
 export interface IRequestAcademicWorkController {
     authors: string[],
@@ -94,6 +98,110 @@ export class academicWorkController {
 
     }
 
+    async basicUpdate(req: UpdateAcademicWorkBasicInfoPROPS, res: FastifyReply): Promise<void> {
+        const { id, fields } = req;
+
+        const resultSanitize = this.sanitizeReceivedDataToUpdateBasicInfo(req);
+        if (resultSanitize.isLeft()) {
+            return res.status(400).send({
+                Error: "ERROR_WITH_SINTAX_REQUEST",
+                detail: resultSanitize.value
+            });
+        }
+
+        const repo = new PrismaAcademicWorkRepository();
+        const useCase = new UpdateAcademicWorkBasicInfoUseCase(
+            repo
+        )
+
+        const result = await useCase.execute({ id, fields });
+
+        if (result.isLeft())
+            return res.status(400).send({
+                Error: result.value
+            });
+
+        res.code(200).send({
+            isRight: result,
+            Message: "DEU BOM AKI",
+        });
+    }
+
+
+    async addAdvisor(req: AddAdvisorToAcademicWorkProps, res: FastifyReply): Promise<void> {
+
+        const repo = new PrismaAcademicWorkRepository();
+        const useCase = new AddAdvisorToAcademicWorkUseCase(
+            repo
+        )
+
+        // const { id, academicWorkId, advisorId, isMain } = req;
+
+        const result = await useCase.execute({
+            academicWorkId: req.academicWorkId,
+            advisorId: req.advisorId,
+            isMain: req.isMain,
+        })
+
+        if (result.isLeft())
+            return res.status(400).send({
+                Error: result.value
+            });
+
+        res.code(200).send({
+            isRight: result,
+            Message: "DEU BOM AKI",
+        });
+    }
+
+
+    async delAdvisor(req: IDelAdvisorProps, res: FastifyReply): Promise<void> {
+        const repo = new PrismaAcademicWorkRepository();
+        const useCase = new DelAdvisorInAcademicWorkUseCase(
+            repo
+        )
+
+        // const { id, academicWorkId, advisorId, isMain } = req;
+
+        const result = await useCase.execute({
+            academicWorkId: req.academicWorkId,
+            advisorId: req.advisorId,
+        })
+
+        if (result.isLeft())
+            return res.status(400).send({
+                Error: result.value
+            });
+
+        res.code(200).send({
+            isRight: result,
+            Message: "DEU BOM AKI",
+        });
+    }
+
+    async defineMainAdvisor(req: DefineProps, res: FastifyReply): Promise<void> {
+        const repo = new PrismaAcademicWorkRepository();
+        const useCase = new DefineMainAdvisorUseCase(
+            repo
+        )
+
+        // const { id, academicWorkId, advisorId, isMain } = req;
+
+        const result = await useCase.execute({
+            academicWorkId: req.academicWorkId,
+            advisorId: req.advisorId,
+        })
+
+        if (result.isLeft())
+            return res.status(400).send({
+                Error: result.value
+            });
+
+        res.code(200).send({
+            isRight: result,
+            Message: "DEU BOM AKI",
+        });
+    }
 
     async update(req: IUpdateRouteRequest, res: FastifyReply): Promise<void> {
         console.log("COMEÇOU A ROTA AKIIIIIIIIIIIIII")
@@ -184,6 +292,105 @@ export class academicWorkController {
         });
     }
 
+
+    sanitizeReceivedDataToUpdateBasicInfo(request: any): Either<string, void> {
+        const { id, fields } = request;
+        const {
+            authors,
+            title,
+            workType,
+            year,
+            pageCount,
+            description,
+            courseId,
+            keyWords,
+            ilustration,
+            references,
+            cduCode,
+            cddCode,
+        } = fields;
+
+
+        if (!id) {
+            return new Left('ID must be provided.');
+        }
+        // Validate authors
+        const parseAuthors = authors ? JSON.parse(authors) : "";
+        if (authors && (!Array.isArray(parseAuthors) || parseAuthors.some((author) => typeof author !== 'string'))) {
+            return new Left('Authors must be an array of strings.');
+        }
+
+
+        // Validate title
+        if (title && typeof title !== 'string') {
+            return new Left('Title must be a string.');
+        }
+
+        // Validate type
+        console.log("AKASIEKDASFJWEASDF")
+        console.log(typeof typeWork)
+        if (typeWork && typeof typeWork !== 'string') {
+            return new Left('Type must be a string.ASDFASDFASD');
+        }
+
+        // Validate year
+
+        if (year && (typeof year !== 'number' || isNaN(year))) {
+            return new Left(`Year must be a number. Value: ${(year && typeof year !== 'number' || isNaN(year))
+                } `);
+        }
+
+        // Validate qtdPag
+        if (pageCount && (typeof pageCount !== 'number' || isNaN(pageCount))) {
+            return new Left('Page count must be a number.');
+        }
+
+        // Validate description
+        if (description && typeof description !== 'string') {
+            return new Left('Description must be a string.');
+        }
+
+        // Validate idCourse
+        if (courseId && typeof courseId !== 'string') {
+            return new Left('Course ID must be a string.');
+        }
+
+        // Validate keyWords
+        const parseKeyWords = keyWords ? JSON.parse(keyWords) : "";
+        if (keyWords && (!Array.isArray(parseKeyWords) || parseKeyWords.some((keyword) => typeof keyword !== 'string'))) {
+            return new Left('Keywords must be an array of strings.');
+        }
+
+        // Validate ilustration
+
+        if (ilustration && typeof ilustration !== 'string') {
+            return new Left('Illustration must be a string.');
+        }
+
+        // Validate references
+        const parseReferences = references ? JSON.parse(references) : "";
+        if (references && (!Array.isArray(parseReferences) || parseReferences.some((reference) => typeof reference !== 'number'))) {
+            return new Left('References must be an array of numbers.');
+        }
+        // console.log("antes da verificação do cdu")
+        // console.log(cduCode)
+        // Validate cduCode (optional)
+
+        // if (cduCode && typeof cduCode !== "string") {
+        //     return new Left("CDU code, if provided, must be a string");
+        // }
+
+        if (cduCode && typeof cduCode !== 'string') {
+            return new Left(`CDU code, if provided, must be a string.CDU: ${cduCode} `);
+        }
+
+        // Validate cddCode (optional)
+        if (cddCode && typeof cddCode !== 'string') {
+            return new Left('CDD code, if provided, must be a string.');
+        }
+        return new Right(undefined);
+    }
+
     sanitizeReceivedDataToUpdate(request: any): Either<string, IUpdateAcademicWorkUseCaseDTO> {
         // const { ...parameters } = request;
         // const verify = Object.entries(parameters)
@@ -235,8 +442,10 @@ export class academicWorkController {
         }
 
         // Validate year
+
         if (year && (typeof year !== 'number' || isNaN(year))) {
-            return new Left(`Year must be a number. Value: ${(year && typeof year !== 'number' || isNaN(year))}`);
+            return new Left(`Year must be a number. Value: ${(year && typeof year !== 'number' || isNaN(year))
+                } `);
         }
 
         // Validate qtdPag
@@ -271,11 +480,16 @@ export class academicWorkController {
         if (references && (!Array.isArray(parseReferences) || parseReferences.some((reference) => typeof reference !== 'number'))) {
             return new Left('References must be an array of numbers.');
         }
-        console.log("antes da verificação do cdu")
-        console.log(cduCode)
+        // console.log("antes da verificação do cdu")
+        // console.log(cduCode)
         // Validate cduCode (optional)
+
+        // if (cduCode && typeof cduCode !== "string") {
+        //     return new Left("CDU code, if provided, must be a string");
+        // }
+
         if (cduCode && typeof cduCode !== 'string') {
-            return new Left(`CDU code, if provided, must be a string. CDU: ${cduCode}`);
+            return new Left(`CDU code, if provided, must be a string.CDU: ${cduCode} `);
         }
 
         // Validate cddCode (optional)
