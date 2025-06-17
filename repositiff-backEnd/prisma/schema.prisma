@@ -47,7 +47,7 @@ model Advisor {
 
 model Advisor_AcademicWork {
   id             String       @id @unique @default(cuid())
-  advisorId      String       @unique
+  advisorId      String
   academicWorkId String
   isMain         Boolean      @default(false)
   AcademicWork   AcademicWork @relation(fields: [academicWorkId], references: [id])

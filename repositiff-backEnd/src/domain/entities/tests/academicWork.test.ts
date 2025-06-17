@@ -33,7 +33,7 @@ describe("Instatiate a AcademicWork entity", () => {
             description: "A detailed study on the impact of AI in various scientific fields.",
             course: courseOrError.value as Course,
             keyWords: ["Artificial Intelligence", "Machine Learning", "Science"],
-            url: "https://example.com/ai-thesis.pdf",
+            file: "https://example.com/ai-thesis.pdf",
             cutterNumber: "D123",
             cduCode: "004.8",
             cddCode: "006.3",

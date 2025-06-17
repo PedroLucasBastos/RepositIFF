@@ -11,6 +11,11 @@ import { DeleteCourseUseCase } from "../delete-course-use-case.js";
 
 describe("Test the guiding actor use cases", () => {
     const repo = new PrismaCourseRepostory();
+
+    it("Clear tables", async () => {
+        await repo.deleteAll();
+    })
+
     it("Should ble able to create and registred a course in database", async () => {
         const sut = CoursesToTests.Correctly();
         const useCase = new CreateCourseUseCase(repo);

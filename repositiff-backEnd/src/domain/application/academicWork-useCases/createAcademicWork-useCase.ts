@@ -50,18 +50,7 @@ export class CreateProjectUseCase {
         // private _generatedCutterNumber: IGenerateCutterNumber,
         // private academicWorkSearch: IAcademicWorkSearch
     ) { }
-    /*
-        Esse caso de uso irá receber os valores do novo tcc e do orientador.
-        Por fim deve verificar mais uma vez se o orientado se encontra já cadastrado
-        Se não estiver cadastrado deve-se realizar o cadastro do mesmo
-        Após estar cadastrado,
-    */
-    // instanciar os autores                    [x]
-    // buscar os orientadores                   [x]
-    // fazer o updload do arquivos se houver    [ ]
-    // instanciar o academicWork,               [ ]
-    // salvar no banco de dados                 [ ]
-    // gerar o cutterNumber                     [ ]
+
     async execute(newAcademicWorkDTO: CreateProjectUseCaseDTO): Promise<response> {
         const { authors, file, idCourse, idAdvisors, typeWork: type, title } = newAcademicWorkDTO;
         let newFile: AcademicWorkFile;
@@ -83,9 +72,6 @@ export class CreateProjectUseCase {
             advisorsList = advisorsOrError.value;
         else if (advisorsOrError.isLeft())
             return new Left(advisorsOrError.value);
-
-        // console.log("asdkjfasdjkfasdjfasdjk");
-        // console.log(advisorsList)
 
         const courseOrNull = await this._courseRepo.findCourseById(idCourse);
         let courseResult: Course;
@@ -156,7 +142,6 @@ export class CreateProjectUseCase {
             });
             await this._fileStorage.upload(academicWorkEntity.file, file);
         }
-
 
         const academicWorkResult = MapperAcademicWork.dtoToEntity(resultDB);
         if (academicWorkResult instanceof DomainError)

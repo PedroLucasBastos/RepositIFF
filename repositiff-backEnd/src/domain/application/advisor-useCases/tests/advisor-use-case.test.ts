@@ -12,7 +12,13 @@ import { IAdvisorRepository } from '@src/infra/repositories/IAdvisorRepository.j
 
 
 describe("Test the guiding actor use cases", () => {
+
     const repo = new PrismaAdvisorRepository();
+
+    it("Clear tables", async () => {
+        await repo.deleteAll();
+    })
+
     it("Should ble able to create and registred a dvisor in database", async () => {
         const useCase = new CreateAdvisorUseCase(repo);
         const advisorValid = AdvisorsProducts.valid();

@@ -7,7 +7,6 @@ import { FastifyInstance, FastifyReply, FastifyRequest } from "fastify";
 
 export async function academicWorkRoutes(fastify: FastifyInstance) {
     const controller = new academicWorkController();
-
     // Define a rota que recebe o arquivo
     fastify.post(
         "/create",
@@ -73,8 +72,6 @@ export async function academicWorkRoutes(fastify: FastifyInstance) {
             res.code(500).send({ error: error.message, message: 'Updation has failed' });
         }
     });
-
-
 
     // ANTIGO UPDATE
     fastify.post(
@@ -178,13 +175,11 @@ export async function academicWorkRoutes(fastify: FastifyInstance) {
             }
         });
 
-
-
-    fastify.post("uploadFile", async (req: FastifyRequest<{ Body: UpdateAcademicWorkBasicInfoPROPS }>, res: FastifyReply) => {
+    fastify.post("/uploadFile", async (req: FastifyRequest<{ Body: UpdateAcademicWorkBasicInfoPROPS }>, res: FastifyReply) => {
 
     })
 
-    fastify.post("addAdvisor", async (req: FastifyRequest<{ Body: AddAdvisorToAcademicWorkProps }>, res: FastifyReply) => {
+    fastify.post("/addAdvisor", async (req: FastifyRequest<{ Body: AddAdvisorToAcademicWorkProps }>, res: FastifyReply) => {
         console.log(req.body)
         try {
             const body = req.body;
@@ -194,7 +189,7 @@ export async function academicWorkRoutes(fastify: FastifyInstance) {
         }
     })
 
-    fastify.post("deleteAdvisor", async (req: FastifyRequest<{ Body: IDelAdvisorProps }>, res: FastifyReply) => {
+    fastify.post("/deleteAdvisor", async (req: FastifyRequest<{ Body: IDelAdvisorProps }>, res: FastifyReply) => {
         console.log(req.body)
         try {
             const body = req.body;
@@ -203,7 +198,8 @@ export async function academicWorkRoutes(fastify: FastifyInstance) {
             res.code(500).send({ error: error.message, message: 'Add advsior has failed' });
         }
     })
-    fastify.get("listAdvisors", async (req: any, res: any) => {
+
+    fastify.get("/listAdvisors", async (req: any, res: any) => {
 
     })
 }

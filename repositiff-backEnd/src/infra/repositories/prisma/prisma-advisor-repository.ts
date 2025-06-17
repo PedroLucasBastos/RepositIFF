@@ -23,7 +23,15 @@ export class PrismaAdvisorRepository implements IAdvisorRepository {
         this._prismaCli = new PrismaClient();
     }
     async deleteAll(): Promise<void> {
-        await this._prismaCli.advisor.deleteMany();
+        await this._prismaCli.$executeRawUnsafe(`
+            TRUNCATE TABLE 
+                "Advisor_AcademicWork", 
+                "AcademicWork", 
+                "Advisor", 
+                "Course", 
+                "Librarian"
+            RESTART IDENTITY CASCADE;
+        `);
     }
     async addAdvisor(advisor: Advisor): Promise<Error | Advisor> {
         try {

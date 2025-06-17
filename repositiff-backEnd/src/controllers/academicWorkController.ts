@@ -273,7 +273,6 @@ export class academicWorkController {
         });
     }
 
-
     async download(
         req: string,
         res: FastifyReply
@@ -291,7 +290,6 @@ export class academicWorkController {
             result: result
         });
     }
-
 
     sanitizeReceivedDataToUpdateBasicInfo(request: any): Either<string, void> {
         const { id, fields } = request;

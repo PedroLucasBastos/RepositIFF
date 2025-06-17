@@ -22,7 +22,15 @@ export class PrismaCourseRepostory implements ICourseRepository {
     }
 
     async deleteAll(): Promise<void> {
-        await this._prismaCli.course.deleteMany();
+        await this._prismaCli.$executeRawUnsafe(`
+            TRUNCATE TABLE 
+                "Advisor_AcademicWork", 
+                "AcademicWork", 
+                "Advisor", 
+                "Course", 
+                "Librarian"
+            RESTART IDENTITY CASCADE;
+        `);
     }
 
     async addCourse(newCourse: Course): Promise<Error | Course> {
