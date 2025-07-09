@@ -70,7 +70,7 @@ const FormTCC = () => {
     formData.append("idAdvisors", JSON.stringify(advisors));
 
     formData.append("title", values.title);
-    formData.append("type", values.type);
+    formData.append("typeWork", values.typeWork);
     formData.append("year", moment(values.year).year());
     formData.append("qtdPag", values.qtdPag);
     formData.append("description", values.description);
@@ -113,7 +113,7 @@ const FormTCC = () => {
         authors: authorsArray,
         idAdvisors: advisors,
         title: values.title,
-        type: values.type,
+        typeWork: values.typeWork,
         year: moment(values.year).year(),
         qtdPag: values.qtdPag,
         description: values.description,
@@ -233,7 +233,7 @@ const FormTCC = () => {
 
           <Form.Item
             label="Tipo"
-            name="type"
+            name="typeWork"
             rules={[{ required: true, message: "Obrigatório" }]}
           >
             <Input placeholder="Ex: Undergraduate thesis" />
