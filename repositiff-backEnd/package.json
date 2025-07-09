@@ -6,11 +6,14 @@
   "type": "module",
   "scripts": {
     "dev": "tsx watch --env-file .env src/server.ts",
+    "start": "./start.sh",
     "test": "vitest",
     "test-domain": "vitest src/domain/entities/tests/",
     "test-useCase-course": "vitest src/domain/application/course-use-case/tests/course-use-case.test.ts",
     "test-useCase-advisor": "vitest src/domain/application/advisor-useCases/tests/advisor-use-case.test.ts",
     "test-useCase-academicWork": "vitest src/domain/application/academicWork-useCases/tests/crudAcademicWork.test.ts",
+    "test-controller-advisor": "vitest src/controllers/tests/advisorController.test.ts",
+    "test-controller-academicWork": "vitest src/controllers/tests/academicWorkController.test.ts",
     "test-file": "vitest src/infra/fileStorage/tests/cloudFlare.test.ts",
     "integrationTest": "vitest src/infra/prisma/academicWork-integration.test.ts",
     "cutterTest": "vitest /src/infra/cutter-number/cutterNumber.test.ts"
@@ -46,6 +49,8 @@
     "fastify": "^5.1.0",
     "fastify-multer": "^2.0.3",
     "fastify-multipart": "^5.4.0",
+    "fetch-blob": "^4.0.0",
+    "formdata-node": "^6.0.3",
     "install": "^0.13.0",
     "jsonwebtoken": "^9.0.2",
     "multer": "^2.0.0",

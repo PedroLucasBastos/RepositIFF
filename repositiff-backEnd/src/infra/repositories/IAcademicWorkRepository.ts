@@ -6,125 +6,120 @@ import { IUpdateAcademicWorkUseCaseDTO } from "@src/domain/application/academicW
 // import { IReturnAcademicWork } from './IAcademicWorkRepository';
 
 export interface addAcademicWorkDTO {
-    idAcademicWork: string,
-    academicWorkStatus: academicWorkVisibility,
-    authors: string[],
-    idAdvisors: string[],
-    title: string,
-    typeWork: string,
-    year: number,
-    qtdPag: number,
-    description: string,
-    idCourse: string,
-    keyWords: string[],
-    ilustration: Illustration,
-    references: number[],
-    cutterNumber?: string,
-    cduCode?: string,
-    cddCode?: string,
-    file?: string
+  idAcademicWork: string;
+  authors: string[];
+  idAdvisors: string[];
+  title: string;
+  typeWork: string;
+  year: number;
+  qtdPag: number;
+  description: string;
+  idCourse: string;
+  keyWords: string[];
+  ilustration: Illustration;
+  references: number[];
+  cutterNumber?: string;
+  cduCode?: string;
+  cddCode?: string;
+  file?: string;
 }
 
 export interface updateAcademicWorkDTO {
-    authors?: string[],
-    idAdvisors?: string[],
-    title?: string,
-    typeWork?: string,
-    year?: number,
-    qtdPag?: number,
-    description?: string,
-    idCourse?: string,
-    keyWords?: string[],
-    ilustration?: string,
-    references?: number[],
-    cduCode?: string,
-    cddCode?: string,
-    file?: string
+  authors?: string[];
+  idAdvisors?: string[];
+  title?: string;
+  typeWork?: string;
+  year?: number;
+  qtdPag?: number;
+  description?: string;
+  idCourse?: string;
+  keyWords?: string[];
+  ilustration?: string;
+  references?: number[];
+  cduCode?: string;
+  cddCode?: string;
+  file?: string;
 }
 
 export interface IReturnAcademicWorkDTO {
-    id: string,
-    academicWorkStatus: string,
-    authors: string[],
-    advisors: IAdvisorDTO[],
-    course: IReturnCourseDTO,
-    title: string,
-    typeWork: string,
-    year: number,
-    qtdPag: number,
-    description: string,
-    keyWords: string[],
-    ilustration: string,
-    references: number[],
-    cutterNumber: string | null,
-    cduCode?: string | null,
-    cddCode?: string | null,
-    file: string,
+  id: string;
+  academicWorkStatus: string;
+  authors: string[];
+  advisors: IAdvisorDTO[];
+  course: IReturnCourseDTO;
+  title: string;
+  typeWork: string;
+  year: number;
+  qtdPag: number;
+  description: string;
+  keyWords: string[];
+  ilustration: string;
+  references: number[];
+  cutterNumber: string | null;
+  cduCode?: string | null;
+  cddCode?: string | null;
+  file: string;
 }
 
-
 export interface updateAcademicWorkFieldsDTO {
-    id: string;
-    fields: {
-        authors?: string[],
-        title?: string,
-        typeWork?: string,
-        year?: number,
-        qtdPag?: number,
-        description?: string,
-        idCourse?: string,
-        keyWords?: string[],
-        ilustration?: string,
-        references?: number[],
-        cduCode?: string,
-        cddCode?: string,
-        file?: string
-    }
+  id: string;
+  fields: {
+    authors?: string[];
+    title?: string;
+    typeWork?: string;
+    year?: number;
+    qtdPag?: number;
+    description?: string;
+    idCourse?: string;
+    keyWords?: string[];
+    ilustration?: string;
+    references?: number[];
+    cduCode?: string;
+    cddCode?: string;
+    file?: string;
+  };
 }
 
 export interface updateAdvisorsDTO {
-    newAdvisor: string
+  newAdvisor: string;
 }
 
 export interface IReturnAcademicWorkUpdateFields {
-    id: string,
-    academicWorkStatus: string,
-    title: string,
-    typeWork: string,
-    year: number,
-    qtdPag: number,
-    description: string,
-    keyWords: string[],
-    ilustration: string,
-    references: number[],
-    cutterNumber: string | null,
-    cduCode?: string | null,
-    cddCode?: string | null,
+  id: string;
+  academicWorkStatus: string;
+  title: string;
+  typeWork: string;
+  year: number;
+  qtdPag: number;
+  description: string;
+  keyWords: string[];
+  ilustration: string;
+  references: number[];
+  cutterNumber: string | null;
+  cduCode?: string | null;
+  cddCode?: string | null;
 }
 
 export interface academicAssociativeAdvisors {
-    id: string;
-    advisorId: string;
-    academicWorkId: string;
+  id: string;
+  advisorId: string;
+  academicWorkId: string;
 }
 
-
-
 export interface IAcademicWorkRepository {
-    addAcademicWork(project: addAcademicWorkDTO): Promise<Error | IReturnAcademicWorkDTO>;
-    updateAcademicWork(project: updateAcademicWorkDTO, id: string): Promise<Error | IReturnAcademicWorkDTO>;
-    updateAcademicWorkFields(project: updateAcademicWorkFieldsDTO): Promise<Error | IReturnAcademicWorkUpdateFields>;
+  addAcademicWork(project: addAcademicWorkDTO): Promise<Error | IReturnAcademicWorkDTO>;
+  updateAcademicWork(project: updateAcademicWorkDTO, id: string): Promise<Error | IReturnAcademicWorkDTO>;
+  updateAcademicWorkFields(project: updateAcademicWorkFieldsDTO): Promise<Error | IReturnAcademicWorkUpdateFields>;
 
-    // updateAcademicWorkAdvisors(newAdvisor: string): Promise<Error | void>;
-    addAdvisorToAcademicWork(academicWorkId: string, advisorId: string): Promise<Error | void>
-    deleteAdvisorToAcademicWork(academicWorkId: string, advisorId: string): Promise<Error | void>;
-    listAdvisors(academicWorkId: string): Promise<Error | academicAssociativeAdvisors[]>
-    selectMainAdvisor(academicWorkId: string, advisorId: string): Promise<Error | (null | string)>
-    defineMainAdvisor(academicWorkId: string, advisorId: string): Promise<Error | void>
+  // updateAcademicWorkAdvisors(newAdvisor: string): Promise<Error | void>;
+  addAdvisorToAcademicWork(academicWorkId: string, advisorId: string): Promise<Error | void>;
+  deleteAdvisorToAcademicWork(academicWorkId: string, advisorId: string): Promise<Error | void>;
+  listAdvisors(academicWorkId: string): Promise<Error | academicAssociativeAdvisors[]>;
+  selectMainAdvisor(academicWorkId: string, advisorId: string): Promise<Error | (null | string)>;
+  defineMainAdvisor(academicWorkId: string, advisorId: string): Promise<Error | void>;
 
-
-    findByIdDoc(id: String): Promise<null | IReturnAcademicWorkDTO>;
-    getFile(idAcademicWork: string): Promise<null | string>;
-    listAllProjects(): Promise<IReturnAcademicWorkDTO[]>;
-    deleteAll(): Promise<void>
+  findByIdDoc(id: String): Promise<null | IReturnAcademicWorkDTO>;
+  getFile(idAcademicWork: string): Promise<null | string>;
+  listAllProjects(): Promise<IReturnAcademicWorkDTO[]>;
+  deleteAll(): Promise<void>;
 }

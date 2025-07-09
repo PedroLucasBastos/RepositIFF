@@ -17,7 +17,7 @@ model AcademicWork {
   description        String
   courseId           String
   keyWords           String[]
-  academicWorkStatus String
+  academicWorkVisibility Boolean            @default(false)
   course             Course                 @relation(fields: [courseId], references: [id])
   ilustration        String
   references         Int[]

@@ -8,44 +8,54 @@ import { CoursesToTests } from "../../course-use-case/tests/coursesToTests.js";
 import { CreateCourseUseCase } from "../../course-use-case/create-course-use-case.js";
 
 type response = {
-    advisor: Advisor,
-    course: Course
-}
+  advisor: Advisor;
+  course: Course;
+};
 
 export class DependeciesAcademicTest {
-    static async allCorrectly(): Promise<response> {
-        const advisorRepo = new PrismaAdvisorRepository();
-        const useCaseAdvisor = new CreateAdvisorUseCase(advisorRepo);
-        const advisorValid = AdvisorsProducts.valid();
+  static async allCorrectly(): Promise<response> {
+    const advisorRepo = new PrismaAdvisorRepository();
+    const useCaseAdvisor = new CreateAdvisorUseCase(advisorRepo);
+    const advisorValid = AdvisorsProducts.valid();
 
-        const advisorUseCaseOrError = await useCaseAdvisor.execute(advisorValid);
+    const advisorUseCaseOrError = await useCaseAdvisor.execute(advisorValid);
 
-        if (advisorUseCaseOrError.isLeft()) {
-            throw new Error("Deu merda aki");
-        }
-        let advisor = advisorUseCaseOrError.value as Advisor
-
-        const courseRepo = new PrismaCourseRepostory();
-        const sut = CoursesToTests.Correctly();
-        const useCaseCourse = new CreateCourseUseCase(courseRepo);
-        const result = await useCaseCourse.execute(sut);
-        const course = result.value as Course;
-
-        return {
-            advisor: advisor,
-            course: course,
-        }
+    if (advisorUseCaseOrError.isLeft()) {
+      throw new Error("Deu merda aki");
     }
+    let advisor = advisorUseCaseOrError.value as Advisor;
 
+    const courseRepo = new PrismaCourseRepostory();
+    const sut = CoursesToTests.Correctly();
+    const useCaseCourse = new CreateCourseUseCase(courseRepo);
+    const result = await useCaseCourse.execute(sut);
+    const course = result.value as Course;
 
+    return {
+      advisor: advisor,
+      course: course,
+    };
+  }
 
+  static async aditionalAdvisor(): Promise<Advisor> {
+    const advisorRepo = new PrismaAdvisorRepository();
+    const useCaseAdvisor = new CreateAdvisorUseCase(advisorRepo);
+    const advisorUseCaseOrError = await useCaseAdvisor.execute({
+      name: "Raquel-adicional",
+      surname: "Duarte",
+      registrationNumber: "5555555",
+    });
+    let advisor = advisorUseCaseOrError.value as Advisor;
 
-    static async basicInfo(): Promise<Course> {
-        const courseRepo = new PrismaCourseRepostory();
-        const sut = CoursesToTests.Correctly();
-        const useCaseCourse = new CreateCourseUseCase(courseRepo);
-        const result = useCaseCourse.execute(sut);
-        const course = (await result).value as Course;
-        return course;
-    }
+    return advisor;
+  }
+
+  static async basicInfo(): Promise<Course> {
+    const courseRepo = new PrismaCourseRepostory();
+    const sut = CoursesToTests.Correctly();
+    const useCaseCourse = new CreateCourseUseCase(courseRepo);
+    const result = useCaseCourse.execute(sut);
+    const course = (await result).value as Course;
+    return course;
+  }
 }
