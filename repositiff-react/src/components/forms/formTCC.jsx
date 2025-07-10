@@ -75,7 +75,7 @@ const FormTCC = ({ onClose }) => {
     formData.append("typeWork", values.typeWork);
     formData.append("cddCode", values.cddCode);
     formData.append("cduCode", values.cduCode);
-    formData.append("year", moment(values.year).year());
+    formData.append("year", values.year.year());
     formData.append("qtdPag", values.qtdPag);
     formData.append("description", values.description);
     formData.append("idCourse", values.idCourse);
@@ -121,7 +121,7 @@ const FormTCC = ({ onClose }) => {
         idAdvisors: advisors,
         title: values.title,
         typeWork: values.typeWork,
-        year: moment(values.year).year(),
+        year: values.year.year(),
         qtdPag: values.qtdPag,
         description: values.description,
         idCourse: values.idCourse,
