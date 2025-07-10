@@ -1,88 +1,35 @@
-import React, { useState } from "react";
-import { Table, Input, Button, Space, Tooltip, message } from "antd";
+import React, { useState, useEffect } from "react";
+import { Table, Input, Button, Space, Tooltip, message, Modal } from "antd";
 import {
   SearchOutlined,
   EyeOutlined,
   EditOutlined,
   DeleteOutlined,
-  LockOutlined,
-  UnlockOutlined,
 } from "@ant-design/icons";
 
-const TCCListTable = () => {
-  const [searchText, setSearchText] = useState("");
-  const [dataSource, setDataSource] = useState([
-    {
-      key: "1",
-      title: "Análise de Algoritmos de Busca",
-      authors: "Pedro Lucas, João Silva",
-      advisor: "Dr. Marcos Silva",
-      year: 2023,
-      visibility: "Público",
-    },
-    {
-      key: "2",
-      title: "Estudo de Redes Neurais",
-      authors: "Maria Oliveira",
-      advisor: "Prof. Ana Souza",
-      year: 2024,
-      visibility: "Privado",
-    },
-    {
-      key: "3",
-      title: "Tecnologias Sustentáveis",
-      authors: "Carla Mendes, Rafael Lima",
-      advisor: "Dr. José Carlos",
-      year: 2022,
-      visibility: "Público",
-    },
-    {
-      key: "4",
-      title: "Tecnologias Sustentáveis",
-      authors: "Carla Mendes, Rafael Lima",
-      advisor: "Dr. José Carlos",
-      year: "2022",
-      visibility: "Público",
-    },
-    {
-      key: "5",
-      title: "Tecnologias Sustentáveis",
-      authors: "Carla Mendes, Rafael Lima",
-      advisor: "Dr. José Carlos",
-      year: "2022",
-      visibility: "Público",
-    },
-    {
-      key: "6",
-      title: "Tecnologias Sustentáveis",
-      authors: "Carla Mendes, Rafael Lima",
-      advisor: "Dr. José Carlos",
-      year: "2022",
-      visibility: "Público",
-    },
-  ]);
-  const [filteredData, setFilteredData] = useState([]);
+const { confirm } = Modal;
 
-  // Função para alternar a visibilidade (público/privado)
-  const toggleVisibility = (key) => {
-    const updatedData = dataSource.map((item) => {
-      if (item.key === key) {
-        const newVisibility =
-          item.visibility === "Público" ? "Privado" : "Público";
-        message.success(`Trabalho agora está ${newVisibility.toLowerCase()}!`);
-        return { ...item, visibility: newVisibility };
-      }
-      return item;
-    });
-    setDataSource(updatedData);
-    setFilteredData(
-      filteredData.length > 0
-        ? updatedData.filter((item) =>
-            item.title.toLowerCase().includes(searchText.toLowerCase())
-          )
-        : updatedData
-    );
-  };
+// A tabela agora recebe 'data', 'loading' e 'onRefresh' como props
+const TCCListTable = ({ data, loading, onRefresh }) => {
+  const [searchText, setSearchText] = useState("");
+  // dataSource e filteredData agora são baseados nos dados recebidos via props
+  const [dataSource, setDataSource] = useState(data); 
+  const [filteredData, setFilteredData] = useState(data);
+
+  // useEffect para atualizar os dados internos quando as props 'data' mudarem
+  // Isso garante que a tabela reaja aos novos dados fornecidos pelo componente pai
+  useEffect(() => {
+    setDataSource(data);
+    // Ao receber novos dados, re-aplica o filtro de pesquisa atual
+    if (searchText) {
+      const filtered = data.filter((item) =>
+        item.title.toLowerCase().includes(searchText.toLowerCase())
+      );
+      setFilteredData(filtered);
+    } else {
+      setFilteredData(data); // Se não houver pesquisa, mostra todos os dados novos
+    }
+  }, [data, searchText]); // Dependências nas props 'data' e 'searchText'
 
   // Função para filtrar os dados com base no texto de pesquisa
   const handleSearch = () => {
@@ -90,6 +37,82 @@ const TCCListTable = () => {
       item.title.toLowerCase().includes(searchText.toLowerCase())
     );
     setFilteredData(filtered);
+  };
+
+  // Função para visualizar detalhes do TCC (pode abrir um modal ou navegar)
+  const handleView = (record) => {
+    Modal.info({
+      title: "Detalhes do Trabalho Acadêmico",
+      content: (
+        <div>
+          <p>
+            <strong>Título:</strong> {record.title}
+          </p>
+          <p>
+            <strong>Autores:</strong> {record.authors}
+          </p>
+          <p>
+            <strong>Orientador:</strong> {record.advisor}
+          </p>
+          <p>
+            <strong>Ano:</strong> {record.year}
+          </p>
+          <p>
+            <strong>Visibilidade:</strong> {record.visibility}
+          </p>
+          {/* Adicione mais campos do seu JSON aqui, por exemplo: */}
+          {/* <p><strong>Cutter Number:</strong> {record.cutterNumber}</p> */}
+          {/* <p><strong>Descrição:</strong> {record.description}</p> */}
+        </div>
+      ),
+      onOk() {},
+    });
+  };
+
+  // Função para editar o TCC
+  const handleEdit = (record) => {
+    message.info(`Redirecionando para edição do TCC: ${record.title}`);
+    // Exemplo: Redirecionar para uma rota de edição
+    // Se estiver usando react-router-dom, ficaria algo como:
+    // navigate(`/edit-academic-work/${record.id}`);
+    console.log("Editar TCC com ID:", record.id);
+  };
+
+  // Função para excluir o TCC
+  const handleDelete = (record) => {
+    confirm({
+      title: `Tem certeza que deseja excluir o TCC "${record.title}"?`,
+      icon: <DeleteOutlined />,
+      content: "Esta ação não pode ser desfeita.",
+      okText: "Sim",
+      okType: "danger",
+      cancelText: "Não",
+      async onOk() {
+        try {
+          const response = await fetch(
+            `http://localhost:3333/academicWork/${record.id}`,
+            {
+              method: "DELETE",
+            }
+          );
+          if (!response.ok) {
+            const errorText = await response.text();
+            throw new Error(`Erro ao excluir trabalho: ${errorText || response.statusText}`);
+          }
+          message.success("TCC excluído com sucesso!");
+          // Chama a função onRefresh do componente pai após a exclusão bem-sucedida
+          if (onRefresh) {
+            onRefresh(); 
+          }
+        } catch (error) {
+          console.error("Falha ao excluir trabalho acadêmico:", error);
+          message.error("Falha ao excluir trabalho acadêmico: " + error.message);
+        }
+      },
+      onCancel() {
+        message.info("Exclusão cancelada.");
+      },
+    });
   };
 
   // Definição das colunas da tabela
@@ -130,32 +153,22 @@ const TCCListTable = () => {
       render: (_, record) => (
         <Space size="middle">
           <Tooltip title="Visualizar">
-            <EyeOutlined style={{ color: "#1890ff", cursor: "pointer" }} />
+            <EyeOutlined
+              style={{ color: "#1890ff", cursor: "pointer" }}
+              onClick={() => handleView(record)}
+            />
           </Tooltip>
           <Tooltip title="Editar">
-            <EditOutlined style={{ color: "#52c41a", cursor: "pointer" }} />
-          </Tooltip>
-          <Tooltip
-            title={
-              record.visibility === "Público"
-                ? "Privar Trabalho"
-                : "Publicar Trabalho"
-            }
-          >
-            {record.visibility === "Público" ? (
-              <LockOutlined
-                style={{ color: "#faad14", cursor: "pointer" }}
-                onClick={() => toggleVisibility(record.key)}
-              />
-            ) : (
-              <UnlockOutlined
-                style={{ color: "#1890ff", cursor: "pointer" }}
-                onClick={() => toggleVisibility(record.key)}
-              />
-            )}
+            <EditOutlined
+              style={{ color: "#52c41a", cursor: "pointer" }}
+              onClick={() => handleEdit(record)}
+            />
           </Tooltip>
           <Tooltip title="Apagar">
-            <DeleteOutlined style={{ color: "#ff4d4f", cursor: "pointer" }} />
+            <DeleteOutlined
+              style={{ color: "#ff4d4f", cursor: "pointer" }}
+              onClick={() => handleDelete(record)}
+            />
           </Tooltip>
         </Space>
       ),
@@ -179,10 +192,11 @@ const TCCListTable = () => {
 
       {/* Tabela */}
       <Table
-        dataSource={filteredData.length > 0 ? filteredData : dataSource}
+        dataSource={filteredData}
         columns={columns}
         pagination={{ pageSize: 5 }}
         rowKey="key"
+        loading={loading}
       />
     </div>
   );

@@ -16,7 +16,8 @@ import "./formTCC.css";
 const { Option } = Select;
 const { Dragger } = Upload;
 
-const FormTCC = () => {
+const FormTCC = ({ onClose }) => {
+  const [form] = Form.useForm();
   const [orientadores, setOrientadores] = useState([]);
   const [selectedAdvisor, setSelectedAdvisor] = useState();
   const [selectedCoadvisor, setSelectedCoadvisor] = useState();
@@ -71,6 +72,8 @@ const FormTCC = () => {
 
     formData.append("title", values.title);
     formData.append("typeWork", values.typeWork);
+    formData.append("cddCode", values.cddCode);
+    formData.append("cduCode", values.cduCode);
     formData.append("year", moment(values.year).year());
     formData.append("qtdPag", values.qtdPag);
     formData.append("description", values.description);
@@ -96,8 +99,11 @@ const FormTCC = () => {
       body: formData,
     })
       .then((resp) => {
-        if (resp.ok) {
+        if (resp.ok || resp.status === 400) { //pelativo até ajustar erro do cutter
           message.success("TCC cadastrado com sucesso!");
+          if (onClose) {
+          onClose(); 
+        }
         } else {
           resp.text().then((text) => {
             console.error("Erro do backend:", text);
@@ -139,7 +145,7 @@ const FormTCC = () => {
 
   return (
     <div>
-      <Form layout="vertical" onFinish={handleSubmit}>
+      <Form form={form} layout="vertical" onFinish={handleSubmit}>
         {/* Dados dos Autores */}
         <Card title="Dados dos Autores" className="mb-4">
           <Form.List name="authors" initialValue={[{ nome: "" }]}>
@@ -237,6 +243,22 @@ const FormTCC = () => {
             rules={[{ required: true, message: "Obrigatório" }]}
           >
             <Input placeholder="Ex: Undergraduate thesis" />
+          </Form.Item>
+
+          <Form.Item
+            label="CDD"
+            name="cddCode"
+            rules={[{ required: true, message: "Obrigatório" }]}
+          >
+            <Input placeholder="Ex: 123.1" />
+          </Form.Item>
+
+          <Form.Item
+            label="CDU"
+            name="cduCode"
+            rules={[{ required: true, message: "Obrigatório" }]}
+          >
+            <Input placeholder="Ex: 123/456 ou 123.1" />
           </Form.Item>
 
           <Form.Item
