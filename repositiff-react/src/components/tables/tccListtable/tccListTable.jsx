@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import { useState, useEffect } from "react";
 import { Table, Input, Button, Space, Tooltip, message, Modal } from "antd";
 import {
   SearchOutlined,
@@ -9,29 +9,24 @@ import {
 
 const { confirm } = Modal;
 
-// A tabela agora recebe 'data', 'loading' e 'onRefresh' como props
-const TCCListTable = ({ data, loading, onRefresh }) => {
+// A tabela agora recebe 'data', 'loading', 'onRefresh' E 'onEdit' como props
+const TCCListTable = ({ data, loading, onRefresh, onEdit }) => { // Adicione onEdit aqui
   const [searchText, setSearchText] = useState("");
-  // dataSource e filteredData agora são baseados nos dados recebidos via props
-  const [dataSource, setDataSource] = useState(data); 
+  const [dataSource, setDataSource] = useState(data);
   const [filteredData, setFilteredData] = useState(data);
 
-  // useEffect para atualizar os dados internos quando as props 'data' mudarem
-  // Isso garante que a tabela reaja aos novos dados fornecidos pelo componente pai
   useEffect(() => {
     setDataSource(data);
-    // Ao receber novos dados, re-aplica o filtro de pesquisa atual
     if (searchText) {
       const filtered = data.filter((item) =>
         item.title.toLowerCase().includes(searchText.toLowerCase())
       );
       setFilteredData(filtered);
     } else {
-      setFilteredData(data); // Se não houver pesquisa, mostra todos os dados novos
+      setFilteredData(data);
     }
-  }, [data, searchText]); // Dependências nas props 'data' e 'searchText'
+  }, [data, searchText]);
 
-  // Função para filtrar os dados com base no texto de pesquisa
   const handleSearch = () => {
     const filtered = dataSource.filter((item) =>
       item.title.toLowerCase().includes(searchText.toLowerCase())
@@ -39,7 +34,6 @@ const TCCListTable = ({ data, loading, onRefresh }) => {
     setFilteredData(filtered);
   };
 
-  // Função para visualizar detalhes do TCC (pode abrir um modal ou navegar)
   const handleView = (record) => {
     Modal.info({
       title: "Detalhes do Trabalho Acadêmico",
@@ -60,9 +54,6 @@ const TCCListTable = ({ data, loading, onRefresh }) => {
           <p>
             <strong>Visibilidade:</strong> {record.visibility}
           </p>
-          {/* Adicione mais campos do seu JSON aqui, por exemplo: */}
-          {/* <p><strong>Cutter Number:</strong> {record.cutterNumber}</p> */}
-          {/* <p><strong>Descrição:</strong> {record.description}</p> */}
         </div>
       ),
       onOk() {},
@@ -71,14 +62,12 @@ const TCCListTable = ({ data, loading, onRefresh }) => {
 
   // Função para editar o TCC
   const handleEdit = (record) => {
-    message.info(`Redirecionando para edição do TCC: ${record.title}`);
-    // Exemplo: Redirecionar para uma rota de edição
-    // Se estiver usando react-router-dom, ficaria algo como:
-    // navigate(`/edit-academic-work/${record.id}`);
-    console.log("Editar TCC com ID:", record.id);
+    // Ao invés de apenas logar ou mostrar uma mensagem, chame a prop onEdit
+    if (onEdit) {
+      onEdit(record); // Chama a função onEdit do componente pai, passando o registro completo
+    }
   };
 
-  // Função para excluir o TCC
   const handleDelete = (record) => {
     confirm({
       title: `Tem certeza que deseja excluir o TCC "${record.title}"?`,
@@ -100,9 +89,8 @@ const TCCListTable = ({ data, loading, onRefresh }) => {
             throw new Error(`Erro ao excluir trabalho: ${errorText || response.statusText}`);
           }
           message.success("TCC excluído com sucesso!");
-          // Chama a função onRefresh do componente pai após a exclusão bem-sucedida
           if (onRefresh) {
-            onRefresh(); 
+            onRefresh();
           }
         } catch (error) {
           console.error("Falha ao excluir trabalho acadêmico:", error);
@@ -115,7 +103,6 @@ const TCCListTable = ({ data, loading, onRefresh }) => {
     });
   };
 
-  // Definição das colunas da tabela
   const columns = [
     {
       title: "Título",
@@ -161,7 +148,7 @@ const TCCListTable = ({ data, loading, onRefresh }) => {
           <Tooltip title="Editar">
             <EditOutlined
               style={{ color: "#52c41a", cursor: "pointer" }}
-              onClick={() => handleEdit(record)}
+              onClick={() => handleEdit(record)} // Isso chamará a prop onEdit do pai
             />
           </Tooltip>
           <Tooltip title="Apagar">
@@ -177,7 +164,6 @@ const TCCListTable = ({ data, loading, onRefresh }) => {
 
   return (
     <div className="p-4">
-      {/* Barra de pesquisa */}
       <div className="mb-4 flex items-center gap-4">
         <Input
           placeholder="Pesquisar TCC"
@@ -190,7 +176,6 @@ const TCCListTable = ({ data, loading, onRefresh }) => {
         </Button>
       </div>
 
-      {/* Tabela */}
       <Table
         dataSource={filteredData}
         columns={columns}

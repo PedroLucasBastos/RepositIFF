@@ -1,0 +1,26 @@
+/* Forçar estilos de focus e hover nos inputs */
+.ant-input:focus,
+.ant-input:hover,
+.ant-select-selector:focus,
+.ant-select-selector:hover,
+.ant-input-focused,
+.ant-select-focused {
+  border-color: #16a34a !important; /* green-600 */
+  box-shadow: 0 0 0 2px rgba(22, 163, 74, 0.2) !important;
+}
+
+/* Forçar o estilo do botão */
+.ant-btn-primary {
+  background-color: #76b865 !important;
+  border-color: #76b865 !important;
+}
+
+.ant-btn-primary:hover {
+  background-color: #16a34a !important; /* green-600 */
+  border-color: #16a34a !important;
+}
+
+.ant-btn-dashed:hover {
+  border-color: #16a34a !important;
+  color: #16a34a !important;
+}

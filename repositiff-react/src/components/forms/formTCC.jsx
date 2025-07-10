@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import { useState, useEffect } from "react";
 import {
   Card,
   Input,
@@ -12,6 +12,7 @@ import {
 import { PlusOutlined, DeleteOutlined, InboxOutlined } from "@ant-design/icons";
 import moment from "moment";
 import "./formTCC.css";
+import PropTypes from "prop-types";
 
 const { Option } = Select;
 const { Dragger } = Upload;
@@ -366,5 +367,9 @@ const FormTCC = ({ onClose }) => {
     </div>
   );
 };
+FormTCC.propTypes = {
+  onClose: PropTypes.func,
+};
 
 export default FormTCC;
+
