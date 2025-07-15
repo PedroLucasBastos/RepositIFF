@@ -1,4 +1,4 @@
-import { useState, useEffect } from "react";
+import React, { useState, useEffect } from "react";
 import {
   Card,
   Input,
@@ -8,520 +8,494 @@ import {
   Button,
   Upload,
   message,
-  Space
+  Space,
 } from "antd";
-import { PlusOutlined, DeleteOutlined, InboxOutlined } from "@ant-design/icons";
+import {
+  PlusOutlined,
+  DeleteOutlined,
+  InboxOutlined,
+  UserAddOutlined,
+  UserDeleteOutlined,
+} from "@ant-design/icons";
 import moment from "moment";
-import "../EditTCC/formEditTCC.css";
 import PropTypes from "prop-types";
+import "./formEditTCC.css";
 
 const { Option } = Select;
 const { Dragger } = Upload;
 
-const FormEditTCC = ({ onClose, tccData }) => {
+const FormEditTCC = ({ tccData, onClose }) => {
   const [form] = Form.useForm();
-  const [orientadoresDisponiveis, setOrientadoresDisponiveis] = useState([]);
-  const [selectedAdvisor, setSelectedAdvisor] = useState(null);
-  const [selectedCoadvisor, setSelectedCoadvisor] = useState(null);
-  const [initialAdvisorIds, setInitialAdvisorIds] = useState([]);
-  const [file, setFile] = useState(null);
+  const [orientadores, setOrientadores] = useState([]);
+  const [currentMainAdvisor, setCurrentMainAdvisor] = useState(null); // Objeto do orientador principal atual (baseado na ordem)
+  const [currentCoAdvisor, setCurrentCoAdvisor] = useState(null); // Objeto do co-orientador atual (baseado na ordem)
+  const [availableAdvisors, setAvailableAdvisors] = useState([]); // Orientadores que podem ser selecionados
+  const [selectedAdvisorForDropdown, setSelectedAdvisorForDropdown] = useState(null); // Seleção para adicionar principal
+  const [selectedCoadvisorForDropdown, setSelectedCoadvisorForDropdown] = useState(null); // Seleção para adicionar co-orientador
   const [cursos, setCursos] = useState([]);
-  const [existingFileName, setExistingFileName] = useState(null);
+  const [file, setFile] = useState(null);
 
+  // Popula formulário com dados iniciais e define orientadores atuais com base na ordem
   useEffect(() => {
-    const fetchAdvisors = async () => {
-      try {
-        const response = await fetch("http://localhost:3333/advisor/list");
-        if (!response.ok) throw new Error("Erro ao buscar orientadores");
-        const data = await response.json();
-        const filteredAdvisors = (data.Advisors || []).filter(adv => adv._id !== null && adv._id !== undefined);
-        setOrientadoresDisponiveis(filteredAdvisors);
-        console.log("Orientadores carregados e filtrados (filtrados por _ID válido):", filteredAdvisors);
-      } catch (error) {
-        console.error("Falha ao carregar orientadores:", error);
-        message.error("Falha ao carregar orientadores");
+    form.setFieldsValue({
+      authors:
+        typeof tccData.authors === "string"
+          ? tccData.authors.split(",").map((nome) => ({ nome: nome.trim() }))
+          : Array.isArray(tccData.authors)
+          ? tccData.authors.map((nome) => ({ nome }))
+          : [],
+      title: tccData.title,
+      typeWork: String(tccData.workType || tccData.typeWork || ''), 
+      cddCode: tccData.cddCode,
+      cduCode: tccData.cduCode,
+      idCourse: tccData.course?.id,
+      year: tccData.year ? moment(tccData.year, "YYYY") : null,
+      qtdPag: tccData.pageCount || tccData.qtdPag,
+      description: tccData.description,
+      ilustration: tccData.ilustration,
+      references: tccData.references || [],
+      keyWords: tccData.keyWords || [],
+    });
+
+    // Popula currentMainAdvisor e currentCoAdvisor a partir de tccData.advisors (agora pela ordem)
+    let main = null;
+    let co = null;
+    if (Array.isArray(tccData.advisors) && tccData.advisors.length > 0) {
+      main = tccData.advisors[0]; // O primeiro da lista é o principal
+      if (tccData.advisors.length > 1) {
+        co = tccData.advisors[1]; // O segundo da lista é o co-orientador
       }
-    };
-    fetchAdvisors();
-  }, []);
-
-  useEffect(() => {
-    const fetchCursos = async () => {
-      try {
-        const response = await fetch("http://localhost:3333/course/list");
-        if (!response.ok) throw new Error("Erro ao buscar cursos");
-        const data = await response.json();
-        // <<<<<<<<<<<<<<< MUDANÇA CRÍTICA AQUI PARA CURSOS: PADRONIZANDO PARA _ID >>>>>>>>>>>>>>>>>
-        // A API /course/list retorna _id, então usamos _id.
-        const formattedCursos = (data.Courses || []).map(curso => ({
-          _id: curso._id, // Usamos _id aqui para ser consistente com a API de listagem
-          name: curso._props.name // Assume que o nome está em _props.name
-        })).filter(curso => curso._id !== null && typeof curso._id !== 'undefined'); // Filtra cursos com _ID nulo
-        setCursos(formattedCursos);
-        console.log("Cursos carregados e formatados (filtrados por _ID válido):", formattedCursos);
-        // <<<<<<<<<<<<<<< FIM DA MUDANÇA CRÍTICA >>>>>>>>>>>>>>>>>
-      } catch (error) {
-        console.error("Erro ao carregar cursos:", error);
-        message.error("Erro ao carregar cursos");
-      }
-    };
-    fetchCursos();
-  }, []);
-
-  useEffect(() => {
-    if (tccData) {
-      console.log("------------------------------------");
-      console.log("Dados completos do TCC recebidos para edição:", tccData);
-      console.log("Tipo de tccData.authors:", typeof tccData.authors, tccData.authors);
-      console.log("tccData.advisors (estrutura):", tccData.advisors);
-      console.log("tccData.course (estrutura):", tccData.course);
-      console.log("tccData.idCourse (do tccData):", tccData.idCourse);
-      console.log("tccData.year:", tccData.year);
-      console.log("tccData.qtdPag:", tccData.qtdPag);
-      console.log("tccData.description:", tccData.description);
-      console.log("tccData.ilustration:", tccData.ilustration);
-      console.log("tccData.references:", tccData.references);
-      console.log("tccData.keyWords:", tccData.keyWords);
-      console.log("------------------------------------");
-
-      let authorsToProcess = [];
-      if (typeof tccData.authors === 'string') {
-        try {
-          const parsed = JSON.parse(tccData.authors);
-          if (Array.isArray(parsed)) {
-            authorsToProcess = parsed;
-          } else {
-            authorsToProcess = tccData.authors.split(',').map(name => name.trim()).filter(name => name);
-          }
-        } catch (e) {
-          console.warn("tccData.authors não é JSON válido ou array, tratando como string simples:", tccData.authors);
-          authorsToProcess = tccData.authors.split(',').map(name => name.trim()).filter(name => name);
-        }
-      } else if (Array.isArray(tccData.authors)) {
-        authorsToProcess = tccData.authors;
-      }
-
-      const formattedAuthors = (authorsToProcess || []).map((authorName) => ({
-        nome: authorName,
-      }));
-
-      // --- TRATAMENTO PARA ORIENTADORES: Comparando registrationNumber ---
-      const currentAdvisorsInTCC = tccData.advisors || [];
-      const identifiedAdvisorIds = []; 
-      
-      if (orientadoresDisponiveis.length > 0) {
-        currentAdvisorsInTCC.forEach(tccAdvisor => {
-          const regNumberFromTCC = tccAdvisor.registrationNumber; 
-          const foundAdvisor = orientadoresDisponiveis.find(
-            availableAdvisor => availableAdvisor._props.registrationNumber === regNumberFromTCC
-          );
-          if (foundAdvisor) {
-            identifiedAdvisorIds.push(foundAdvisor._id); 
-          }
-        });
-      }
-      
-      setInitialAdvisorIds(identifiedAdvisorIds);
-
-      const initialAdvisorId = identifiedAdvisorIds[0] || null;
-      const initialCoadvisorId = identifiedAdvisorIds[1] || null;
-
-      setSelectedAdvisor(initialAdvisorId);
-      setSelectedCoadvisor(initialCoadvisorId);
-      console.log("Orientador ID inicial (identificado por registrationNumber e _id):", initialAdvisorId);
-      console.log("Coorientador ID inicial (identificado por registrationNumber e _id):", initialCoadvisorId);
-
-      // Define o nome do arquivo existente
-      if (tccData.file && tccData.file.filename) {
-        setExistingFileName(tccData.file.filename);
-      } else {
-        setExistingFileName(null);
-      }
-
-      // <<<<<<<<<<<<<<< MUDANÇA CRÍTICA AQUI PARA idCourse: PADRONIZANDO PARA _ID >>>>>>>>>>>>>>>>>
-      let initialCourseId = undefined;
-      if (cursos.length > 0 && tccData.course?.id) { // Se a lista de cursos e o ID do TCC estiverem disponíveis
-        // Encontra o curso na lista de cursos disponíveis pelo ID
-        const foundCourse = cursos.find(c => c.id === tccData.course.id);
-        if (foundCourse) {
-          initialCourseId = foundCourse._id; // Pega o _id da lista de cursos (padronizado)
-        }
-      } else if (tccData.idCourse) { // Fallback, se o idCourse vier direto e não como tccData.course?.id
-         // Se idCourse vem direto e não aninhado, tenta encontrar ele na lista de cursos para padronizar
-         const foundCourseById = cursos.find(c => c.id === tccData.idCourse);
-         if(foundCourseById) {
-            initialCourseId = foundCourseById._id;
-         } else {
-            initialCourseId = tccData.idCourse; // Se não encontrar na lista, usa o ID como está, mas pode ser inconsistente
-         }
-      }
-      // <<<<<<<<<<<<<<< FIM DA MUDANÇA CRÍTICA >>>>>>>>>>>>>>>>>
-
-      const fieldsToSet = {
-        title: tccData.title || '',
-        typeWork: tccData.typeWork || '',
-        cddCode: tccData.cddCode || '',
-        cduCode: tccData.cduCode || '',
-        idCourse: initialCourseId, // Agora usa o ID padronizado para o curso
-        year: tccData.year ? moment(String(tccData.year)) : undefined,
-        qtdPag: tccData.qtdPag || '',
-        description: tccData.description || '',
-        ilustration: tccData.ilustration || undefined,
-        
-        references: Array.isArray(tccData.references) && tccData.references.length === 2
-                      ? tccData.references
-                      : [null, null],
-        
-        keyWords: Array.isArray(tccData.keyWords)
-                    ? [...tccData.keyWords, ...Array(5 - tccData.keyWords.length).fill('')].slice(0, 5)
-                    : ['', '', '', '', ''],
-        
-        authors: formattedAuthors.length > 0 ? formattedAuthors : [{ nome: "" }],
-      };
-
-      form.setFieldsValue(fieldsToSet);
-      console.log("Valores definidos no formulário (ajustados para ID e registrationNumber):", fieldsToSet);
     }
-  }, [tccData, form, orientadoresDisponiveis, cursos]); 
+    setCurrentMainAdvisor(main || null);
+    setCurrentCoAdvisor(co || null);
+
+  }, [tccData, form]);
+
+  // Busca listas de todos os orientadores e cursos
+  useEffect(() => {
+    async function loadLists() {
+      try {
+        const [aRes, cRes] = await Promise.all([
+          fetch("http://localhost:3333/advisor/list"),
+          fetch("http://localhost:3333/course/list"),
+        ]);
+        const aJson = await aRes.json();
+        const cJson = await cRes.json();
+        setOrientadores(aJson.Advisors || []); // Lista completa de todos os orientadores
+        setCursos(cJson.Courses || []);
+      } catch (err) {
+        console.error(err);
+        message.error("Erro ao carregar listas de orientadores e cursos.");
+      }
+    }
+    loadLists();
+  }, []);
+
+  // Filtra os orientadores disponíveis para seleção
+  useEffect(() => {
+    const assignedAdvisorIds = [];
+    if (currentMainAdvisor) assignedAdvisorIds.push(currentMainAdvisor.id);
+    if (currentCoAdvisor) assignedAdvisorIds.push(currentCoAdvisor.id);
+
+    const filtered = orientadores.filter(
+      (o) => !assignedAdvisorIds.includes(o._id)
+    );
+    setAvailableAdvisors(filtered);
+    // Limpa a seleção se os orientadores atuais mudarem
+    setSelectedAdvisorForDropdown(null);
+    setSelectedCoadvisorForDropdown(null);
+  }, [orientadores, currentMainAdvisor, currentCoAdvisor]);
 
   const handleSubmit = async (values) => {
-    try {
-      message.loading({ content: "Salvando alterações...", key: "editTCC" });
+    const parsedQtdPag = Number(values.qtdPag);
+    if (isNaN(parsedQtdPag)) {
+      message.error("Número de Páginas deve ser um valor numérico válido.");
+      return;
+    }
 
-      const formData = new FormData();
+    const typeWorkValue = form.getFieldValue('typeWork');
+    const typeWorkAsString = String(typeWorkValue || '');
 
-      formData.append("id", tccData.id);
-
-      formData.append("title", values.title);
-      formData.append("typeWork", values.typeWork);
-      formData.append("cddCode", values.cddCode);
-      formData.append("cduCode", values.cduCode);
-      formData.append("year", moment(values.year).year());
-      formData.append("qtdPag", values.qtdPag);
-      formData.append("description", values.description);
-      formData.append("idCourse", values.idCourse); // Envia o ID selecionado (que agora será _id)
-      formData.append("ilustration", values.ilustration);
-
-      formData.append("authors", JSON.stringify(values.authors.map((author) => author.nome)));
-      formData.append("keyWords", JSON.stringify(values.keyWords.filter((kw) => kw && kw.trim())));
-      formData.append("references", JSON.stringify(values.references));
-
-      if (file) {
-        formData.append("file", file);
+    const payload = {
+      id: tccData.id,
+      fields: {
+        authors: JSON.stringify(values.authors.map(a => a.nome.trim())),
+        title: values.title,
+        typeWork: typeWorkAsString,
+        year: values.year.year(),
+        qtdPag: parsedQtdPag,
+        description: values.description,
+        courseId: values.idCourse,
+        keyWords: JSON.stringify(values.keyWords.filter(kw => kw && kw.trim())),
+        ilustration: values.ilustration,
+        references: JSON.stringify(values.references.map(Number)),
+        cduCode: values.cduCode,
+        cddCode: values.cddCode,
       }
+    };
 
-      const basicResponse = await fetch("http://localhost:3333/academicWork/basicUpdate", {
-        method: "PUT",
-        body: formData,
+    try {
+      const resp = await fetch("http://localhost:3333/academicWork/basicUpdate", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(payload),
       });
 
-      if (!basicResponse.ok) {
-        const errorText = await basicResponse.text();
-        throw new Error(`Erro ao atualizar dados básicos (incluindo PDF): ${errorText}`);
+      if (!resp.ok) {
+        const errorData = await resp.json().catch(() => ({ message: "Erro desconhecido do servidor." }));
+        throw new Error(errorData.message || "Falha ao atualizar dados.");
       }
 
-      const currentSelectedAdvisorIds = [];
-      if (selectedAdvisor) currentSelectedAdvisorIds.push(selectedAdvisor);
-      if (selectedCoadvisor) currentSelectedCoadvisorIds.push(selectedCoadvisor);
+      message.success("Dados atualizados com sucesso!");
+      onClose();
+    } catch (err) {
+      console.error("Erro no handleSubmit:", err);
+      message.error(err.message);
+    }
+  };
 
-      const advisorsToAdd = currentSelectedAdvisorIds.filter(
-        (id) => !initialAdvisorIds.includes(id)
-      );
-      const advisorsToRemove = initialAdvisorIds.filter(
-        (id) => !currentSelectedAdvisorIds.includes(id)
-      );
+  // Função para adicionar um orientador ou co-orientador
+  const handleAddAdvisorRole = async (advisorId, isMainRole) => { // isMainRole será true para o primeiro slot (principal)
+    if (!advisorId) {
+      message.error("Selecione um orientador antes de adicionar.");
+      return;
+    }
 
-      for (const advisorId of advisorsToAdd) {
-        const addAdvisorResponse = await fetch("http://localhost:3333/academicWork/addAdvisor", {
-          method: "POST",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({ academicWorkId: tccData.id, advisorId: advisorId }),
-        });
-        if (!addAdvisorResponse.ok) {
-          const errorText = await addAdvisorResponse.text();
-          console.warn(`Falha ao adicionar orientador ${advisorId}: ${errorText}`);
-          message.warning(`Não foi possível adicionar um orientador. Pode ser que ele já esteja associado.`);
-        }
-      }
+    // Nova lógica: Não permite adicionar co-orientador se não houver orientador principal
+    if (!isMainRole && !currentMainAdvisor) {
+      message.error("Não é possível adicionar um co-orientador sem um orientador principal.");
+      return;
+    }
 
-      for (const advisorId of advisorsToRemove) {
-        const deleteAdvisorResponse = await fetch("http://localhost:3333/academicWork/deleteAdvisor", {
-          method: "DELETE",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({ academicWorkId: tccData.id, advisorId: advisorId }),
-        });
-        if (!deleteAdvisorResponse.ok) {
-          const errorText = await deleteAdvisorResponse.text();
-          console.warn(`Falha ao remover orientador ${advisorId}: ${errorText}`);
-          message.warning(`Não foi possível remover um orientador.`);
-        }
-      }
+    try {
+      // Associar o orientador ao trabalho acadêmico
+      const addResp = await fetch("http://localhost:3333/academicWork/addAdvisor", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ academicWorkId: tccData.id, advisorId: advisorId }),
+      });
+      if (!addResp.ok) throw new Error("Erro ao associar orientador.");
 
-      message.success({ content: "TCC atualizado com sucesso!", key: "editTCC", duration: 2 });
-      if (onClose) {
-        onClose();
-      }
+      // Remover a chamada a defineMainAdvisor (conforme solicitação do usuário)
+      // A lógica de "principal" agora é definida pela ordem no frontend.
+      // O backend precisaria ser ajustado para usar a ordem ou ter uma lógica implícita.
+
+      message.success(`Orientador adicionado com sucesso!`); // Mensagem simplificada
+      onClose(); // Dispara o refresh dos dados no componente pai
     } catch (error) {
-      console.error("Erro na atualização do TCC:", error);
-      message.error({ content: `Erro ao atualizar TCC: ${error.message}`, key: "editTCC", duration: 5 });
+      console.error("Erro ao adicionar orientador:", error);
+      message.error(error.message || "Falha ao adicionar orientador.");
+    }
+  };
+
+  // Função para remover um orientador
+  const handleRemoveAdvisorRole = async (advisorId) => {
+    try {
+      const removeResp = await fetch("http://localhost:3333/academicWork/deleteAdvisor", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ idWork: tccData.id, idAdvisor: advisorId }),
+      });
+      if (!removeResp.ok) throw new Error("Erro ao remover orientador.");
+
+      message.success("Orientador removido com sucesso!");
+      // Atualiza o estado local para remover o orientador da UI
+      if (currentMainAdvisor && currentMainAdvisor.id === advisorId) {
+        setCurrentMainAdvisor(null);
+      } else if (currentCoAdvisor && currentCoAdvisor.id === advisorId) {
+        setCurrentCoAdvisor(null);
+      }
+      // O useEffect que calcula availableAdvisors será disparado automaticamente
+      // para incluir o orientador que acabou de ser removido na lista de disponíveis.
+
+    } catch (error) {
+      console.error("Erro ao remover orientador:", error);
+      message.error(error.message || "Falha ao remover orientador.");
     }
   };
 
   const uploadProps = {
     name: "file",
     multiple: false,
-    maxCount: 1,
-    beforeUpload: (uploadedFile) => {
-      setFile(uploadedFile);
-      setExistingFileName(uploadedFile.name);
+    beforeUpload: (f) => {
+      setFile(f);
       return false;
     },
-    onRemove: () => {
-      setFile(null);
-      setExistingFileName(tccData.file?.filename || null);
-      return true;
-    },
-    fileList: file
-      ? [{ uid: 'new-file', name: file.name, status: 'done', size: file.size }]
-      : existingFileName
-        ? [{ uid: 'existing-file', name: existingFileName, status: 'done', url: tccData.file?.url }]
-        : [],
+    onRemove: () => setFile(null),
   };
 
-
   return (
-    <div>
-      <Form form={form} layout="vertical" onFinish={handleSubmit}>
-        <Card title="Dados dos Autores" className="mb-4">
-          <Form.List name="authors">
-            {(fields, { add, remove }) => (
-              <>
-                {fields.map(({ key, name, ...restField }, index) => (
-                  <Card
-                    key={key}
-                    title={`Dados do Autor ${index + 1}`}
-                    className="mb-4"
-                    extra={
-                      index > 0 && (
-                        <Button
-                          type="text"
-                          icon={<DeleteOutlined style={{ color: "red" }} />}
-                          onClick={() => remove(name)}
-                        />
-                      )
-                    }
-                  >
-                    <Form.Item
-                      {...restField}
-                      name={[name, "nome"]}
-                      label="Nome"
-                      rules={[{ required: true, message: "Obrigatório" }]}
-                    >
-                      <Input placeholder={`Digite o nome do autor ${index + 1}`} />
-                    </Form.Item>
-                  </Card>
-                ))}
-                <Button
-                  type="dashed"
-                  onClick={() => add()}
-                  icon={<PlusOutlined />}
-                  className="mb-4 w-full"
+    <Form form={form} layout="vertical" onFinish={handleSubmit}>
+      {/* Dados dos Autores */}
+      <Card title="Dados dos Autores" className="mb-4">
+        <Form.List name="authors" initialValue={[]}>
+          {(fields, { add, remove }) => (
+            <>
+              {fields.map(({ key, name, ...restField }, idx) => (
+                <Card
+                  key={key}
+                  title={`Autor ${idx + 1}`}
+                  className="mb-3"
+                  extra={
+                    fields.length > 1 && (
+                      <Button
+                        type="text"
+                        icon={<DeleteOutlined style={{ color: "red" }} />}
+                        onClick={() => remove(name)}
+                      />
+                    )
+                  }
                 >
-                  Adicionar mais um autor
-                </Button>
-              </>
-            )}
-          </Form.List>
-        </Card>
-
-        <Card title="Dados dos Orientadores" className="mb-4">
-          <Form.Item label="Orientador">
-            <Select
-              placeholder="Selecione o orientador"
-              value={selectedAdvisor}
-              onChange={(value) => {
-                setSelectedAdvisor(value);
-                if (value === selectedCoadvisor) {
-                  setSelectedCoadvisor(null);
-                }
-              }}
-              allowClear
-            >
-              {orientadoresDisponiveis.map((orientador) => (
-                <Option key={orientador._id} value={orientador._id}>
-                  {`${orientador._props.name} ${orientador._props.surname}`}
-                </Option>
+                  <Form.Item
+                    {...restField}
+                    name={[name, "nome"]}
+                    rules={[{ required: true, message: "Obrigatório" }]}
+                  >
+                    <Input placeholder="Nome do autor" />
+                  </Form.Item>
+                </Card>
               ))}
-            </Select>
-          </Form.Item>
+              <Button
+                type="dashed"
+                onClick={() => add()}
+                icon={<PlusOutlined />}
+                block
+              >
+                Adicionar autor
+              </Button>
+            </>
+          )}
+        </Form.List>
+      </Card>
 
-          <Form.Item label="Coorientador">
-            <Select
-              placeholder="Selecione o coorientador (se houver)"
-              value={selectedCoadvisor}
-              onChange={(value) => setSelectedCoadvisor(value)}
-              allowClear
-            >
-              {orientadoresDisponiveis
-                .filter((o) => o._id !== selectedAdvisor) 
-                .map((o) => (
+      {/* Dados dos Orientadores */}
+      <Card title="Dados dos Orientadores" className="mb-4">
+        {/* Seção Orientador Principal */}
+        <div className="mb-3">
+          <h5>Orientador Principal:</h5>
+          {currentMainAdvisor ? (
+            <Space>
+              <span>
+                {currentMainAdvisor.name} {currentMainAdvisor.surname}
+              </span>
+              <Button
+                type="text"
+                icon={<DeleteOutlined style={{ color: "red" }} />}
+                onClick={() => handleRemoveAdvisorRole(currentMainAdvisor.id)}
+              />
+            </Space>
+          ) : (
+            <Space style={{ width: "100%" }}>
+              <Select
+                placeholder="Selecione o orientador principal"
+                value={selectedAdvisorForDropdown}
+                onChange={setSelectedAdvisorForDropdown}
+                style={{ flexGrow: 1 }}
+              >
+                {availableAdvisors.map((o) => (
                   <Option key={o._id} value={o._id}>
-                    {`${o._props.name} ${o._props.surname}`}
+                    {o._props.name} {o._props.surname}
                   </Option>
                 ))}
-            </Select>
-          </Form.Item>
-        </Card>
-
-        <Card title="Dados do Trabalho" className="mb-4">
-          <Form.Item
-            label="Título"
-            name="title"
-            rules={[{ required: true, message: "Obrigatório" }]}
-          >
-            <Input.TextArea placeholder="Digite o título do trabalho" />
-          </Form.Item>
-
-          <Form.Item
-            label="Tipo"
-            name="typeWork"
-            rules={[{ required: true, message: "Obrigatório" }]}
-          >
-            <Input placeholder="Ex: Undergraduate thesis" />
-          </Form.Item>
-
-          <Form.Item
-            label="CDD"
-            name="cddCode"
-            rules={[{ required: true, message: "Obrigatório" }]}
-          >
-            <Input placeholder="Ex: 123.1" />
-          </Form.Item>
-
-          <Form.Item
-            label="CDU"
-            name="cduCode"
-            rules={[{ required: true, message: "Obrigatório" }]}
-          >
-            <Input placeholder="Ex: 123/456 ou 123.1" />
-          </Form.Item>
-
-          <Form.Item
-            label="Curso"
-            name="idCourse"
-            rules={[{ required: true, message: "Obrigatório" }]}
-          >
-            <Select 
-              placeholder="Selecione o curso"
-              showSearch // Permite pesquisa
-              optionFilterProp="children" // Filtra pelo texto da Option
-              filterOption={(input, option) => // Função de filtro customizada
-                (option?.children || '').toLowerCase().includes(input.toLowerCase())
-              }
-            >
-              {cursos.map((curso) => (
-                <Option key={curso._id} value={curso._id}> {/* AQUI: Chave e Valor são _id */}
-                  {curso.name} {/* O texto exibido é o nome */}
-                </Option>
-              ))}
-            </Select>
-          </Form.Item>
-
-          <Form.Item
-            label="Ano"
-            name="year"
-            rules={[{ required: true, message: "Obrigatório" }]}
-          >
-            <DatePicker picker="year" style={{ width: "100%" }} />
-          </Form.Item>
-
-          <Form.Item
-            label="Número de Páginas"
-            name="qtdPag"
-            rules={[{ required: true, message: "Obrigatório" }]}
-          >
-            <Input type="number" placeholder="Digite o número de páginas" />
-          </Form.Item>
-
-          <Form.Item
-            label="Descrição"
-            name="description"
-            rules={[{ required: true, message: "Obrigatório" }]}
-          >
-            <Input.TextArea placeholder="Descrição do trabalho acadêmico" />
-          </Form.Item>
-
-          <Form.Item
-            label="Ilustrações"
-            name="ilustration"
-            rules={[{ required: true, message: "Obrigatório" }]}
-          >
-            <Select placeholder="Selecione a opção">
-              <Option value="Colorful">Colorido</Option>
-              <Option value="nao">Não possui</Option>
-              <Option value="pretoEBranco">Preto e Branco</Option>
-            </Select>
-          </Form.Item>
-
-          <Form.Item label="Referências" name="references">
-            <Input.Group compact>
-              <Form.Item
-                name={[ "references", 0 ]}
-                noStyle
+              </Select>
+              <Button
+                icon={<UserAddOutlined />}
+                onClick={() => handleAddAdvisorRole(selectedAdvisorForDropdown, true)} // isMainRole = true para o primeiro slot
               >
-                <Input type="number" style={{ width: "50%" }} placeholder="Página inicial" />
-              </Form.Item>
-              <Form.Item
-                name={[ "references", 1 ]}
-                noStyle
+                Adicionar
+              </Button>
+            </Space>
+          )}
+        </div>
+
+        {/* Seção Co-Orientador */}
+        <div className="mb-3">
+          <h5>Co-Orientador:</h5>
+          {currentCoAdvisor ? (
+            <Space>
+              <span>
+                {currentCoAdvisor.name} {currentCoAdvisor.surname}
+              </span>
+              <Button
+                type="text"
+                icon={<DeleteOutlined style={{ color: "red" }} />}
+                onClick={() => handleRemoveAdvisorRole(currentCoAdvisor.id)}
+              />
+            </Space>
+          ) : (
+            <Space style={{ width: "100%" }}>
+              <Select
+                placeholder="Selecione o co-orientador"
+                value={selectedCoadvisorForDropdown}
+                onChange={setSelectedCoadvisorForDropdown}
+                style={{ flexGrow: 1 }}
+                disabled={!currentMainAdvisor} // Desabilitado se não houver orientador principal
               >
-                <Input type="number" style={{ width: "50%" }} placeholder="Página final" />
-              </Form.Item>
-            </Input.Group>
-          </Form.Item>
+                {availableAdvisors.map((o) => (
+                  <Option key={o._id} value={o._id}>
+                    {o._props.name} {o._props.surname}
+                  </Option>
+                ))}
+              </Select>
+              <Button
+                icon={<UserAddOutlined />}
+                onClick={() => handleAddAdvisorRole(selectedCoadvisorForDropdown, false)} // isMainRole = false para o segundo slot
+                disabled={!currentMainAdvisor} // Desabilitado se não houver orientador principal
+              >
+                Adicionar
+              </Button>
+            </Space>
+          )}
+        </div>
+      </Card>
 
-          <Form.Item label="Palavras-chave" name="keyWords">
-            <Input.Group>
-              {[...Array(5)].map((_, index) => (
-                <Form.Item key={index} name={["keyWords", index]} noStyle>
-                  <Input
-                    placeholder={`Palavra-chave ${index + 1}`}
-                    style={{ marginBottom: 8 }}
-                  />
-                </Form.Item>
-              ))}
-            </Input.Group>
-          </Form.Item>
-        </Card>
-
-        <Card title="Upload de Arquivos" className="mb-4">
-          <Dragger {...uploadProps}>
-            <p className="ant-upload-drag-icon">
-              <InboxOutlined />
-            </p>
-            <p className="ant-upload-text">
-              Clique ou arraste os arquivos para esta área.
-            </p>
-            <p className="ant-upload-hint">Suporte para upload de arquivos.</p>
-            {existingFileName && !file && (
-              <p className="ant-upload-list-item-name">Arquivo atual: {existingFileName}</p>
-            )}
-          </Dragger>
-        </Card>
-
-        <Form.Item>
-          <Button type="primary" htmlType="submit" className="w-full">
-            Salvar Alterações
-          </Button>
+      {/* Dados do Trabalho */}
+      <Card title="Dados do Trabalho" className="mb-4">
+        <Form.Item
+          name="title"
+          label="Título"
+          rules={[{ required: true, message: "O título é obrigatório" }]}
+        >
+          <Input.TextArea autoSize={{ minRows: 2, maxRows: 6 }} />
         </Form.Item>
-      </Form>
-    </div>
+        <Form.Item
+          name="typeWork"
+          label="Tipo de Trabalho"
+          rules={[{ required: true, message: "O tipo de trabalho é obrigatório" }]}
+        >
+          <Input />
+        </Form.Item>
+        <Form.Item
+          name="cddCode"
+          label="CDD"
+          rules={[{ required: true, message: "O código CDD é obrigatório" }]}
+        >
+          <Input />
+        </Form.Item>
+        <Form.Item
+          name="cduCode"
+          label="CDU"
+          rules={[{ required: true, message: "O código CDU é obrigatório" }]}
+        >
+          <Input />
+        </Form.Item>
+        <Form.Item
+          name="idCourse"
+          label="Curso"
+          rules={[{ required: true, message: "O curso é obrigatório" }]}
+        >
+          <Select placeholder="Selecione o curso">
+            {cursos.map((c) => (
+              <Option key={c._id} value={c._id}>
+                {c._props.name}
+              </Option>
+            ))}
+          </Select>
+        </Form.Item>
+        <Form.Item
+          name="year"
+          label="Ano"
+          rules={[{ required: true, message: "O ano é obrigatório" }]}
+        >
+          <DatePicker picker="year" style={{ width: "100%" }} />
+        </Form.Item>
+        <Form.Item
+          name="qtdPag"
+          label="Número de Páginas"
+          rules={[{ required: true, message: "O número de páginas é obrigatório" }]}
+        >
+          <Input type="number" min={1} />
+        </Form.Item>
+        <Form.Item
+          name="description"
+          label="Descrição"
+          rules={[{ required: true, message: "A descrição é obrigatória" }]}
+        >
+          <Input.TextArea autoSize={{ minRows: 3, maxRows: 10 }} />
+        </Form.Item>
+        <Form.Item
+          name="ilustration"
+          label="Ilustrações"
+          rules={[{ required: true, message: "A seleção de ilustração é obrigatória" }]}
+        >
+          <Select placeholder="Selecione se possui ilustrações">
+            <Option value="Colorful">Colorido</Option>
+            <Option value="nao">Não possui</Option>
+            <Option value="pretoEBranco">Preto e Branco</Option>
+          </Select>
+        </Form.Item>
+        <Form.Item label="Referências" name="references">
+          <Space.Compact>
+            <Form.Item
+              name={["references", 0]}
+              noStyle
+              rules={[{ required: true, message: "Campo obrigatório" }]}
+            >
+              <Input placeholder="De (página inicial)" type="number" min={1} />
+            </Form.Item>
+            <Form.Item
+              name={["references", 1]}
+              noStyle
+              rules={[{ required: true, message: "Campo obrigatório" }]}
+            >
+              <Input placeholder="Até (página final)" type="number" min={1} />
+            </Form.Item>
+          </Space.Compact>
+        </Form.Item>
+        <Form.Item name="keyWords" label="Palavras-chave">
+          <Space.Compact direction="vertical" style={{ width: "100%" }}>
+            {[...Array(5)].map((_, i) => (
+              <Form.Item key={i} name={["keyWords", i]} noStyle>
+                <Input placeholder={`Palavra-chave ${i + 1}`} className="mb-2" />
+              </Form.Item>
+            ))}
+          </Space.Compact>
+        </Form.Item>
+      </Card>
+
+      {/* Upload de Arquivos */}
+      <Card title="Upload de Arquivos" className="mb-4">
+        <Dragger {...uploadProps}>
+          <p className="ant-upload-drag-icon">
+            <InboxOutlined />
+          </p>
+          <p>Clique ou arraste o arquivo PDF aqui.</p>
+        </Dragger>
+      </Card>
+
+      <Form.Item>
+        <Button type="primary" htmlType="submit" block size="large">
+          Salvar Alterações
+        </Button>
+      </Form.Item>
+    </Form>
   );
 };
 
 FormEditTCC.propTypes = {
-  onClose: PropTypes.func,
-  tccData: PropTypes.object,
+  tccData: PropTypes.shape({
+    id: PropTypes.string.isRequired,
+    authors: PropTypes.oneOfType([PropTypes.string, PropTypes.array]),
+    title: PropTypes.string,
+    workType: PropTypes.string,
+    year: PropTypes.number,
+    pageCount: PropTypes.number,
+    description: PropTypes.string,
+    course: PropTypes.shape({ id: PropTypes.string }),
+    keyWords: PropTypes.array,
+    ilustration: PropTypes.string,
+    references: PropTypes.array,
+    cddCode: PropTypes.string,
+    cduCode: PropTypes.string,
+    advisors: PropTypes.arrayOf(
+      PropTypes.shape({
+        id: PropTypes.string.isRequired,
+        name: PropTypes.string.isRequired,
+        surname: PropTypes.string.isRequired,
+      })
+    ),
+  }).isRequired,
+  onClose: PropTypes.func.isRequired,
 };
 
 export default FormEditTCC;

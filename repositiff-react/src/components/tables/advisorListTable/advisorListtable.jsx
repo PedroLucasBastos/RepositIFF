@@ -41,6 +41,25 @@ const AdvisorListTable = () => {
     fetchAdvisors();
   }, []);
 
+  useEffect(() => {
+    if (searchText.trim() === "") {
+      setFilteredData([]);
+    }
+  }, [searchText]);
+
+  const handleSearch = () => {
+    const filtered = dataSource.filter((advisor) => {
+      const fullName = `${advisor.name} ${advisor.surname}`.toLowerCase();
+      const search = searchText.toLowerCase();
+      return (
+        fullName.includes(search) ||
+        advisor.registrationNumber.toLowerCase().includes(search)
+      );
+    });
+
+    setFilteredData(filtered);
+  };
+
   const handleView = (record) => {
     setSelectedAdvisorId(record.key);
     setIsDetailsModalVisible(true);
@@ -158,16 +177,29 @@ const AdvisorListTable = () => {
         <Input
           placeholder="Pesquisar Orientador"
           value={searchText}
-          onChange={(e) => setSearchText(e.target.value)}
+          onChange={(e) => {
+            const text = e.target.value;
+            setSearchText(text);
+
+            const filtered = dataSource.filter((advisor) => {
+              const fullName = `${advisor.name} ${advisor.surname}`.toLowerCase();
+              return (
+                fullName.includes(text.toLowerCase()) ||
+                advisor.registrationNumber.toLowerCase().includes(text.toLowerCase())
+              );
+            });
+
+            setFilteredData(filtered);
+          }}
           className="w-full"
         />
-        <Button type="primary" icon={<SearchOutlined />}>
+        <Button type="primary" icon={<SearchOutlined />} onClick={handleSearch}>
           Pesquisar
         </Button>
       </div>
 
       <Table
-        dataSource={filteredData.length > 0 ? filteredData : dataSource}
+        dataSource={filteredData.length > 0 || searchText ? filteredData : dataSource}
         columns={columns}
         pagination={{ pageSize: 5 }}
         rowKey="key"
@@ -198,14 +230,14 @@ const AdvisorListTable = () => {
         cancelText="Cancelar"
         okButtonProps={{
           style: {
-            backgroundColor: "#ff4d4f", // Cor vermelha do botão
+            backgroundColor: "#ff4d4f",
             borderColor: "#ff4d4f",
             color: "white",
           },
         }}
         cancelButtonProps={{
           style: {
-            backgroundColor: "#f0f0f0", // Cor neutra do botão
+            backgroundColor: "#f0f0f0",
             borderColor: "#f0f0f0",
             color: "black",
           },
