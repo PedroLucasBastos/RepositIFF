@@ -106,6 +106,8 @@ export class academicWorkController {
   }
 
   async basicUpdate(req: UpdateAcademicWorkBasicInfoPROPS, res: FastifyReply): Promise<void> {
+    console.log("\n\nCOMEÇOU O CONTROLLER DE BASIC\n");
+
     const { id, fields } = req;
 
     const resultSanitize = this.sanitizeReceivedDataToUpdateBasicInfo(req);
@@ -121,11 +123,15 @@ export class academicWorkController {
 
     const result = await useCase.execute({ id, fields });
 
+    console.log("\n\nRESULTADO DA SANITIZAÇÃO\n");
+    console.log(resultSanitize);
+    console.log("\nRESULTADO DA SANITIZAÇÃO\n\n");
+
     if (result.isLeft())
       return res.status(400).send({
         Error: result.value,
       });
-
+    console.log("\nPASSOU TUDO\n");
     res.code(200).send({
       isRight: result,
       Message: "DEU BOM AKI",
@@ -273,14 +279,14 @@ export class academicWorkController {
 
   sanitizeReceivedDataToUpdateBasicInfo(request: any): Either<string, void> {
     const { id, fields } = request;
-    const { authors, title, workType, year, pageCount, description, courseId, keyWords, ilustration, references, cduCode, cddCode } = fields;
+    const { authors, title, typeWork, year, pageCount, description, courseId, keyWords, ilustration, references, cduCode, cddCode } = fields;
 
     if (!id) {
       return new Left("ID must be provided.");
     }
     // Validate authors
-    const parseAuthors = authors ? JSON.parse(authors) : "";
-    if (authors && (!Array.isArray(parseAuthors) || parseAuthors.some((author) => typeof author !== "string"))) {
+    // const parseAuthors = JSON.parse(authors);
+    if (!Array.isArray(authors) || authors.some((author) => typeof author !== "string")) {
       return new Left("Authors must be an array of strings.");
     }
 
@@ -290,8 +296,8 @@ export class academicWorkController {
     }
 
     // Validate type
-    console.log("AKASIEKDASFJWEASDF");
-    console.log(typeof typeWork);
+    // console.log("AKASIEKDASFJWEASDF");
+    // console.log(typeof typeWork);
     if (typeWork && typeof typeWork !== "string") {
       return new Left("Type must be a string.ASDFASDFASD");
     }

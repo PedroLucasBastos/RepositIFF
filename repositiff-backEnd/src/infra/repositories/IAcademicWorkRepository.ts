@@ -86,7 +86,7 @@ export interface updateAdvisorsDTO {
 
 export interface IReturnAcademicWorkUpdateFields {
   id: string;
-  academicWorkStatus: string;
+  academicWorkVisibility: boolean;
   title: string;
   typeWork: string;
   year: number;

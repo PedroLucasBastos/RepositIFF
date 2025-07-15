@@ -126,8 +126,12 @@ export class CreateProjectUseCase {
       });
       await this._fileStorage.upload(academicWorkEntity.file, file);
     }
-
+    console.log("\n\n QUASE ACABANDO AKI \n\n");
     const academicWorkResult = MapperAcademicWork.dtoToEntity(resultDB);
+
+    console.log("\n\n DEPOIS DO ULTIMO MAPPING \n\n");
+    console.log(academicWorkResult);
+
     if (academicWorkResult instanceof DomainError) return new Left(new DomainError(ErrorCategory.Application, "ERROR_TO_MAPPING_ACADEMICWORK", academicWorkResult.message, academicWorkResult, academicWorkResult.name));
     console.log("VERIFICAÇÃO");
     console.log(`ID DA ENTIDADE: ${resultDB.id}`);

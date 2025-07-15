@@ -1,13 +1,5 @@
 import { academicWorkVisibility, AcademicWork } from "@src/domain/entities/academicWork.js";
-import {
-  addAcademicWorkDTO,
-  IAcademicWorkRepository,
-  IReturnAcademicWorkUpdateFields,
-  IReturnAcademicWorkDTO,
-  updateAcademicWorkDTO,
-  updateAcademicWorkFieldsDTO,
-  academicAssociativeAdvisors,
-} from "@src/infra/repositories/IAcademicWorkRepository.js";
+import { addAcademicWorkDTO, IAcademicWorkRepository, IReturnAcademicWorkUpdateFields, IReturnAcademicWorkDTO, updateAcademicWorkDTO, updateAcademicWorkFieldsDTO, academicAssociativeAdvisors } from "@src/infra/repositories/IAcademicWorkRepository.js";
 import { Prisma, PrismaClient } from "@prisma/client";
 import { Author } from "@src/domain/entities/author.js";
 import { AdvisorFactory } from "@src/domain/entities/factories/advisorFactory.js";
@@ -39,9 +31,7 @@ export class PrismaAcademicWorkRepository implements IAcademicWorkRepository {
     try {
       console.log("até tentou");
       // Limpa os campos que são undefined ou inválidos para o Prisma
-      const cleanedData = Object.fromEntries(
-        Object.entries(props).filter(([_, v]) => v !== undefined && v !== null && v !== "" && !(typeof v === "number" && isNaN(v)))
-      );
+      const cleanedData = Object.fromEntries(Object.entries(props).filter(([_, v]) => v !== undefined && v !== null && v !== "" && !(typeof v === "number" && isNaN(v))));
       const prismaData = await this._prismaCli.academicWork.update({
         where: { id },
         data: cleanedData,
@@ -67,7 +57,7 @@ export class PrismaAcademicWorkRepository implements IAcademicWorkRepository {
         cduCode: prismaData.cduCode || undefined,
         cddCode: prismaData.cddCode || undefined,
         cutterNumber: prismaData.cutterNumber,
-        academicWorkStatus: prismaData.academicWorkStatus,
+        academicWorkVisibility: prismaData.academicWorkVisibility,
       };
       return result;
 
@@ -175,9 +165,7 @@ export class PrismaAcademicWorkRepository implements IAcademicWorkRepository {
       const operations: Prisma.PrismaPromise<unknown>[] = [];
 
       // Limpa os campos que são undefined ou inválidos para o Prisma
-      const cleanedData = Object.fromEntries(
-        Object.entries(props).filter(([_, v]) => v !== undefined && v !== null && v !== "" && !(typeof v === "number" && isNaN(v)))
-      );
+      const cleanedData = Object.fromEntries(Object.entries(props).filter(([_, v]) => v !== undefined && v !== null && v !== "" && !(typeof v === "number" && isNaN(v))));
       console.log("Limpo");
       console.log(cleanedData);
 
@@ -402,7 +390,9 @@ export class PrismaAcademicWorkRepository implements IAcademicWorkRepository {
       console.log(`ID SALVO NO BANCO DE DADOS ${prismaData.id}`);
       console.log(prismaData);
       console.log("=========================================================");
-      return MapperAcademicWork.toDTO(prismaData);
+      const response = MapperAcademicWork.toDTO(prismaData);
+      console.log(response);
+      return response;
     } catch (error) {
       // console.log("\n\n\n")
       // console.log("teste: ", error);

@@ -72,7 +72,8 @@ export async function academicWorkRoutes(fastify: FastifyInstance) {
     }
   });
 
-  fastify.post("/basicUpdate", async (req: FastifyRequest<{ Body: UpdateAcademicWorkBasicInfoPROPS }>, res: FastifyReply) => {
+  fastify.put("/basicUpdate", async (req: FastifyRequest<{ Body: UpdateAcademicWorkBasicInfoPROPS }>, res: FastifyReply) => {
+    console.log("\n INICIO DOS TRABALHOS DE BASIC UPDATE");
     console.log(req.body);
     try {
       const body = req.body;

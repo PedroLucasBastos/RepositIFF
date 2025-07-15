@@ -148,14 +148,16 @@ export class AcademicWorkValitador {
   }
 
   static validateCutterNumber(cutterNumber?: string): EitherOO<DomainError, void> {
-    if (!cutterNumber || !/^[A-Z]\d{3}$/i.test(cutterNumber)) {
-      return new Left(AcademicWorkErros.InvalidParameters("The Cutter Number is invalid"));
+    if (!cutterNumber || cutterNumber.length < 0) {
+      console.log("\n CUTTER INVÁLIDO");
+      console.log(cutterNumber);
+      return new Left(AcademicWorkErros.InvalidParameters("The Cutter Number is invalid S2"));
     }
     return new Right(undefined);
   }
 
   static validateCduCode(cduCode?: string): EitherOO<DomainError, void> {
-    if (!cduCode || !/^\d+(\.\d+)*$/.test(cduCode)) {
+    if (!cduCode || cduCode.length < 0) {
       return new Left(AcademicWorkErros.InvalidParameters("The CDU Code is invalid"));
     }
 
@@ -163,7 +165,7 @@ export class AcademicWorkValitador {
   }
 
   static validateCddCode(cddCode?: string): EitherOO<DomainError, void> {
-    if (!cddCode || !/^\d+(\.\d+)*$/.test(cddCode)) {
+    if (!cddCode || cddCode.length < 0) {
       return new Left(AcademicWorkErros.InvalidParameters("The CDD Code is invalid"));
     }
 
