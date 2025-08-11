@@ -491,6 +491,19 @@ export class PrismaAcademicWorkRepository implements IAcademicWorkRepository {
     }
   }
 
+  async deleteAcademicWork(idAcademicWork: string): Promise<void> {
+    try {
+      await this._prismaCli.advisor_AcademicWork.deleteMany({
+        where: { academicWorkId: idAcademicWork },
+      });
+
+      await this._prismaCli.academicWork.delete({
+        where: { id: idAcademicWork },
+      });
+      return;
+    } catch (error) {}
+  }
+
   async deleteAll(): Promise<void> {
     await this._prismaCli.$executeRawUnsafe(`
             TRUNCATE TABLE 

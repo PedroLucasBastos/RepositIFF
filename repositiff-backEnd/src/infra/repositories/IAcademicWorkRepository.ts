@@ -117,7 +117,7 @@ export interface IAcademicWorkRepository {
   listAdvisors(academicWorkId: string): Promise<Error | academicAssociativeAdvisors[]>;
   selectMainAdvisor(academicWorkId: string, advisorId: string): Promise<Error | (null | string)>;
   defineMainAdvisor(academicWorkId: string, advisorId: string): Promise<Error | void>;
-
+  deleteAcademicWork(idAcademicWork: string): Promise<void>;
   findByIdDoc(id: String): Promise<null | IReturnAcademicWorkDTO>;
   getFile(idAcademicWork: string): Promise<null | string>;
   listAllProjects(): Promise<IReturnAcademicWorkDTO[]>;

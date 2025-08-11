@@ -12,6 +12,7 @@ import { UpdateAcademicWorkBasicInfoPROPS, UpdateAcademicWorkBasicInfoUseCase } 
 import { AddAdvisorToAcademicWorkProps, AddAdvisorToAcademicWorkUseCase } from "@src/domain/application/academicWork_Advisors-useCases/addAdvisorToAcademickWork-useCase.js";
 import { DelAdvisorInAcademicWorkUseCase, IDelAdvisorProps } from "@src/domain/application/academicWork_Advisors-useCases/delAdvisorToAcademicWork-useCase.js";
 import { DefineMainAdvisorUseCase, DefineProps } from "@src/domain/application/academicWork_Advisors-useCases/defineMainAdvisor-use-case.js";
+import { DeleteAcademicWorkUseCase } from "@src/domain/application/academicWork-useCases/deleteAcademicWork-use-case.js";
 
 export interface IRequestAcademicWorkController {
   authors: string[];
@@ -101,6 +102,23 @@ export class academicWorkController {
 
     res.code(201).send({
       Data: result.value,
+      Message: "DEU BOM AKI",
+    });
+  }
+
+  async deleteAcademicWork(req: string, res: FastifyReply): Promise<void> {
+    // const { id } = req;
+    const repo = new PrismaAcademicWorkRepository();
+    const flare = new CloudFlareFileStorage();
+
+    const useCase = new DeleteAcademicWorkUseCase(repo, flare).execute(req);
+    // if (result.isLeft())
+    //   return res.status(400).send({
+    //     Error: result.value,
+    //   });
+    // console.log("\nPASSOU TUDO\n");
+    res.code(200).send({
+      isRight: true,
       Message: "DEU BOM AKI",
     });
   }
