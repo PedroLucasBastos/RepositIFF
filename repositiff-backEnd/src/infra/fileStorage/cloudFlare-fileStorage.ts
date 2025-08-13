@@ -40,7 +40,7 @@ export class CloudFlareFileStorage implements IFileStorage {
       );
     } catch (error) {}
 
-    throw new Error("Method not implemented.");
+    
   }
   async upload(key: string, file: Buffer): Promise<Error | void> {
     console.log(key);

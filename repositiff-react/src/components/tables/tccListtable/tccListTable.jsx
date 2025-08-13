@@ -7,13 +7,19 @@ import {
   DeleteOutlined,
 } from "@ant-design/icons";
 
-const { confirm } = Modal;
+// Não precisamos mais do 'confirm' aqui
+// const { confirm } = Modal;
 
-// A tabela agora recebe 'data', 'loading', 'onRefresh' E 'onEdit' como props
-const TCCListTable = ({ data, loading, onRefresh, onEdit }) => { // Adicione onEdit aqui
+const TCCListTable = ({ data, loading, onRefresh, onEdit }) => {
   const [searchText, setSearchText] = useState("");
   const [dataSource, setDataSource] = useState(data);
   const [filteredData, setFilteredData] = useState(data);
+
+  // --- NOVOS ESTADOS PARA O MODAL DE EXCLUSÃO ---
+  const [isDeleteModalVisible, setIsDeleteModalVisible] = useState(false);
+  const [recordToDelete, setRecordToDelete] = useState(null); // Guarda o TCC a ser excluído
+  const [deleteConfirmationInput, setDeleteConfirmationInput] = useState(""); // Guarda o texto digitado
+  const [isConfirmingDelete, setIsConfirmingDelete] = useState(false); // Estado de loading do botão
 
   useEffect(() => {
     setDataSource(data);
@@ -60,50 +66,64 @@ const TCCListTable = ({ data, loading, onRefresh, onEdit }) => { // Adicione onE
     });
   };
 
-  // Função para editar o TCC
   const handleEdit = (record) => {
-    // Ao invés de apenas logar ou mostrar uma mensagem, chame a prop onEdit
     if (onEdit) {
-      onEdit(record); // Chama a função onEdit do componente pai, passando o registro completo
+      onEdit(record);
     }
   };
 
+  // --- FUNÇÃO DE EXCLUSÃO MODIFICADA ---
+  // Agora ela apenas abre o modal e guarda a informação do TCC
   const handleDelete = (record) => {
-    confirm({
-      title: `Tem certeza que deseja excluir o TCC "${record.title}"?`,
-      icon: <DeleteOutlined />,
-      content: "Esta ação não pode ser desfeita.",
-      okText: "Sim",
-      okType: "danger",
-      cancelText: "Não",
-      async onOk() {
-        try {
-          const response = await fetch(
-            `http://localhost:3333/academicWork/${record.id}`,
-            {
-              method: "DELETE",
-            }
-          );
-          if (!response.ok) {
-            const errorText = await response.text();
-            throw new Error(`Erro ao excluir trabalho: ${errorText || response.statusText}`);
-          }
-          message.success("TCC excluído com sucesso!");
-          if (onRefresh) {
-            onRefresh();
-          }
-        } catch (error) {
-          console.error("Falha ao excluir trabalho acadêmico:", error);
-          message.error("Falha ao excluir trabalho acadêmico: " + error.message);
+    setRecordToDelete(record);
+    setIsDeleteModalVisible(true);
+  };
+
+  // --- NOVA FUNÇÃO PARA CONFIRMAR A EXCLUSÃO (chamada pelo botão OK do modal) ---
+  const handleConfirmDelete = async () => {
+    if (!recordToDelete) return;
+
+    setIsConfirmingDelete(true); // Ativa o loading
+    try {
+      const response = await fetch(
+        `http://localhost:3333/academicWork/${recordToDelete.id}/delete`,
+        {
+          method: "DELETE",
         }
-      },
-      onCancel() {
-        message.info("Exclusão cancelada.");
-      },
-    });
+      );
+      // Analisa a resposta como JSON, conforme sua imagem
+      const result = await response.json(); 
+
+      if (!response.ok || !result.isRight) {
+        // Usa a mensagem do backend se disponível, senão uma mensagem padrão
+        const errorMessage = result.Message || `Erro ao excluir trabalho.`;
+        throw new Error(errorMessage);
+      }
+      
+      message.success(result.Message || "TCC excluído com sucesso!");
+      if (onRefresh) {
+        onRefresh();
+      }
+    } catch (error) {
+      console.error("Falha ao excluir trabalho acadêmico:", error);
+      message.error("Falha ao excluir trabalho acadêmico: " + error.message);
+    } finally {
+      setIsConfirmingDelete(false); // Desativa o loading
+      setIsDeleteModalVisible(false); // Fecha o modal
+      setDeleteConfirmationInput(""); // Limpa o input
+      setRecordToDelete(null); // Limpa o registro
+    }
+  };
+  
+  // Função para fechar o modal ao clicar em Cancelar ou no 'X'
+  const handleCancelDelete = () => {
+    setIsDeleteModalVisible(false);
+    setDeleteConfirmationInput("");
+    setRecordToDelete(null);
   };
 
   const columns = [
+    // ... (suas colunas continuam as mesmas)
     {
       title: "Título",
       dataIndex: "title",
@@ -148,7 +168,7 @@ const TCCListTable = ({ data, loading, onRefresh, onEdit }) => { // Adicione onE
           <Tooltip title="Editar">
             <EditOutlined
               style={{ color: "#52c41a", cursor: "pointer" }}
-              onClick={() => handleEdit(record)} // Isso chamará a prop onEdit do pai
+              onClick={() => handleEdit(record)}
             />
           </Tooltip>
           <Tooltip title="Apagar">
@@ -183,6 +203,38 @@ const TCCListTable = ({ data, loading, onRefresh, onEdit }) => { // Adicione onE
         rowKey="key"
         loading={loading}
       />
+
+      {/* --- NOSSO NOVO MODAL DE CONFIRMAÇÃO --- */}
+      {recordToDelete && (
+        <Modal
+          title="Confirmar Exclusão"
+          visible={isDeleteModalVisible}
+          onOk={handleConfirmDelete}
+          onCancel={handleCancelDelete}
+          // Propriedades do botão OK
+          okText="Confirmar Exclusão"
+          okType="danger"
+          okButtonProps={{
+            // AQUI ESTÁ A MÁGICA: o botão é desabilitado se o texto não for igual
+            disabled: deleteConfirmationInput !== recordToDelete.title,
+            loading: isConfirmingDelete,
+          }}
+          // Propriedades do botão Cancelar
+          cancelText="Cancelar"
+        >
+          <p>
+            Para confirmar a exclusão, por favor, digite o título completo do trabalho no campo abaixo:
+          </p>
+          <p>
+            <strong>{recordToDelete.title}</strong>
+          </p>
+          <Input
+            placeholder="Digite o título aqui"
+            value={deleteConfirmationInput}
+            onChange={(e) => setDeleteConfirmationInput(e.target.value)}
+          />
+        </Modal>
+      )}
     </div>
   );
 };
