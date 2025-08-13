@@ -10,9 +10,10 @@ import {
   message,
 } from "antd";
 import { PlusOutlined, DeleteOutlined, InboxOutlined } from "@ant-design/icons";
-import moment from "moment";
+//import moment from "moment";
 import "./formTCC.css";
 import PropTypes from "prop-types";
+import DatePickerEstilizado from "../datepicker/DatePickerEstilizado";
 
 const { Option } = Select;
 const { Dragger } = Upload;
@@ -24,6 +25,9 @@ const FormTCC = ({ onClose }) => {
   const [selectedCoadvisor, setSelectedCoadvisor] = useState();
   const [file, setFile] = useState(null);
   const [cursos, setCursos] = useState([]);
+  const workTypes = [
+  "Undergraduate thesis"             // Artigo
+];
 
   // Busca os orientadores na API e extrai o array "Advisors"
   useEffect(() => {
@@ -75,7 +79,7 @@ const FormTCC = ({ onClose }) => {
     formData.append("typeWork", values.typeWork);
     formData.append("cddCode", values.cddCode);
     formData.append("cduCode", values.cduCode);
-    formData.append("year", values.year.year());
+    formData.append("year", values.year.getFullYear());
     formData.append("qtdPag", values.qtdPag);
     formData.append("description", values.description);
     formData.append("idCourse", values.idCourse);
@@ -242,8 +246,16 @@ const FormTCC = ({ onClose }) => {
             label="Tipo"
             name="typeWork"
             rules={[{ required: true, message: "Obrigatório" }]}
+            initialValue="Undergraduate thesis"
           >
-            <Input placeholder="Ex: Undergraduate thesis" />
+            <Select placeholder="Selecione o tipo de trabalho">
+            
+            {workTypes.map(type => (
+              <Option key={type} value={type}>
+                {type}
+              </Option>
+            ))}
+          </Select>
           </Form.Item>
 
           <Form.Item
@@ -276,12 +288,12 @@ const FormTCC = ({ onClose }) => {
             </Select>
           </Form.Item>
 
-          <Form.Item
+         <Form.Item
             label="Ano"
             name="year"
             rules={[{ required: true, message: "Obrigatório" }]}
           >
-            <DatePicker picker="year" style={{ width: "100%" }} />
+            <DatePickerEstilizado showYearPicker />
           </Form.Item>
 
           <Form.Item

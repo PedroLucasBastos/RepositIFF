@@ -7,19 +7,16 @@ import {
   DeleteOutlined,
 } from "@ant-design/icons";
 
-// Não precisamos mais do 'confirm' aqui
-// const { confirm } = Modal;
 
 const TCCListTable = ({ data, loading, onRefresh, onEdit }) => {
   const [searchText, setSearchText] = useState("");
   const [dataSource, setDataSource] = useState(data);
   const [filteredData, setFilteredData] = useState(data);
 
-  // --- NOVOS ESTADOS PARA O MODAL DE EXCLUSÃO ---
   const [isDeleteModalVisible, setIsDeleteModalVisible] = useState(false);
-  const [recordToDelete, setRecordToDelete] = useState(null); // Guarda o TCC a ser excluído
-  const [deleteConfirmationInput, setDeleteConfirmationInput] = useState(""); // Guarda o texto digitado
-  const [isConfirmingDelete, setIsConfirmingDelete] = useState(false); // Estado de loading do botão
+  const [recordToDelete, setRecordToDelete] = useState(null);
+  const [deleteConfirmationInput, setDeleteConfirmationInput] = useState("");
+  const [isConfirmingDelete, setIsConfirmingDelete] = useState(false);
 
   useEffect(() => {
     setDataSource(data);
@@ -72,18 +69,16 @@ const TCCListTable = ({ data, loading, onRefresh, onEdit }) => {
     }
   };
 
-  // --- FUNÇÃO DE EXCLUSÃO MODIFICADA ---
-  // Agora ela apenas abre o modal e guarda a informação do TCC
   const handleDelete = (record) => {
     setRecordToDelete(record);
     setIsDeleteModalVisible(true);
   };
 
-  // --- NOVA FUNÇÃO PARA CONFIRMAR A EXCLUSÃO (chamada pelo botão OK do modal) ---
+  // --- 👇 FUNÇÃO DE CONFIRMAÇÃO COM A NOVA LÓGICA DO MODAL DE SUCESSO 👇 ---
   const handleConfirmDelete = async () => {
     if (!recordToDelete) return;
 
-    setIsConfirmingDelete(true); // Ativa o loading
+    setIsConfirmingDelete(true);
     try {
       const response = await fetch(
         `http://localhost:3333/academicWork/${recordToDelete.id}/delete`,
@@ -91,31 +86,41 @@ const TCCListTable = ({ data, loading, onRefresh, onEdit }) => {
           method: "DELETE",
         }
       );
-      // Analisa a resposta como JSON, conforme sua imagem
+      
       const result = await response.json(); 
 
       if (!response.ok || !result.isRight) {
-        // Usa a mensagem do backend se disponível, senão uma mensagem padrão
         const errorMessage = result.Message || `Erro ao excluir trabalho.`;
         throw new Error(errorMessage);
       }
       
-      message.success(result.Message || "TCC excluído com sucesso!");
-      if (onRefresh) {
-        onRefresh();
-      }
+      // PASSO 1: Fecha o modal de confirmação
+      setIsDeleteModalVisible(false);
+
+      // PASSO 2: Mostra o modal de sucesso estático do Ant Design
+      Modal.success({
+        title: 'Excluído com Sucesso!',
+        content: result.Message || 'O trabalho acadêmico foi removido.',
+        okText: 'Concluir',
+        // PASSO 3: A atualização SÓ acontece quando o usuário clica em "Concluir"
+        async onOk() {
+          if (onRefresh) {
+            await onRefresh();
+          }
+        },
+      });
+
     } catch (error) {
       console.error("Falha ao excluir trabalho acadêmico:", error);
       message.error("Falha ao excluir trabalho acadêmico: " + error.message);
     } finally {
-      setIsConfirmingDelete(false); // Desativa o loading
-      setIsDeleteModalVisible(false); // Fecha o modal
-      setDeleteConfirmationInput(""); // Limpa o input
-      setRecordToDelete(null); // Limpa o registro
+      // Limpa os estados, independentemente de sucesso ou falha
+      setIsConfirmingDelete(false); 
+      setDeleteConfirmationInput("");
+      setRecordToDelete(null);
     }
   };
   
-  // Função para fechar o modal ao clicar em Cancelar ou no 'X'
   const handleCancelDelete = () => {
     setIsDeleteModalVisible(false);
     setDeleteConfirmationInput("");
@@ -200,26 +205,22 @@ const TCCListTable = ({ data, loading, onRefresh, onEdit }) => {
         dataSource={filteredData}
         columns={columns}
         pagination={{ pageSize: 5 }}
-        rowKey="key"
+        rowKey={(record) => record.id} // Recomendo usar o 'id' como chave
         loading={loading}
       />
 
-      {/* --- NOSSO NOVO MODAL DE CONFIRMAÇÃO --- */}
       {recordToDelete && (
         <Modal
           title="Confirmar Exclusão"
           visible={isDeleteModalVisible}
           onOk={handleConfirmDelete}
           onCancel={handleCancelDelete}
-          // Propriedades do botão OK
           okText="Confirmar Exclusão"
           okType="danger"
           okButtonProps={{
-            // AQUI ESTÁ A MÁGICA: o botão é desabilitado se o texto não for igual
             disabled: deleteConfirmationInput !== recordToDelete.title,
             loading: isConfirmingDelete,
           }}
-          // Propriedades do botão Cancelar
           cancelText="Cancelar"
         >
           <p>

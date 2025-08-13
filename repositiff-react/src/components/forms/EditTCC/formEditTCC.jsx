@@ -3,7 +3,7 @@ import {
   Card,
   Input,
   Select,
-  DatePicker,
+  // DatePicker, // <-- MUDANÇA: Removido
   Form,
   Button,
   Upload,
@@ -15,11 +15,11 @@ import {
   DeleteOutlined,
   InboxOutlined,
   UserAddOutlined,
-  UserDeleteOutlined,
 } from "@ant-design/icons";
-import moment from "moment";
+// import moment from "moment"; // <-- MUDANÇA: Removido
 import PropTypes from "prop-types";
 import "./formEditTCC.css";
+import DatePickerEstilizado from "@/components/datepicker/DatePickerEstilizado";
 
 const { Option } = Select;
 const { Dragger } = Upload;
@@ -35,7 +35,6 @@ const FormEditTCC = ({ tccData, onClose }) => {
   const [cursos, setCursos] = useState([]);
   const [file, setFile] = useState(null);
 
-  // Popula formulário com dados iniciais e define orientadores atuais com base na ordem
   useEffect(() => {
     form.setFieldsValue({
       authors:
@@ -49,7 +48,8 @@ const FormEditTCC = ({ tccData, onClose }) => {
       cddCode: tccData.cddCode,
       cduCode: tccData.cduCode,
       idCourse: tccData.course?.id,
-      year: tccData.year ? moment(String(tccData.year), "YYYY") : null,
+      // <-- MUDANÇA: Usa new Date() para criar um objeto de data nativo
+      year: tccData.year ? new Date(tccData.year, 0) : null,
       qtdPag: tccData.pageCount || tccData.qtdPag,
       description: tccData.description,
       ilustration: tccData.ilustration,
@@ -117,7 +117,6 @@ const FormEditTCC = ({ tccData, onClose }) => {
       return sorted1.every((value, index) => value === sorted2[index]);
     };
 
-    // Compara cada campo para identificar o que foi alterado
     if (values.title !== originalData.title) {
       modifiedFields.title = values.title;
     }
@@ -133,8 +132,10 @@ const FormEditTCC = ({ tccData, onClose }) => {
     if (values.idCourse !== originalData.course?.id) {
       modifiedFields.courseId = values.idCourse;
     }
-    if (values.year?.year() !== originalData.year) {
-      modifiedFields.year = values.year.year();
+    // <-- MUDANÇA: Usa .getFullYear() para comparar o ano
+    if (values.year?.getFullYear() !== originalData.year) {
+      // <-- MUDANÇA: Usa .getFullYear() para obter o ano
+      modifiedFields.year = values.year.getFullYear();
     }
     if (Number(values.qtdPag) !== (originalData.pageCount || originalData.qtdPag)) {
       modifiedFields.pageCount = Number(values.qtdPag);
@@ -174,17 +175,12 @@ const FormEditTCC = ({ tccData, onClose }) => {
         payloadFields.authors = originalAuthors;
     }
     
-    // ================== INÍCIO DA CORREÇÃO DEFINITIVA ==================
-    // Com base no arquivo de teste do backend, sabemos que ele espera
-    // 'references' e 'keyWords' como strings JSON. Vamos converter apenas eles.
     if (payloadFields.references && Array.isArray(payloadFields.references)) {
         payloadFields.references = JSON.stringify(payloadFields.references);
     }
     if (payloadFields.keyWords && Array.isArray(payloadFields.keyWords)) {
         payloadFields.keyWords = JSON.stringify(payloadFields.keyWords);
     }
-    // 'authors' é mantido como array, pois o backend parece tratar esse campo de forma diferente.
-    // =================== FIM DA CORREÇÃO DEFINITIVA ====================
     
     const payload = {
         id: tccData.id,
@@ -274,7 +270,6 @@ const FormEditTCC = ({ tccData, onClose }) => {
 
   return (
     <Form form={form} layout="vertical" onFinish={handleSubmit}>
-      {/* Dados dos Autores */}
       <Card title="Dados dos Autores" className="mb-4">
         <Form.List name="authors" initialValue={[]}>
           {(fields, { add, remove }) => (
@@ -316,9 +311,7 @@ const FormEditTCC = ({ tccData, onClose }) => {
         </Form.List>
       </Card>
 
-      {/* Dados dos Orientadores */}
       <Card title="Dados dos Orientadores" className="mb-4">
-        {/* Seção Orientador Principal */}
         <div className="mb-3">
           <h5>Orientador Principal:</h5>
           {currentMainAdvisor ? (
@@ -356,7 +349,6 @@ const FormEditTCC = ({ tccData, onClose }) => {
           )}
         </div>
 
-        {/* Seção Co-Orientador */}
         <div className="mb-3">
           <h5>Co-Orientador:</h5>
           {currentCoAdvisor ? (
@@ -397,7 +389,6 @@ const FormEditTCC = ({ tccData, onClose }) => {
         </div>
       </Card>
 
-      {/* Dados do Trabalho */}
       <Card title="Dados do Trabalho" className="mb-4">
         <Form.Item
           name="title"
@@ -440,12 +431,13 @@ const FormEditTCC = ({ tccData, onClose }) => {
             ))}
           </Select>
         </Form.Item>
+        {/* <-- MUDANÇA: Substituição do DatePicker aqui --> */}
         <Form.Item
           name="year"
           label="Ano"
           rules={[{ required: true, message: "O ano é obrigatório" }]}
         >
-          <DatePicker picker="year" style={{ width: "100%" }} />
+          <DatePickerEstilizado showYearPicker />
         </Form.Item>
         <Form.Item
           name="qtdPag"
@@ -491,17 +483,16 @@ const FormEditTCC = ({ tccData, onClose }) => {
           </Space.Compact>
         </Form.Item>
         <Form.Item label="Palavras-chave">
-  <Space.Compact direction="vertical" style={{ width: "100%" }}>
-    {[...Array(5)].map((_, i) => (
-      <Form.Item key={i} name={["keyWords", i]} noStyle>
-        <Input placeholder={`Palavra-chave ${i + 1}`} className="mb-2" />
-      </Form.Item>
-    ))}
-  </Space.Compact>
-</Form.Item>
+          <Space.Compact direction="vertical" style={{ width: "100%" }}>
+            {[...Array(5)].map((_, i) => (
+              <Form.Item key={i} name={["keyWords", i]} noStyle>
+                <Input placeholder={`Palavra-chave ${i + 1}`} className="mb-2" />
+              </Form.Item>
+            ))}
+          </Space.Compact>
+        </Form.Item>
       </Card>
 
-      {/* Upload de Arquivos */}
       <Card title="Upload de Arquivos" className="mb-4">
         <Dragger {...uploadProps}>
           <p className="ant-upload-drag-icon">
