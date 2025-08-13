@@ -164,12 +164,25 @@ export async function academicWorkRoutes(fastify: FastifyInstance) {
     const { id } = request.params as { id: string }; // Pegando o parâmetro da URL
     try {
       await controller.download(id, res);
+      // Agora `req.body` é do tipo IRequestAcademicWorkController
+    } catch (error: any) {
+      res.code(500).send({
+        message: "Get has failed",
+        error: error.message,
+      });
+    }
+  });
+
+  fastify.delete("/:id/delete", async (request, res) => {
+    const { id } = request.params as { id: string }; // Pegando o parâmetro da URL
+    try {
+      await controller.deleteAcademicWork(id, res);
 
       // Agora `req.body` é do tipo IRequestAcademicWorkController
     } catch (error: any) {
       res.code(500).send({
         error: error.message,
-        message: "Get has failed",
+        message: "DELETE has failed",
       });
     }
   });
