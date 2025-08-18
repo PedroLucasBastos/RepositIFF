@@ -7,11 +7,10 @@ import {
   DeleteOutlined,
 } from "@ant-design/icons";
 import axios from "axios";
+import Cookies from "js-cookie";
 
-
-const LibrarianListTable = () => {
+const LibrarianListTable = ({ data, loading, onRefresh }) => {
   const [searchText, setSearchText] = useState("");
-  const [dataSource, setDataSource] = useState([]);
   const [filteredData, setFilteredData] = useState([]);
   const [selectedLibrarianId, setSelectedLibrarianId] = useState(null);
   const [librarianMatricula, setLibrarianMatricula] = useState("");
@@ -21,24 +20,18 @@ const LibrarianListTable = () => {
   const [isDetailsModalVisible, setIsDetailsModalVisible] = useState(false);
   const [isUpdateModalVisible, setIsUpdateModalVisible] = useState(false);
 
-  const fetchLibrarians = async () => {
-    try {
-      const response = await axios.get("http://localhost:3333/librarian/list");
-      const librarians = response.data.librarians.map((lib) => ({
-        key: lib._id,
-        name: lib._props.name,
-        surname: lib._props.surname,
-        registrationNumber: lib._props.registrationNumber,
-      }));
-      setDataSource(librarians);
-    } catch (error) {
-      message.error("Erro ao buscar os bibliotecários: " + error.message);
-    }
-  };
-
   useEffect(() => {
-    fetchLibrarians();
-  }, []);
+    if (searchText) {
+      const filtered = data.filter(
+        (item) =>
+          item.fullName.toLowerCase().includes(searchText.toLowerCase()) ||
+          item.registrationNumber.includes(searchText)
+      );
+      setFilteredData(filtered);
+    } else {
+      setFilteredData(data);
+    }
+  }, [searchText, data]);
 
   const handleView = (record) => {
     setSelectedLibrarianId(record.key);
@@ -83,32 +76,38 @@ const LibrarianListTable = () => {
     setMatriculaToConfirm(e.target.value);
   };
 
+  // --- FUNÇÃO DE EXCLUSÃO CORRIGIDA ---
   const handleDelete = async () => {
+    const token = Cookies.get("authToken");
+    if (!token) {
+      message.error("Autenticação necessária. Por favor, faça login novamente.");
+      return;
+    }
+
     try {
-      await axios.delete("http://localhost:3333/librarian/delete", {
-        data: { librarianIdentification: selectedLibrarianId },
+      // CORREÇÃO: O ID do bibliotecário agora é adicionado diretamente à URL
+      await axios.delete(`http://localhost:3333/librarian/delete/${selectedLibrarianId}`, {
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+        // A propriedade 'data' foi removida pois não é mais necessária
       });
 
       message.success("Bibliotecário excluído com sucesso!");
-      setConfirmDeleteVisible(false);
-      fetchLibrarians();
+      handleCancelDelete(); // Fecha todos os modais
+      onRefresh(); // Atualiza a lista na página principal
     } catch (error) {
-      message.error("Erro ao excluir o bibliotecário: " + error.message);
+      const errorMessage = error.response?.data?.message || error.message;
+      message.error(`Erro ao excluir o bibliotecário: ${errorMessage}`);
     }
   };
 
   const columns = [
     {
-      title: "Nome",
-      dataIndex: "name",
-      key: "name",
-      sorter: (a, b) => a.name.localeCompare(b.name),
-    },
-    {
-      title: "Sobrenome",
-      dataIndex: "surname",
-      key: "surname",
-      sorter: (a, b) => a.surname.localeCompare(b.surname),
+      title: "Nome Completo",
+      dataIndex: "fullName",
+      key: "fullName",
+      sorter: (a, b) => a.fullName.localeCompare(b.fullName),
     },
     {
       title: "Número de Matrícula",
@@ -148,35 +147,31 @@ const LibrarianListTable = () => {
     <div className="p-4">
       <div className="mb-4 flex items-center gap-4">
         <Input
-          placeholder="Pesquisar Bibliotecário"
+          placeholder="Pesquisar por nome ou matrícula"
           value={searchText}
           onChange={(e) => setSearchText(e.target.value)}
           className="w-full"
         />
-        <Button type="primary" icon={<SearchOutlined />}>
-          Pesquisar
-        </Button>
       </div>
 
       <Table
-        dataSource={filteredData.length > 0 ? filteredData : dataSource}
+        dataSource={filteredData}
         columns={columns}
+        loading={loading}
         pagination={{ pageSize: 5 }}
         rowKey="key"
       />
 
-      
       <Modal
         title="Deseja Deletar?"
         open={isDeleteModalVisible}
         onOk={showConfirmDeleteModal}
         onCancel={handleCancelDelete}
-        okText="Sim"
+        okText="Sim, Excluir"
         cancelText="Cancelar"
-        okButtonProps={{ className: "bg-red-500 border-none text-white" }}
-        cancelButtonProps={{ className: "bg-gray-200 border-none" }}
+        okButtonProps={{ className: "bg-red-500 border-none text-white hover:bg-red-600" }}
       >
-        <p>Você tem certeza que deseja excluir este bibliotecário?</p>
+        <p>Você tem certeza que deseja excluir o bibliotecário de matrícula <strong>{librarianMatricula}</strong>?</p>
       </Modal>
 
       <Modal
@@ -187,21 +182,19 @@ const LibrarianListTable = () => {
         okText="Confirmar Exclusão"
         cancelText="Cancelar"
         okButtonProps={{
-          className: "bg-red-500 border-none text-white",
+          className: "bg-red-500 border-none text-white hover:bg-red-600",
           disabled: matriculaToConfirm !== librarianMatricula,
         }}
-        cancelButtonProps={{ className: "bg-gray-200 border-none" }}
       >
         <p>
-          Após confirmar, esta ação não poderá ser desfeita. Para confirmar,
-          digite o número de matrícula do bibliotecário:
+          Esta ação não pode ser desfeita. Para confirmar,
+          digite o número de matrícula do bibliotecário: <strong>{librarianMatricula}</strong>
         </p>
         <Input
           value={matriculaToConfirm}
           onChange={handleMatriculaChange}
-          placeholder="Digite o número de matrícula"
+          placeholder="Digite o número de matrícula para confirmar"
         />
-        <p>Matrícula: {librarianMatricula}</p>
       </Modal>
     </div>
   );

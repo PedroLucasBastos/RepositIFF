@@ -1,45 +1,44 @@
-// src/components/dashboardCharts/CardsAdmin.jsx
-import React, { useState, useEffect } from "react";
+import React, { useEffect, useState } from "react";
 import PropTypes from "prop-types";
 import { Card } from "antd";
 import {
-  BarChart, Bar, XAxis, YAxis, Tooltip, Legend,
-  ResponsiveContainer, CartesianGrid
+  BarChart,
+  Bar,
+  XAxis,
+  YAxis,
+  Tooltip,
+  Legend,
+  ResponsiveContainer,
+  CartesianGrid,
 } from "recharts";
 
-const CardsAdmin = ({ data }) => {
-  const [totalLibs, setTotalLibs] = useState(0);
-  const [currentYearLibs, setCurrentYearLibs] = useState(0);
+const CardsAdmin = ({ librarians, courses, academicWorks }) => {
   const [chartData, setChartData] = useState([]);
 
   useEffect(() => {
-    // total no sistema
-    setTotalLibs(data.length);
-
-    // admitidos neste ano
-    const year = new Date().getFullYear();
-    const admittedThisYear = data.filter(item =>
-      new Date(item.admissionDate).getFullYear() === year
-    ).length;
-    setCurrentYearLibs(admittedThisYear);
-
-    // agrupamento por ano
+    console.log("AcademicWorks recebidos no CardsAdmin:", academicWorks);
+    // agrupa TCCs por ano
     const grouping = {};
-    data.forEach(item => {
-      const admYear = new Date(item.admissionDate).getFullYear();
-      grouping[admYear] = (grouping[admYear] || 0) + 1;
+    academicWorks.forEach((work) => {
+      const year = work.year || new Date().getFullYear();
+      grouping[year] = (grouping[year] || 0) + 1;
     });
+
     const sortedYears = Object.keys(grouping).sort();
-    const chartArr = sortedYears.map(y => ({ year: y, count: grouping[y] }));
+    const chartArr = sortedYears.map((y) => ({
+      year: y,
+      count: grouping[y],
+    }));
+
     setChartData(chartArr);
-  }, [data]);
+  }, [academicWorks]);
 
   return (
     <div className="flex justify-between mx-12 gap-12 mt-10">
-      {/* gráfico por ano */}
+      {/* Trabalhos Acadêmicos por ano */}
       <Card
         className="flex-1 bg-gray-100 border rounded-lg"
-        title={<div className="border-b pb-2">TCC's por curso</div>}
+        title={<div className="border-b pb-2">TCC's por Ano</div>}
       >
         <ResponsiveContainer width="100%" height={250}>
           <BarChart data={chartData} margin={{ top: 20, bottom: 20 }}>
@@ -48,34 +47,48 @@ const CardsAdmin = ({ data }) => {
             <YAxis allowDecimals={false} />
             <Tooltip />
             <Legend />
-            <Bar dataKey="count" name="Cursos" fill="#8884d8" />
+            <Bar dataKey="count" name="TCCs" fill="#8884d8" />
           </BarChart>
         </ResponsiveContainer>
       </Card>
 
-      {/* admitidos no ano */}
+      {/* Total Bibliotecários */}
       <Card
         className="flex-1 bg-sky-100 border-sky-300 border rounded-lg text-center flex flex-col items-center justify-center"
-        title={<div className="border-b pb-2 text-xl font-semibold">Total de bibliotecários</div>}
+        title={
+          <div className="border-b pb-2 text-xl font-semibold">
+            Total de Bibliotecários
+          </div>
+        }
       >
-        <p className="text-6xl font-extrabold text-green-500">{currentYearLibs}</p>
-        <p className="mt-2">Total de bibliotecários cadastrados</p>
+        <p className="text-6xl font-extrabold text-green-500">
+          {librarians.length}
+        </p>
+        <p className="mt-2">Cadastrados no sistema</p>
       </Card>
 
-      {/* total bibliotecários */}
+      {/* Total Cursos */}
       <Card
         className="flex-1 bg-green-100 border-green-300 border rounded-lg text-center flex flex-col items-center justify-center"
-        title={<div className="border-b pb-2 text-xl font-semibold">Cusos no Sistema</div>}
+        title={
+          <div className="border-b pb-2 text-xl font-semibold">
+            Cursos no Sistema
+          </div>
+        }
       >
-        <p className="text-6xl font-extrabold text-blue-500">{totalLibs}</p>
-        <p className="mt-2">Total de curso cadastrados</p>
+        <p className="text-6xl font-extrabold text-blue-500">
+          {courses.length}
+        </p>
+        <p className="mt-2">Total cadastrados</p>
       </Card>
     </div>
   );
 };
 
 CardsAdmin.propTypes = {
-  data: PropTypes.array.isRequired,
+  librarians: PropTypes.array.isRequired,
+  courses: PropTypes.array.isRequired,
+  academicWorks: PropTypes.array.isRequired,
 };
 
 export default CardsAdmin;
