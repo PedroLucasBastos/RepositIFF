@@ -19,6 +19,20 @@ const CourseTable = () => {
   const [courseCode, setCourseCode] = useState("");
   const [codeToConfirm, setCodeToConfirm] = useState("");
 
+  useEffect(() => {
+    if (!searchText) {
+      setFilteredData(dataSource);
+      return;
+    }
+    const filtered = dataSource.filter(
+      (course) =>
+        course.name.toLowerCase().includes(searchText.toLowerCase()) ||
+        course.courseCode.toLowerCase().includes(searchText.toLowerCase())
+    );
+    setFilteredData(filtered);
+  }, [searchText, dataSource]);
+  // ==================================================================
+
   const fetchCourses = async () => {
     try {
       const response = await axios.get("http://localhost:3333/course/list");
@@ -37,6 +51,8 @@ const CourseTable = () => {
   useEffect(() => {
     fetchCourses();
   }, []);
+
+  // ... (Restante do seu código: showEditModal, handleDelete, etc. continua igual)
 
   const showEditModal = (courseId) => {
     setSelectedCourseId(courseId);
@@ -74,12 +90,13 @@ const CourseTable = () => {
       });
 
       message.success("Curso excluído com sucesso!");
-      setConfirmDeleteVisible(false);
-      fetchCourses();
+      handleCancelDelete(); // Fecha os modais
+      fetchCourses(); // Recarrega os cursos
     } catch (error) {
       message.error("Erro ao excluir o curso: " + error.message);
     }
   };
+
   const degreeTypeMapping = {
     BACHELOR: "Bacharelado",
     LICENTIATE: "Licenciatura",
@@ -102,7 +119,7 @@ const CourseTable = () => {
       title: "Tipo de Grau",
       dataIndex: "degreeType",
       key: "degreeType",
-      render: (text) => degreeTypeMapping[text] || text, // Converte ou mantém o original se não estiver no mapeamento
+      render: (text) => degreeTypeMapping[text] || text,
     },
     {
       title: "Ações",
@@ -130,7 +147,7 @@ const CourseTable = () => {
     <div className="p-4">
       <div className="mb-4 flex items-center gap-4">
         <Input
-          placeholder="Pesquisar Curso"
+          placeholder="Pesquisar por nome ou código do curso"
           value={searchText}
           onChange={(e) => setSearchText(e.target.value)}
           className="w-full"
@@ -141,7 +158,8 @@ const CourseTable = () => {
       </div>
 
       <Table
-        dataSource={filteredData.length > 0 ? filteredData : dataSource}
+        // ✅ ATUALIZAÇÃO FINAL: A tabela agora usa APENAS a lista filtrada
+        dataSource={filteredData}
         columns={columns}
         pagination={{ pageSize: 5 }}
         rowKey="key"

@@ -3,11 +3,10 @@ import { Form, Input, Button, message, Select } from "antd";
 import axios from "axios";
 import PropTypes from "prop-types";
 
-const RegisterCourse = ({ handleCancel }) => {
+// Recebe a nova prop 'onCourseRegistered'
+const RegisterCourse = ({ handleCancel, onCourseRegistered }) => {
   const [loading, setLoading] = useState(false);
   const [form] = Form.useForm();
-
-  // Estado para armazenar os erros do backend
   const [backendErrors, setBackendErrors] = useState({
     name: "",
     courseCode: "",
@@ -16,76 +15,47 @@ const RegisterCourse = ({ handleCancel }) => {
 
   const onFinish = async (values) => {
     setLoading(true);
-    setBackendErrors({ name: "", courseCode: "", degreeType: "" }); // Limpa erros antigos antes de cada requisição
-
-    const emptyFields = Object.entries(values).filter(([key, value]) => !value);
-    if (emptyFields.length > 0) {
-      message.error("Por favor, preencha todos os campos.");
-      const firstEmptyField = emptyFields[0][0];
-      form.scrollToField(firstEmptyField, {
-        behavior: "smooth",
-        block: "center",
-      });
-      setLoading(false);
-      return;
-    }
-    console.log("Dados que serão enviados:", values); // Exibe os dados no console
+    setBackendErrors({ name: "", courseCode: "", degreeType: "" });
 
     try {
+      // **IMPORTANTE**: Verifique se esta é a sua URL de cadastro correta
       await axios.post("http://localhost:3333/course/register", values);
       message.success("Curso cadastrado com sucesso!");
-      form.resetFields(); // Limpa os campos do formulário
+
+      // AQUI A MÁGICA ACONTECE!
+      // Avisa o componente pai que um novo curso foi registrado
+      onCourseRegistered();
+
+      form.resetFields();
       handleCancel(); // Fecha o modal
     } catch (error) {
       console.error(error);
       if (error.response && error.response.data) {
-        const { message } = error.response.data;
-        const { statusCode } = error.response.data;
+        const { message, statusCode } = error.response.data;
 
-        // Erro no nome do curso
         if (message === "Course name already in use") {
-          setBackendErrors({
-            name: "Nome do curso já cadastrado. Tente outro nome.",
-            courseCode: "", // Garante que código do curso não receba erro neste caso
-            degreeType: "", // Garante que tipo de grau não receba erro neste caso
-          });
-          form.scrollToField("name", { behavior: "smooth", block: "center" });
+          setBackendErrors({ name: "Nome do curso já cadastrado.", courseCode: "", degreeType: "" });
+          form.scrollToField("name");
+        } else if (statusCode === 400) {
+          setBackendErrors({ name: "", courseCode: "Código do curso já cadastrado.", degreeType: "" });
+          form.scrollToField("courseCode");
+        } else {
+           message.error("Erro ao cadastrar o curso. Tente novamente.");
         }
-
-        // Erro no código do curso
-        if (statusCode === 400) {
-          setBackendErrors({
-            name: "", // Garante que nome do curso não receba erro neste caso
-            courseCode:
-              "Código do curso já cadastrado. Verifique e tente novamente.",
-            degreeType: "", // Garante que tipo de grau não receba erro neste caso
-          });
-          form.scrollToField("courseCode", {
-            behavior: "smooth",
-            block: "center",
-          });
-        }
+      } else {
+        message.error("Erro ao conectar com o servidor. Tente novamente.");
       }
-      message.error("Erro ao cadastrar o curso. Tente novamente.");
     } finally {
       setLoading(false);
     }
   };
 
   return (
-    <Form
-      form={form}
-      layout="vertical"
-      onFinish={onFinish}
-      autoComplete="off"
-      className="space-y-4"
-    >
+    <Form form={form} layout="vertical" onFinish={onFinish} autoComplete="off">
       <Form.Item
         label="Nome do Curso"
         name="name"
-        rules={[
-          { required: true, message: "Por favor, insira o nome do curso!" },
-        ]}
+        rules={[{ required: true, message: "Por favor, insira o nome do curso!" }]}
         help={backendErrors.name}
         validateStatus={backendErrors.name ? "error" : ""}
       >
@@ -95,9 +65,7 @@ const RegisterCourse = ({ handleCancel }) => {
       <Form.Item
         label="Código do Curso"
         name="courseCode"
-        rules={[
-          { required: true, message: "Por favor, insira o código do curso!" },
-        ]}
+        rules={[{ required: true, message: "Por favor, insira o código do curso!" }]}
         help={backendErrors.courseCode}
         validateStatus={backendErrors.courseCode ? "error" : ""}
       >
@@ -107,9 +75,7 @@ const RegisterCourse = ({ handleCancel }) => {
       <Form.Item
         label="Tipo de Grau"
         name="degreeType"
-        rules={[
-          { required: true, message: "Por favor, insira o tipo de grau!" },
-        ]}
+        rules={[{ required: true, message: "Por favor, insira o tipo de grau!" }]}
         help={backendErrors.degreeType}
         validateStatus={backendErrors.degreeType ? "error" : ""}
       >
@@ -119,15 +85,10 @@ const RegisterCourse = ({ handleCancel }) => {
         </Select>
       </Form.Item>
 
-      <div className="flex justify-between">
+      <div className="flex justify-end space-x-4 mt-6">
         <Button
           type="default"
-          onClick={() => {
-            form.resetFields();
-            setBackendErrors({ name: "", courseCode: "", degreeType: "" });
-            handleCancel();
-          }}
-          className="bg-gray-200 hover:bg-gray-300"
+          onClick={handleCancel}
         >
           Cancelar
         </Button>
@@ -135,7 +96,6 @@ const RegisterCourse = ({ handleCancel }) => {
           type="primary"
           htmlType="submit"
           loading={loading}
-          className="bg-blue-500 hover:bg-blue-600 text-white"
         >
           Cadastrar
         </Button>
@@ -146,6 +106,7 @@ const RegisterCourse = ({ handleCancel }) => {
 
 RegisterCourse.propTypes = {
   handleCancel: PropTypes.func.isRequired,
+  onCourseRegistered: PropTypes.func.isRequired, // Adiciona a nova prop
 };
 
 export default RegisterCourse;
