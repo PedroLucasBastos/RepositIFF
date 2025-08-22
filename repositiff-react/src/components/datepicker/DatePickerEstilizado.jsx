@@ -18,6 +18,7 @@ const DatePickerEstilizado = ({ value, onChange, showYearPicker = false }) => {
         showYearPicker={showYearPicker}
         className="input-estilo-antd"
         placeholderText={showYearPicker ? "Selecione um ano" : "Selecione uma data"}
+        maxDate={new Date()}
       />
     </div>
   );

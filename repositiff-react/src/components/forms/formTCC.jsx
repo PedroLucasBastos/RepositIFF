@@ -3,7 +3,6 @@ import {
   Card,
   Input,
   Select,
-  DatePicker,
   Form,
   Button,
   Upload,
@@ -147,6 +146,26 @@ const FormTCC = ({ onClose }) => {
       setFile(null);
     },
   };
+
+const validateReferencePage = () => ({
+    validator(_, value) {
+      // Pega o número total de páginas USANDO A INSTÂNCIA DO FORM
+      const totalPages = form.getFieldValue('qtdPag');
+      
+      if (!value || !totalPages) {
+        return Promise.resolve();
+      }
+
+      const pageNumber = parseInt(value, 10);
+      const totalPagesNumber = parseInt(totalPages, 10);
+
+      if (pageNumber > totalPagesNumber) {
+        return Promise.reject(new Error(`A pág. não pode ser > ${totalPagesNumber}!`));
+      }
+
+      return Promise.resolve();
+    },
+  });
 
   return (
     <div>
@@ -324,21 +343,29 @@ const FormTCC = ({ onClose }) => {
             </Select>
           </Form.Item>
 
-          <Form.Item label="Referências" name="references">
+          <Form.Item label="Referências">
             <Input.Group compact>
               <Form.Item
                 name={["references", 0]}
                 noStyle
-                rules={[{ required: true, message: "Obrigatório" }]}
+                dependencies={['qtdPag']} // Garante a revalidação automática
+                rules={[
+                  { required: true, message: "Obrigatório" },
+                  validateReferencePage, // Aplica a nova regra
+                ]}
               >
-                <Input style={{ width: "50%" }} placeholder="De" />
+                <Input style={{ width: "50%" }} placeholder="Página inicial" type="number" />
               </Form.Item>
               <Form.Item
                 name={["references", 1]}
                 noStyle
-                rules={[{ required: true, message: "Obrigatório" }]}
+                dependencies={['qtdPag']} // Garante a revalidação automática
+                rules={[
+                  { required: true, message: "Obrigatório" },
+                  validateReferencePage, // Aplica a nova regra
+                ]}
               >
-                <Input style={{ width: "50%" }} placeholder="Até" />
+                <Input style={{ width: "50%" }} placeholder="Página final" type="number" />
               </Form.Item>
             </Input.Group>
           </Form.Item>
