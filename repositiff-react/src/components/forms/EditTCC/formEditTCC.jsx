@@ -224,12 +224,29 @@ const FormEditTCC = ({ tccData, onClose }) => {
       const addResp = await fetch("http://localhost:3333/academicWork/addAdvisor", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ academicWorkId: tccData.id, advisorId: advisorId }),
+        body: JSON.stringify({ academicWorkId: tccData.id, advisorId: advisorId}),
       });
       if (!addResp.ok) throw new Error("Erro ao associar orientador.");
 
+      const addedAdvisor = orientadores.find(o => o._id === advisorId);
+    if (addedAdvisor) {
+      if (isMainRole) {
+        setCurrentMainAdvisor({
+          id: addedAdvisor._id,
+          name: addedAdvisor._props.name,
+          surname: addedAdvisor._props.surname,
+        });
+      } else {
+        setCurrentCoAdvisor({
+          id: addedAdvisor._id,
+          name: addedAdvisor._props.name,
+          surname: addedAdvisor._props.surname,
+        });
+      }
+    }
+
       message.success(`Orientador adicionado com sucesso!`);
-      onClose();
+      
     } catch (error) {
       console.error("Erro ao adicionar orientador:", error);
       message.error(error.message || "Falha ao adicionar orientador.");
@@ -237,6 +254,11 @@ const FormEditTCC = ({ tccData, onClose }) => {
   };
 
   const handleRemoveAdvisorRole = async (advisorId) => {
+    console.log("--- DEBUG: REMOVENDO ORIENTADOR ---");
+  console.log("ID enviado pelo clique:", advisorId);
+  console.log("ID do Orientador Principal (antes):", currentMainAdvisor?.id);
+  console.log("ID do Co-Orientador (antes):", currentCoAdvisor?.id);
+  console.log("------------------------------------");
     try {
       const removeResp = await fetch("http://localhost:3333/academicWork/deleteAdvisor", {
         method: "POST",
@@ -247,11 +269,14 @@ const FormEditTCC = ({ tccData, onClose }) => {
 
       message.success("Orientador removido com sucesso!");
       if (currentMainAdvisor && currentMainAdvisor.id === advisorId) {
-        setCurrentMainAdvisor(null);
-      } else if (currentCoAdvisor && currentCoAdvisor.id === advisorId) {
-        setCurrentCoAdvisor(null);
-      }
-      onClose();
+      setCurrentMainAdvisor(null);
+    } 
+    
+    // Verifica se o ID removido corresponde ao co-orientador
+    if (currentCoAdvisor && currentCoAdvisor.id === advisorId) {
+      setCurrentCoAdvisor(null);
+    }
+      
     } catch (error) {
       console.error("Erro ao remover orientador:", error);
       message.error(error.message || "Falha ao remover orientador.");
