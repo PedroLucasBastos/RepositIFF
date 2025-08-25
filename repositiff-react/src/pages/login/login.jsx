@@ -5,11 +5,14 @@ import axios from "axios"; // Importar axios
 import animationData from "../../assets/lotties/animacaoLogin.json";
 import { Alert } from "antd";
 import { useNavigate } from "react-router-dom";
+import { EyeInvisibleOutlined, EyeOutlined } from "@ant-design/icons";
 
 function Login() {
   const [message, setMessage] = useState("");
   const [errorMessage, setErrorMessage] = useState("");
   const navigate = useNavigate();
+  const [passwordVisible, setPasswordVisible] = useState(false);
+
 
   const handleFormSubmit = async (e) => {
     e.preventDefault();
@@ -134,13 +137,20 @@ function Login() {
                     Esqueceu a Senha?
                   </a>
                 </div>
+                <div className="relative">
                 <input
-                  type="password"
-                  name="password"
-                  id="password"
-                  placeholder="Digite sua senha"
-                  className="w-full px-4 py-3 border rounded-md text-gray-700 dark:text-gray-800 bg-gray-100 dark:bg-gray-700 dark:border-gray-600 focus:outline-none focus:ring-2 focus:ring-iffEscuro"
+                    // O tipo muda com base no estado
+                    type={passwordVisible ? "text" : "password"}
+                    name="password"
+                    id="password"
+                    placeholder="Digite sua senha"
+                    // Adicionado padding à direita (pr-10) para o ícone não cobrir o texto
+                    className="w-full px-4 py-3 pr-10 border rounded-md text-gray-700 dark:text-gray-800 bg-gray-100 dark:bg-gray-700 dark:border-gray-600 focus:outline-none focus:ring-2 focus:ring-iffEscuro"
                 />
+                <div className="absolute inset-y-0 right-0 flex items-center pr-3 cursor-pointer" onClick={() => setPasswordVisible(!passwordVisible)}>
+                  {passwordVisible ? <EyeOutlined /> : <EyeInvisibleOutlined />}
+                </div>
+              </div>
               </div>
             </div>
             <div className="mt-8">
@@ -148,7 +158,7 @@ function Login() {
                 type="submit"
                 className="w-full py-3 px-6 font-semibold rounded-md bg-botaoIFF text-white hover:bg-green-500"
               >
-                Sign in
+                Entrar
               </button>
             </div>
           </form>

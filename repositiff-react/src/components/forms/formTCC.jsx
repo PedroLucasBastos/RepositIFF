@@ -3,16 +3,16 @@ import {
   Card,
   Input,
   Select,
-  DatePicker,
   Form,
   Button,
   Upload,
   message,
 } from "antd";
 import { PlusOutlined, DeleteOutlined, InboxOutlined } from "@ant-design/icons";
-import moment from "moment";
+//import moment from "moment";
 import "./formTCC.css";
 import PropTypes from "prop-types";
+import DatePickerEstilizado from "../datepicker/DatePickerEstilizado";
 
 const { Option } = Select;
 const { Dragger } = Upload;
@@ -24,6 +24,9 @@ const FormTCC = ({ onClose }) => {
   const [selectedCoadvisor, setSelectedCoadvisor] = useState();
   const [file, setFile] = useState(null);
   const [cursos, setCursos] = useState([]);
+  const workTypes = [
+  "Undergraduate thesis"             // Artigo
+];
 
   // Busca os orientadores na API e extrai o array "Advisors"
   useEffect(() => {
@@ -75,7 +78,7 @@ const FormTCC = ({ onClose }) => {
     formData.append("typeWork", values.typeWork);
     formData.append("cddCode", values.cddCode);
     formData.append("cduCode", values.cduCode);
-    formData.append("year", values.year.year());
+    formData.append("year", values.year.getFullYear());
     formData.append("qtdPag", values.qtdPag);
     formData.append("description", values.description);
     formData.append("idCourse", values.idCourse);
@@ -143,6 +146,26 @@ const FormTCC = ({ onClose }) => {
       setFile(null);
     },
   };
+
+const validateReferencePage = () => ({
+    validator(_, value) {
+      // Pega o número total de páginas USANDO A INSTÂNCIA DO FORM
+      const totalPages = form.getFieldValue('qtdPag');
+      
+      if (!value || !totalPages) {
+        return Promise.resolve();
+      }
+
+      const pageNumber = parseInt(value, 10);
+      const totalPagesNumber = parseInt(totalPages, 10);
+
+      if (pageNumber > totalPagesNumber) {
+        return Promise.reject(new Error(`A pág. não pode ser > ${totalPagesNumber}!`));
+      }
+
+      return Promise.resolve();
+    },
+  });
 
   return (
     <div>
@@ -242,8 +265,16 @@ const FormTCC = ({ onClose }) => {
             label="Tipo"
             name="typeWork"
             rules={[{ required: true, message: "Obrigatório" }]}
+            initialValue="Undergraduate thesis"
           >
-            <Input placeholder="Ex: Undergraduate thesis" />
+            <Select placeholder="Selecione o tipo de trabalho">
+            
+            {workTypes.map(type => (
+              <Option key={type} value={type}>
+                {type}
+              </Option>
+            ))}
+          </Select>
           </Form.Item>
 
           <Form.Item
@@ -276,12 +307,12 @@ const FormTCC = ({ onClose }) => {
             </Select>
           </Form.Item>
 
-          <Form.Item
+         <Form.Item
             label="Ano"
             name="year"
             rules={[{ required: true, message: "Obrigatório" }]}
           >
-            <DatePicker picker="year" style={{ width: "100%" }} />
+            <DatePickerEstilizado showYearPicker />
           </Form.Item>
 
           <Form.Item
@@ -312,21 +343,29 @@ const FormTCC = ({ onClose }) => {
             </Select>
           </Form.Item>
 
-          <Form.Item label="Referências" name="references">
+          <Form.Item label="Referências">
             <Input.Group compact>
               <Form.Item
                 name={["references", 0]}
                 noStyle
-                rules={[{ required: true, message: "Obrigatório" }]}
+                dependencies={['qtdPag']} // Garante a revalidação automática
+                rules={[
+                  { required: true, message: "Obrigatório" },
+                  validateReferencePage, // Aplica a nova regra
+                ]}
               >
-                <Input style={{ width: "50%" }} placeholder="De" />
+                <Input style={{ width: "50%" }} placeholder="Página inicial" type="number" />
               </Form.Item>
               <Form.Item
                 name={["references", 1]}
                 noStyle
-                rules={[{ required: true, message: "Obrigatório" }]}
+                dependencies={['qtdPag']} // Garante a revalidação automática
+                rules={[
+                  { required: true, message: "Obrigatório" },
+                  validateReferencePage, // Aplica a nova regra
+                ]}
               >
-                <Input style={{ width: "50%" }} placeholder="Até" />
+                <Input style={{ width: "50%" }} placeholder="Página final" type="number" />
               </Form.Item>
             </Input.Group>
           </Form.Item>

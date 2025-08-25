@@ -1,0 +1,78 @@
+/* === Estilos para o Input (wrapper) === */
+
+/* Define a aparência base do input, imitando o Ant Design */
+.datepicker-wrapper .input-estilo-antd {
+  width: 100%;
+  padding: 8px 11px;
+  font-size: 14px;
+  line-height: 1.5715;
+  border: 1px solid #d9d9d9;
+  border-radius: 6px;
+  transition: all 0.2s;
+  outline: none;
+  background-color: #fff;
+}
+
+/* Garante que o container ocupe 100% da largura */
+.datepicker-wrapper {
+  width: 100%;
+}
+
+
+/* === Personalização das Cores para Verde === */
+
+/* Borda do campo no estado normal, de foco e hover */
+.datepicker-wrapper .input-estilo-antd {
+  border-color: #52c41a; /* Borda verde (cor de sucesso do AntD) */
+}
+
+.datepicker-wrapper .input-estilo-antd:focus {
+  border-color: #52c41a; 
+  box-shadow: 0 0 0 2px rgba(82, 196, 26, 0.2); /* Sombra de foco verde */
+}
+
+.datepicker-wrapper .input-estilo-antd:hover {
+  border-color: #52c41a;
+}
+
+
+/* === Estilos para o Calendário Pop-up === */
+
+/* Cor do header do calendário (onde fica o mês e ano) */
+.react-datepicker__header {
+  background-color: #f6ffed; /* Verde bem clarinho */
+  border-bottom: 1px solid #f0f0f0;
+}
+
+/* Cor do dia/mês/ano atualmente selecionado */
+.react-datepicker__day--selected,
+.react-datepicker__month-text--selected,
+.react-datepicker__quarter-text--selected,
+.react-datepicker__year-text--selected {
+  background-color: #52c41a; /* Verde principal */
+  color: white; /* Texto branco para contraste */
+}
+
+/* Cor ao passar o mouse sobre o item já selecionado */
+.react-datepicker__day--selected:hover,
+.react-datepicker__month-text--selected:hover,
+.react-datepicker__quarter-text--selected:hover,
+.react-datepicker__year-text--selected:hover {
+  background-color: #389e0d; /* Verde um pouco mais escuro */
+}
+
+/* Cor ao passar o mouse sobre um item selecionável */
+.react-datepicker__day:hover,
+.react-datepicker__month-text:hover,
+.react-datepicker__quarter-text:hover,
+.react-datepicker__year-text:hover {
+  background-color: #f6ffed; /* Verde bem clarinho */
+}
+
+/* Remove o arredondamento do hover para um visual mais quadrado */
+.react-datepicker__day:hover,
+.react-datepicker__month-text:hover,
+.react-datepicker__quarter-text:hover,
+.react-datepicker__year-text:hover {
+    border-radius: 0.3rem;
+}

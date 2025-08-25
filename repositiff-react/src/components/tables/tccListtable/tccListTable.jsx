@@ -7,13 +7,16 @@ import {
   DeleteOutlined,
 } from "@ant-design/icons";
 
-const { confirm } = Modal;
 
-// A tabela agora recebe 'data', 'loading', 'onRefresh' E 'onEdit' como props
-const TCCListTable = ({ data, loading, onRefresh, onEdit }) => { // Adicione onEdit aqui
+const TCCListTable = ({ data, loading, onRefresh, onEdit }) => {
   const [searchText, setSearchText] = useState("");
   const [dataSource, setDataSource] = useState(data);
   const [filteredData, setFilteredData] = useState(data);
+
+  const [isDeleteModalVisible, setIsDeleteModalVisible] = useState(false);
+  const [recordToDelete, setRecordToDelete] = useState(null);
+  const [deleteConfirmationInput, setDeleteConfirmationInput] = useState("");
+  const [isConfirmingDelete, setIsConfirmingDelete] = useState(false);
 
   useEffect(() => {
     setDataSource(data);
@@ -60,50 +63,72 @@ const TCCListTable = ({ data, loading, onRefresh, onEdit }) => { // Adicione onE
     });
   };
 
-  // Função para editar o TCC
   const handleEdit = (record) => {
-    // Ao invés de apenas logar ou mostrar uma mensagem, chame a prop onEdit
     if (onEdit) {
-      onEdit(record); // Chama a função onEdit do componente pai, passando o registro completo
+      onEdit(record);
     }
   };
 
   const handleDelete = (record) => {
-    confirm({
-      title: `Tem certeza que deseja excluir o TCC "${record.title}"?`,
-      icon: <DeleteOutlined />,
-      content: "Esta ação não pode ser desfeita.",
-      okText: "Sim",
-      okType: "danger",
-      cancelText: "Não",
-      async onOk() {
-        try {
-          const response = await fetch(
-            `http://localhost:3333/academicWork/${record.id}`,
-            {
-              method: "DELETE",
-            }
-          );
-          if (!response.ok) {
-            const errorText = await response.text();
-            throw new Error(`Erro ao excluir trabalho: ${errorText || response.statusText}`);
-          }
-          message.success("TCC excluído com sucesso!");
-          if (onRefresh) {
-            onRefresh();
-          }
-        } catch (error) {
-          console.error("Falha ao excluir trabalho acadêmico:", error);
-          message.error("Falha ao excluir trabalho acadêmico: " + error.message);
+    setRecordToDelete(record);
+    setIsDeleteModalVisible(true);
+  };
+
+  // --- 👇 FUNÇÃO DE CONFIRMAÇÃO COM A NOVA LÓGICA DO MODAL DE SUCESSO 👇 ---
+  const handleConfirmDelete = async () => {
+    if (!recordToDelete) return;
+
+    setIsConfirmingDelete(true);
+    try {
+      const response = await fetch(
+        `http://localhost:3333/academicWork/${recordToDelete.id}/delete`,
+        {
+          method: "DELETE",
         }
-      },
-      onCancel() {
-        message.info("Exclusão cancelada.");
-      },
-    });
+      );
+      
+      const result = await response.json(); 
+
+      if (!response.ok || !result.isRight) {
+        const errorMessage = result.Message || `Erro ao excluir trabalho.`;
+        throw new Error(errorMessage);
+      }
+      
+      // PASSO 1: Fecha o modal de confirmação
+      setIsDeleteModalVisible(false);
+
+      // PASSO 2: Mostra o modal de sucesso estático do Ant Design
+      Modal.success({
+        title: 'Excluído com Sucesso!',
+        content: result.Message || 'O trabalho acadêmico foi removido.',
+        okText: 'Concluir',
+        // PASSO 3: A atualização SÓ acontece quando o usuário clica em "Concluir"
+        async onOk() {
+          if (onRefresh) {
+            await onRefresh();
+          }
+        },
+      });
+
+    } catch (error) {
+      console.error("Falha ao excluir trabalho acadêmico:", error);
+      message.error("Falha ao excluir trabalho acadêmico: " + error.message);
+    } finally {
+      // Limpa os estados, independentemente de sucesso ou falha
+      setIsConfirmingDelete(false); 
+      setDeleteConfirmationInput("");
+      setRecordToDelete(null);
+    }
+  };
+  
+  const handleCancelDelete = () => {
+    setIsDeleteModalVisible(false);
+    setDeleteConfirmationInput("");
+    setRecordToDelete(null);
   };
 
   const columns = [
+    // ... (suas colunas continuam as mesmas)
     {
       title: "Título",
       dataIndex: "title",
@@ -148,7 +173,7 @@ const TCCListTable = ({ data, loading, onRefresh, onEdit }) => { // Adicione onE
           <Tooltip title="Editar">
             <EditOutlined
               style={{ color: "#52c41a", cursor: "pointer" }}
-              onClick={() => handleEdit(record)} // Isso chamará a prop onEdit do pai
+              onClick={() => handleEdit(record)}
             />
           </Tooltip>
           <Tooltip title="Apagar">
@@ -180,9 +205,37 @@ const TCCListTable = ({ data, loading, onRefresh, onEdit }) => { // Adicione onE
         dataSource={filteredData}
         columns={columns}
         pagination={{ pageSize: 5 }}
-        rowKey="key"
+        rowKey={(record) => record.id} // Recomendo usar o 'id' como chave
         loading={loading}
       />
+
+      {recordToDelete && (
+        <Modal
+          title="Confirmar Exclusão"
+          visible={isDeleteModalVisible}
+          onOk={handleConfirmDelete}
+          onCancel={handleCancelDelete}
+          okText="Confirmar Exclusão"
+          okType="danger"
+          okButtonProps={{
+            disabled: deleteConfirmationInput !== recordToDelete.title,
+            loading: isConfirmingDelete,
+          }}
+          cancelText="Cancelar"
+        >
+          <p>
+            Para confirmar a exclusão, por favor, digite o título completo do trabalho no campo abaixo:
+          </p>
+          <p>
+            <strong>{recordToDelete.title}</strong>
+          </p>
+          <Input
+            placeholder="Digite o título aqui"
+            value={deleteConfirmationInput}
+            onChange={(e) => setDeleteConfirmationInput(e.target.value)}
+          />
+        </Modal>
+      )}
     </div>
   );
 };

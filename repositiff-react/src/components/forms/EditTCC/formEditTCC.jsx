@@ -3,7 +3,7 @@ import {
   Card,
   Input,
   Select,
-  DatePicker,
+  // DatePicker, // <-- MUDANÇA: Removido
   Form,
   Button,
   Upload,
@@ -15,11 +15,11 @@ import {
   DeleteOutlined,
   InboxOutlined,
   UserAddOutlined,
-  UserDeleteOutlined,
 } from "@ant-design/icons";
-import moment from "moment";
+// import moment from "moment"; // <-- MUDANÇA: Removido
 import PropTypes from "prop-types";
 import "./formEditTCC.css";
+import DatePickerEstilizado from "@/components/datepicker/DatePickerEstilizado";
 
 const { Option } = Select;
 const { Dragger } = Upload;
@@ -27,15 +27,14 @@ const { Dragger } = Upload;
 const FormEditTCC = ({ tccData, onClose }) => {
   const [form] = Form.useForm();
   const [orientadores, setOrientadores] = useState([]);
-  const [currentMainAdvisor, setCurrentMainAdvisor] = useState(null); // Objeto do orientador principal atual (baseado na ordem)
-  const [currentCoAdvisor, setCurrentCoAdvisor] = useState(null); // Objeto do co-orientador atual (baseado na ordem)
-  const [availableAdvisors, setAvailableAdvisors] = useState([]); // Orientadores que podem ser selecionados
-  const [selectedAdvisorForDropdown, setSelectedAdvisorForDropdown] = useState(null); // Seleção para adicionar principal
-  const [selectedCoadvisorForDropdown, setSelectedCoadvisorForDropdown] = useState(null); // Seleção para adicionar co-orientador
+  const [currentMainAdvisor, setCurrentMainAdvisor] = useState(null);
+  const [currentCoAdvisor, setCurrentCoAdvisor] = useState(null);
+  const [availableAdvisors, setAvailableAdvisors] = useState([]);
+  const [selectedAdvisorForDropdown, setSelectedAdvisorForDropdown] = useState(null);
+  const [selectedCoadvisorForDropdown, setSelectedCoadvisorForDropdown] = useState(null);
   const [cursos, setCursos] = useState([]);
   const [file, setFile] = useState(null);
 
-  // Popula formulário com dados iniciais e define orientadores atuais com base na ordem
   useEffect(() => {
     form.setFieldsValue({
       authors:
@@ -45,11 +44,12 @@ const FormEditTCC = ({ tccData, onClose }) => {
           ? tccData.authors.map((nome) => ({ nome }))
           : [],
       title: tccData.title,
-      typeWork: String(tccData.workType || tccData.typeWork || ''), 
+      typeWork: String(tccData.workType || tccData.typeWork || ""),
       cddCode: tccData.cddCode,
       cduCode: tccData.cduCode,
       idCourse: tccData.course?.id,
-      year: tccData.year ? moment(tccData.year, "YYYY") : null,
+      // <-- MUDANÇA: Usa new Date() para criar um objeto de data nativo
+      year: tccData.year ? new Date(tccData.year, 0) : null,
       qtdPag: tccData.pageCount || tccData.qtdPag,
       description: tccData.description,
       ilustration: tccData.ilustration,
@@ -57,21 +57,18 @@ const FormEditTCC = ({ tccData, onClose }) => {
       keyWords: tccData.keyWords || [],
     });
 
-    // Popula currentMainAdvisor e currentCoAdvisor a partir de tccData.advisors (agora pela ordem)
     let main = null;
     let co = null;
     if (Array.isArray(tccData.advisors) && tccData.advisors.length > 0) {
-      main = tccData.advisors[0]; // O primeiro da lista é o principal
+      main = tccData.advisors[0];
       if (tccData.advisors.length > 1) {
-        co = tccData.advisors[1]; // O segundo da lista é o co-orientador
+        co = tccData.advisors[1];
       }
     }
     setCurrentMainAdvisor(main || null);
     setCurrentCoAdvisor(co || null);
-
   }, [tccData, form]);
 
-  // Busca listas de todos os orientadores e cursos
   useEffect(() => {
     async function loadLists() {
       try {
@@ -81,7 +78,7 @@ const FormEditTCC = ({ tccData, onClose }) => {
         ]);
         const aJson = await aRes.json();
         const cJson = await cRes.json();
-        setOrientadores(aJson.Advisors || []); // Lista completa de todos os orientadores
+        setOrientadores(aJson.Advisors || []);
         setCursos(cJson.Courses || []);
       } catch (err) {
         console.error(err);
@@ -91,17 +88,13 @@ const FormEditTCC = ({ tccData, onClose }) => {
     loadLists();
   }, []);
 
-  // Filtra os orientadores disponíveis para seleção
   useEffect(() => {
     const assignedAdvisorIds = [];
     if (currentMainAdvisor) assignedAdvisorIds.push(currentMainAdvisor.id);
     if (currentCoAdvisor) assignedAdvisorIds.push(currentCoAdvisor.id);
 
-    const filtered = orientadores.filter(
-      (o) => !assignedAdvisorIds.includes(o._id)
-    );
+    const filtered = orientadores.filter((o) => !assignedAdvisorIds.includes(o._id));
     setAvailableAdvisors(filtered);
-    // Limpa a seleção se os orientadores atuais mudarem
     setSelectedAdvisorForDropdown(null);
     setSelectedCoadvisorForDropdown(null);
   }, [orientadores, currentMainAdvisor, currentCoAdvisor]);
@@ -113,37 +106,100 @@ const FormEditTCC = ({ tccData, onClose }) => {
       return;
     }
 
-    const typeWorkValue = form.getFieldValue('typeWork');
-    const typeWorkAsString = String(typeWorkValue || '');
+    const modifiedFields = {};
+    const originalData = tccData;
 
-    const payload = {
-      id: tccData.id,
-      fields: {
-        authors: JSON.stringify(values.authors.map(a => a.nome.trim())),
-        title: values.title,
-        typeWork: typeWorkAsString,
-        year: values.year.year(),
-        qtdPag: parsedQtdPag,
-        description: values.description,
-        courseId: values.idCourse,
-        keyWords: JSON.stringify(values.keyWords.filter(kw => kw && kw.trim())),
-        ilustration: values.ilustration,
-        references: JSON.stringify(values.references.map(Number)),
-        cduCode: values.cduCode,
-        cddCode: values.cddCode,
-      }
+    const areSimpleArraysEqual = (arr1, arr2) => {
+      if (!arr1 || !arr2) return arr1 === arr2;
+      if (arr1.length !== arr2.length) return false;
+      const sorted1 = [...arr1].sort();
+      const sorted2 = [...arr2].sort();
+      return sorted1.every((value, index) => value === sorted2[index]);
     };
+
+    if (values.title !== originalData.title) {
+      modifiedFields.title = values.title;
+    }
+    if (String(values.typeWork || "") !== String(originalData.workType || originalData.typeWork || "")) {
+      modifiedFields.workType = String(values.typeWork || "");
+    }
+    if (values.cddCode !== originalData.cddCode) {
+      modifiedFields.cddCode = values.cddCode;
+    }
+    if (values.cduCode !== originalData.cduCode) {
+      modifiedFields.cduCode = values.cduCode;
+    }
+    if (values.idCourse !== originalData.course?.id) {
+      modifiedFields.courseId = values.idCourse;
+    }
+    // <-- MUDANÇA: Usa .getFullYear() para comparar o ano
+    if (values.year?.getFullYear() !== originalData.year) {
+      // <-- MUDANÇA: Usa .getFullYear() para obter o ano
+      modifiedFields.year = values.year.getFullYear();
+    }
+    if (Number(values.qtdPag) !== (originalData.pageCount || originalData.qtdPag)) {
+      modifiedFields.pageCount = Number(values.qtdPag);
+    }
+    if (values.description !== originalData.description) {
+      modifiedFields.description = values.description;
+    }
+    if (values.ilustration !== originalData.ilustration) {
+      modifiedFields.ilustration = values.ilustration;
+    }
+
+    const newAuthors = (values.authors || []).map(a => a.nome.trim()).filter(Boolean);
+    const originalAuthors = Array.isArray(originalData.authors) ? originalData.authors : (originalData.authors || '').split(",").map(a => a.trim()).filter(Boolean);
+    if (!areSimpleArraysEqual(newAuthors, originalAuthors)) {
+      modifiedFields.authors = newAuthors;
+    }
+
+    const newReferences = (values.references || []).map(Number).filter(n => !isNaN(n));
+    if (!areSimpleArraysEqual(newReferences, originalData.references || [])) {
+        modifiedFields.references = newReferences;
+    }
+    
+    const newKeyWords = (values.keyWords || []).filter(kw => kw && kw.trim());
+    if (!areSimpleArraysEqual(newKeyWords, originalData.keyWords || [])) {
+      modifiedFields.keyWords = newKeyWords;
+    }
+
+    if (Object.keys(modifiedFields).length === 0) {
+      message.info("Nenhuma alteração detectada para salvar.");
+      onClose();
+      return;
+    }
+    
+    const payloadFields = { ...modifiedFields };
+
+    if (!payloadFields.hasOwnProperty('authors')) {
+        payloadFields.authors = originalAuthors;
+    }
+    
+    if (payloadFields.references && Array.isArray(payloadFields.references)) {
+        payloadFields.references = JSON.stringify(payloadFields.references);
+    }
+    if (payloadFields.keyWords && Array.isArray(payloadFields.keyWords)) {
+        payloadFields.keyWords = JSON.stringify(payloadFields.keyWords);
+    }
+    
+    const payload = {
+        id: tccData.id,
+        fields: payloadFields
+    };
+    
+    console.log("Payload para basicUpdate:", payload);
 
     try {
       const resp = await fetch("http://localhost:3333/academicWork/basicUpdate", {
-        method: "POST",
+        method: "PUT",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify(payload),
       });
 
       if (!resp.ok) {
         const errorData = await resp.json().catch(() => ({ message: "Erro desconhecido do servidor." }));
-        throw new Error(errorData.message || "Falha ao atualizar dados.");
+        const errorMessage = errorData.error || errorData.detail || errorData.Error?.details || errorData.message || "Falha ao atualizar dados.";
+        throw new Error(errorMessage);
       }
 
       message.success("Dados atualizados com sucesso!");
@@ -154,60 +210,73 @@ const FormEditTCC = ({ tccData, onClose }) => {
     }
   };
 
-  // Função para adicionar um orientador ou co-orientador
-  const handleAddAdvisorRole = async (advisorId, isMainRole) => { // isMainRole será true para o primeiro slot (principal)
+  const handleAddAdvisorRole = async (advisorId, isMainRole) => {
     if (!advisorId) {
       message.error("Selecione um orientador antes de adicionar.");
       return;
     }
-
-    // Nova lógica: Não permite adicionar co-orientador se não houver orientador principal
     if (!isMainRole && !currentMainAdvisor) {
       message.error("Não é possível adicionar um co-orientador sem um orientador principal.");
       return;
     }
 
     try {
-      // Associar o orientador ao trabalho acadêmico
       const addResp = await fetch("http://localhost:3333/academicWork/addAdvisor", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ academicWorkId: tccData.id, advisorId: advisorId }),
+        body: JSON.stringify({ academicWorkId: tccData.id, advisorId: advisorId}),
       });
       if (!addResp.ok) throw new Error("Erro ao associar orientador.");
 
-      // Remover a chamada a defineMainAdvisor (conforme solicitação do usuário)
-      // A lógica de "principal" agora é definida pela ordem no frontend.
-      // O backend precisaria ser ajustado para usar a ordem ou ter uma lógica implícita.
+      const addedAdvisor = orientadores.find(o => o._id === advisorId);
+    if (addedAdvisor) {
+      if (isMainRole) {
+        setCurrentMainAdvisor({
+          id: addedAdvisor._id,
+          name: addedAdvisor._props.name,
+          surname: addedAdvisor._props.surname,
+        });
+      } else {
+        setCurrentCoAdvisor({
+          id: addedAdvisor._id,
+          name: addedAdvisor._props.name,
+          surname: addedAdvisor._props.surname,
+        });
+      }
+    }
 
-      message.success(`Orientador adicionado com sucesso!`); // Mensagem simplificada
-      onClose(); // Dispara o refresh dos dados no componente pai
+      message.success(`Orientador adicionado com sucesso!`);
+      
     } catch (error) {
       console.error("Erro ao adicionar orientador:", error);
       message.error(error.message || "Falha ao adicionar orientador.");
     }
   };
 
-  // Função para remover um orientador
   const handleRemoveAdvisorRole = async (advisorId) => {
+    console.log("--- DEBUG: REMOVENDO ORIENTADOR ---");
+  console.log("ID enviado pelo clique:", advisorId);
+  console.log("ID do Orientador Principal (antes):", currentMainAdvisor?.id);
+  console.log("ID do Co-Orientador (antes):", currentCoAdvisor?.id);
+  console.log("------------------------------------");
     try {
       const removeResp = await fetch("http://localhost:3333/academicWork/deleteAdvisor", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ idWork: tccData.id, idAdvisor: advisorId }),
+        body: JSON.stringify({ academicWorkId: tccData.id, advisorId: advisorId }),
       });
       if (!removeResp.ok) throw new Error("Erro ao remover orientador.");
 
       message.success("Orientador removido com sucesso!");
-      // Atualiza o estado local para remover o orientador da UI
       if (currentMainAdvisor && currentMainAdvisor.id === advisorId) {
-        setCurrentMainAdvisor(null);
-      } else if (currentCoAdvisor && currentCoAdvisor.id === advisorId) {
-        setCurrentCoAdvisor(null);
-      }
-      // O useEffect que calcula availableAdvisors será disparado automaticamente
-      // para incluir o orientador que acabou de ser removido na lista de disponíveis.
-
+      setCurrentMainAdvisor(null);
+    } 
+    
+    // Verifica se o ID removido corresponde ao co-orientador
+    if (currentCoAdvisor && currentCoAdvisor.id === advisorId) {
+      setCurrentCoAdvisor(null);
+    }
+      
     } catch (error) {
       console.error("Erro ao remover orientador:", error);
       message.error(error.message || "Falha ao remover orientador.");
@@ -226,7 +295,6 @@ const FormEditTCC = ({ tccData, onClose }) => {
 
   return (
     <Form form={form} layout="vertical" onFinish={handleSubmit}>
-      {/* Dados dos Autores */}
       <Card title="Dados dos Autores" className="mb-4">
         <Form.List name="authors" initialValue={[]}>
           {(fields, { add, remove }) => (
@@ -268,9 +336,7 @@ const FormEditTCC = ({ tccData, onClose }) => {
         </Form.List>
       </Card>
 
-      {/* Dados dos Orientadores */}
       <Card title="Dados dos Orientadores" className="mb-4">
-        {/* Seção Orientador Principal */}
         <div className="mb-3">
           <h5>Orientador Principal:</h5>
           {currentMainAdvisor ? (
@@ -300,7 +366,7 @@ const FormEditTCC = ({ tccData, onClose }) => {
               </Select>
               <Button
                 icon={<UserAddOutlined />}
-                onClick={() => handleAddAdvisorRole(selectedAdvisorForDropdown, true)} // isMainRole = true para o primeiro slot
+                onClick={() => handleAddAdvisorRole(selectedAdvisorForDropdown, true)}
               >
                 Adicionar
               </Button>
@@ -308,7 +374,6 @@ const FormEditTCC = ({ tccData, onClose }) => {
           )}
         </div>
 
-        {/* Seção Co-Orientador */}
         <div className="mb-3">
           <h5>Co-Orientador:</h5>
           {currentCoAdvisor ? (
@@ -329,7 +394,7 @@ const FormEditTCC = ({ tccData, onClose }) => {
                 value={selectedCoadvisorForDropdown}
                 onChange={setSelectedCoadvisorForDropdown}
                 style={{ flexGrow: 1 }}
-                disabled={!currentMainAdvisor} // Desabilitado se não houver orientador principal
+                disabled={!currentMainAdvisor}
               >
                 {availableAdvisors.map((o) => (
                   <Option key={o._id} value={o._id}>
@@ -339,8 +404,8 @@ const FormEditTCC = ({ tccData, onClose }) => {
               </Select>
               <Button
                 icon={<UserAddOutlined />}
-                onClick={() => handleAddAdvisorRole(selectedCoadvisorForDropdown, false)} // isMainRole = false para o segundo slot
-                disabled={!currentMainAdvisor} // Desabilitado se não houver orientador principal
+                onClick={() => handleAddAdvisorRole(selectedCoadvisorForDropdown, false)}
+                disabled={!currentMainAdvisor}
               >
                 Adicionar
               </Button>
@@ -349,7 +414,6 @@ const FormEditTCC = ({ tccData, onClose }) => {
         </div>
       </Card>
 
-      {/* Dados do Trabalho */}
       <Card title="Dados do Trabalho" className="mb-4">
         <Form.Item
           name="title"
@@ -392,12 +456,13 @@ const FormEditTCC = ({ tccData, onClose }) => {
             ))}
           </Select>
         </Form.Item>
+        {/* <-- MUDANÇA: Substituição do DatePicker aqui --> */}
         <Form.Item
           name="year"
           label="Ano"
           rules={[{ required: true, message: "O ano é obrigatório" }]}
         >
-          <DatePicker picker="year" style={{ width: "100%" }} />
+          <DatePickerEstilizado showYearPicker />
         </Form.Item>
         <Form.Item
           name="qtdPag"
@@ -424,8 +489,8 @@ const FormEditTCC = ({ tccData, onClose }) => {
             <Option value="pretoEBranco">Preto e Branco</Option>
           </Select>
         </Form.Item>
-        <Form.Item label="Referências" name="references">
-          <Space.Compact>
+        <Form.Item label="Referências">
+          <Space.Compact style={{width: "100%"}}>
             <Form.Item
               name={["references", 0]}
               noStyle
@@ -442,7 +507,7 @@ const FormEditTCC = ({ tccData, onClose }) => {
             </Form.Item>
           </Space.Compact>
         </Form.Item>
-        <Form.Item name="keyWords" label="Palavras-chave">
+        <Form.Item label="Palavras-chave">
           <Space.Compact direction="vertical" style={{ width: "100%" }}>
             {[...Array(5)].map((_, i) => (
               <Form.Item key={i} name={["keyWords", i]} noStyle>
@@ -453,7 +518,6 @@ const FormEditTCC = ({ tccData, onClose }) => {
         </Form.Item>
       </Card>
 
-      {/* Upload de Arquivos */}
       <Card title="Upload de Arquivos" className="mb-4">
         <Dragger {...uploadProps}>
           <p className="ant-upload-drag-icon">
@@ -478,8 +542,10 @@ FormEditTCC.propTypes = {
     authors: PropTypes.oneOfType([PropTypes.string, PropTypes.array]),
     title: PropTypes.string,
     workType: PropTypes.string,
+    typeWork: PropTypes.string,
     year: PropTypes.number,
     pageCount: PropTypes.number,
+    qtdPag: PropTypes.number,
     description: PropTypes.string,
     course: PropTypes.shape({ id: PropTypes.string }),
     keyWords: PropTypes.array,
