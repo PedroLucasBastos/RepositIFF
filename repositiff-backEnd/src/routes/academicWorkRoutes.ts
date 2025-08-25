@@ -5,6 +5,7 @@ import { AddAdvisorToAcademicWorkProps } from "@src/domain/application/academicW
 import { IDelAdvisorProps } from "@src/domain/application/academicWork_Advisors-useCases/delAdvisorToAcademicWork-useCase.js";
 import { FastifyInstance, FastifyReply, FastifyRequest } from "fastify";
 import multipart from "@fastify/multipart";
+import { DefineProps } from "@src/domain/application/academicWork_Advisors-useCases/defineMainAdvisor-use-case.js";
 
 export async function academicWorkRoutes(fastify: FastifyInstance) {
   const controller = new academicWorkController();
@@ -72,16 +73,19 @@ export async function academicWorkRoutes(fastify: FastifyInstance) {
     }
   });
 
-  fastify.put("/basicUpdate", async (req: FastifyRequest<{ Body: UpdateAcademicWorkBasicInfoPROPS }>, res: FastifyReply) => {
-    console.log("\n INICIO DOS TRABALHOS DE BASIC UPDATE");
-    console.log(req.body);
-    try {
-      const body = req.body;
-      await controller.basicUpdate(body, res);
-    } catch (error: any) {
-      res.code(500).send({ error: error.message, message: "Updation has failed" });
+  fastify.put(
+    "/basicUpdate",
+    async (req: FastifyRequest<{ Body: UpdateAcademicWorkBasicInfoPROPS }>, res: FastifyReply) => {
+      console.log("\n INICIO DOS TRABALHOS DE BASIC UPDATE");
+      console.log(req.body);
+      try {
+        const body = req.body;
+        await controller.basicUpdate(body, res);
+      } catch (error: any) {
+        res.code(500).send({ error: error.message, message: "Updation has failed" });
+      }
     }
-  });
+  );
 
   // ANTIGO UPDATE
   fastify.post("/update", async (req, res) => {
@@ -187,17 +191,33 @@ export async function academicWorkRoutes(fastify: FastifyInstance) {
     }
   });
 
-  fastify.post("/uploadFile", async (req: FastifyRequest<{ Body: UpdateAcademicWorkBasicInfoPROPS }>, res: FastifyReply) => {});
-
-  fastify.post("/addAdvisor", async (req: FastifyRequest<{ Body: AddAdvisorToAcademicWorkProps }>, res: FastifyReply) => {
+  fastify.put("/defineMainAdvisor", async (req: FastifyRequest<{ Body: DefineProps }>, res: FastifyReply) => {
     console.log(req.body);
     try {
       const body = req.body;
-      await controller.addAdvisor(body, res);
+      await controller.defineMainAdvisor(body, res);
     } catch (error: any) {
-      res.code(500).send({ error: error.message, message: "Add advsior has failed" });
+      res.code(500).send({ error: error.message, message: "Updation has failed" });
     }
   });
+
+  fastify.post(
+    "/uploadFile",
+    async (req: FastifyRequest<{ Body: UpdateAcademicWorkBasicInfoPROPS }>, res: FastifyReply) => {}
+  );
+
+  fastify.post(
+    "/addAdvisor",
+    async (req: FastifyRequest<{ Body: AddAdvisorToAcademicWorkProps }>, res: FastifyReply) => {
+      console.log(req.body);
+      try {
+        const body = req.body;
+        await controller.addAdvisor(body, res);
+      } catch (error: any) {
+        res.code(500).send({ error: error.message, message: "Add advsior has failed" });
+      }
+    }
+  );
 
   fastify.post("/deleteAdvisor", async (req: FastifyRequest<{ Body: IDelAdvisorProps }>, res: FastifyReply) => {
     console.log(req.body);

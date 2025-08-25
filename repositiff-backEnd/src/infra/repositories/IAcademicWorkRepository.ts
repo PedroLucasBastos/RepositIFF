@@ -41,11 +41,30 @@ export interface updateAcademicWorkDTO {
   file?: string;
 }
 
-export interface IReturnAcademicWorkDTO {
+export interface IReturnFullAcademicWorkDTO {
   id: string;
   academicWorkStatus: string;
   authors: string[];
   advisors: IAdvisorDTO[];
+  course: IReturnCourseDTO;
+  title: string;
+  typeWork: string;
+  year: number;
+  qtdPag: number;
+  description: string;
+  keyWords: string[];
+  ilustration: string;
+  references: number[];
+  cutterNumber: string | null;
+  cduCode?: string | null;
+  cddCode?: string | null;
+  file: string;
+}
+
+export interface IReturnBasicAcademicWork {
+  id: string;
+  academicWorkStatus: string;
+  authors: string[];
   course: IReturnCourseDTO;
   title: string;
   typeWork: string;
@@ -107,19 +126,21 @@ export interface academicAssociativeAdvisors {
 }
 
 export interface IAcademicWorkRepository {
-  addAcademicWork(project: addAcademicWorkDTO): Promise<Error | IReturnAcademicWorkDTO>;
-  updateAcademicWork(project: updateAcademicWorkDTO, id: string): Promise<Error | IReturnAcademicWorkDTO>;
+  addAcademicWork(project: addAcademicWorkDTO): Promise<Error | IReturnFullAcademicWorkDTO>;
+  updateAcademicWork(project: updateAcademicWorkDTO, id: string): Promise<Error | IReturnFullAcademicWorkDTO>;
   updateAcademicWorkFields(project: updateAcademicWorkFieldsDTO): Promise<Error | IReturnAcademicWorkUpdateFields>;
-
+  selectAcademicWork(id: string): Promise<Error | (null | IReturnFullAcademicWorkDTO)>;
+  changeVsibility(id: string, status: boolean): Promise<Error | IReturnBasicAcademicWork>;
   // updateAcademicWorkAdvisors(newAdvisor: string): Promise<Error | void>;
   addAdvisorToAcademicWork(academicWorkId: string, advisorId: string): Promise<Error | void>;
   deleteAdvisorToAcademicWork(academicWorkId: string, advisorId: string): Promise<Error | void>;
   listAdvisors(academicWorkId: string): Promise<Error | academicAssociativeAdvisors[]>;
-  selectMainAdvisor(academicWorkId: string, advisorId: string): Promise<Error | (null | string)>;
+  selectMainAdvisor(academicWorkId: string): Promise<Error | (null | string)>;
   defineMainAdvisor(academicWorkId: string, advisorId: string): Promise<Error | void>;
+  removeMainAdvisor(academicWorkId: string, advisorId: string): Promise<Error | void>;
   deleteAcademicWork(idAcademicWork: string): Promise<void>;
-  findByIdDoc(id: String): Promise<null | IReturnAcademicWorkDTO>;
+  findByIdDoc(id: String): Promise<null | IReturnFullAcademicWorkDTO>;
   getFile(idAcademicWork: string): Promise<null | string>;
-  listAllProjects(): Promise<IReturnAcademicWorkDTO[]>;
+  listAllProjects(): Promise<IReturnFullAcademicWorkDTO[]>;
   deleteAll(): Promise<void>;
 }

@@ -1,13 +1,18 @@
 import { DomainError, ErrorCategory } from "@src/error_handling/domainServicesErrors.js";
-import { IReturnAcademicWorkDTO, IReturnAcademicWorkUpdateFields } from "@src/infra/repositories/IAcademicWorkRepository.js";
+import {
+  IReturnFullAcademicWorkDTO,
+  IReturnAcademicWorkUpdateFields,
+  IReturnBasicAcademicWork,
+} from "@src/infra/repositories/IAcademicWorkRepository.js";
 import { MapperAdvisor } from "./mapperAdvisor.js";
 import { MapperCourse } from "./mapperCourse.js";
 import { AcademicWork, Illustration, typeWork } from "@src/domain/entities/academicWork.js";
 
 export class MapperAcademicWork {
-  static mapBasicInfoToDTO(prismaData: any): IReturnAcademicWorkUpdateFields {
+  static toBasicInfoDTO(prismaData: any): IReturnBasicAcademicWork {
     return {
       id: prismaData.id,
+      authors: prismaData.authors,
       title: prismaData.title,
       typeWork: prismaData.typeWork,
       year: prismaData.year,
@@ -19,11 +24,13 @@ export class MapperAcademicWork {
       cduCode: prismaData.cduCode || undefined,
       cddCode: prismaData.cddCode || undefined,
       cutterNumber: prismaData.cutterNumber,
-      academicWorkVisibility: prismaData.academicWorkVisibility,
+      course: prismaData.course,
+      file: prismaData.file,
+      academicWorkStatus: prismaData.academicWorkStatus,
     };
   }
 
-  static toDTO(data: any): IReturnAcademicWorkDTO {
+  static toDTO(data: any): IReturnFullAcademicWorkDTO {
     // console.log("================================================ toDTO =====================================================================================")
     // console.log(data)
     // console.log(data.advisors)

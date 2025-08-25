@@ -1,5 +1,14 @@
 import { academicWorkVisibility, AcademicWork } from "@src/domain/entities/academicWork.js";
-import { addAcademicWorkDTO, IAcademicWorkRepository, IReturnAcademicWorkUpdateFields, IReturnAcademicWorkDTO, updateAcademicWorkDTO, updateAcademicWorkFieldsDTO, academicAssociativeAdvisors } from "@src/infra/repositories/IAcademicWorkRepository.js";
+import {
+  addAcademicWorkDTO,
+  IAcademicWorkRepository,
+  IReturnAcademicWorkUpdateFields,
+  IReturnFullAcademicWorkDTO,
+  updateAcademicWorkDTO,
+  updateAcademicWorkFieldsDTO,
+  academicAssociativeAdvisors,
+  IReturnBasicAcademicWork,
+} from "@src/infra/repositories/IAcademicWorkRepository.js";
 import { Prisma, PrismaClient } from "@prisma/client";
 import { Author } from "@src/domain/entities/author.js";
 import { AdvisorFactory } from "@src/domain/entities/factories/advisorFactory.js";
@@ -24,14 +33,20 @@ export class PrismaAcademicWorkRepository implements IAcademicWorkRepository {
   constructor() {
     this._prismaCli = new PrismaClient();
   }
-  async updateAcademicWorkFields(project: updateAcademicWorkFieldsDTO): Promise<Error | IReturnAcademicWorkUpdateFields> {
+  async updateAcademicWorkFields(
+    project: updateAcademicWorkFieldsDTO
+  ): Promise<Error | IReturnAcademicWorkUpdateFields> {
     const { id, fields } = project;
     const { idCourse, ...props } = fields;
     console.log(project);
     try {
       console.log("até tentou");
       // Limpa os campos que são undefined ou inválidos para o Prisma
-      const cleanedData = Object.fromEntries(Object.entries(props).filter(([_, v]) => v !== undefined && v !== null && v !== "" && !(typeof v === "number" && isNaN(v))));
+      const cleanedData = Object.fromEntries(
+        Object.entries(props).filter(
+          ([_, v]) => v !== undefined && v !== null && v !== "" && !(typeof v === "number" && isNaN(v))
+        )
+      );
       const prismaData = await this._prismaCli.academicWork.update({
         where: { id },
         data: cleanedData,
@@ -136,6 +151,47 @@ export class PrismaAcademicWorkRepository implements IAcademicWorkRepository {
     throw new Error("Method not implemented.");
   }
 
+  async selectAcademicWork(id: string): Promise<Error | (null | IReturnFullAcademicWorkDTO)> {
+    try {
+      const prismaAcademicWork = await this._prismaCli.academicWork.findUnique({
+        where: { id },
+        include: {
+          advisors: {
+            select: {
+              Advisor: true,
+            },
+          },
+          course: true,
+        },
+      });
+      if (!prismaAcademicWork) return null;
+      return MapperAcademicWork.toDTO(prismaAcademicWork);
+    } catch (error) {
+      if (error instanceof Prisma.PrismaClientKnownRequestError) {
+        const customMessage = prismaErrorMessages[error.code] || "Unknown database error occurred";
+        console.log(customMessage);
+        return new Error(customMessage);
+      }
+      return new Error("Unexpected error");
+    }
+  }
+  async changeVsibility(id: string, status: boolean): Promise<Error | IReturnBasicAcademicWork> {
+    try {
+      const prismaRequest = await this._prismaCli.academicWork.update({
+        where: { id: id },
+        data: { academicWorkVisibility: status },
+      });
+      return MapperAcademicWork.toBasicInfoDTO(prismaRequest);
+    } catch (error) {
+      if (error instanceof Prisma.PrismaClientKnownRequestError) {
+        const customMessage = prismaErrorMessages[error.code] || "Unknown database error occurred";
+        console.log(customMessage);
+        return new Error(customMessage);
+      }
+      return new Error("Unexpected error");
+    }
+  }
+
   async listAdvisors(academicWorkId: string): Promise<Error | academicAssociativeAdvisors[]> {
     const fields = {};
     try {
@@ -157,7 +213,7 @@ export class PrismaAcademicWorkRepository implements IAcademicWorkRepository {
     }
     throw new Error("Method not implemented. - LIST ADVISOR IN ACADEMIC WORK");
   }
-  async updateAcademicWork(project: updateAcademicWorkDTO, id: string): Promise<Error | IReturnAcademicWorkDTO> {
+  async updateAcademicWork(project: updateAcademicWorkDTO, id: string): Promise<Error | IReturnFullAcademicWorkDTO> {
     const { idAdvisors, ...props } = project;
     console.log(project);
     try {
@@ -165,7 +221,11 @@ export class PrismaAcademicWorkRepository implements IAcademicWorkRepository {
       const operations: Prisma.PrismaPromise<unknown>[] = [];
 
       // Limpa os campos que são undefined ou inválidos para o Prisma
-      const cleanedData = Object.fromEntries(Object.entries(props).filter(([_, v]) => v !== undefined && v !== null && v !== "" && !(typeof v === "number" && isNaN(v))));
+      const cleanedData = Object.fromEntries(
+        Object.entries(props).filter(
+          ([_, v]) => v !== undefined && v !== null && v !== "" && !(typeof v === "number" && isNaN(v))
+        )
+      );
       console.log("Limpo");
       console.log(cleanedData);
 
@@ -235,16 +295,15 @@ export class PrismaAcademicWorkRepository implements IAcademicWorkRepository {
     throw new Error("Method not implemented. - updateeeeeeeee");
   }
 
-  async selectMainAdvisor(academicWorkId: string, advisorId: string): Promise<Error | (null | string)> {
+  async selectMainAdvisor(academicWorkId: string): Promise<Error | (null | string)> {
     try {
       const operations = await this._prismaCli.advisor_AcademicWork.findFirst({
         where: {
           academicWorkId: academicWorkId,
-          advisorId: advisorId,
           isMain: true,
         },
       });
-      if (operations) return operations.advisorId;
+      return operations?.advisorId ?? null;
     } catch (error) {
       if (error instanceof Prisma.PrismaClientKnownRequestError) {
         // The .code property can be accessed in a type-safe manner
@@ -270,7 +329,6 @@ export class PrismaAcademicWorkRepository implements IAcademicWorkRepository {
       });
     } catch (error) {
       if (error instanceof Prisma.PrismaClientKnownRequestError) {
-        // The .code property can be accessed in a type-safe manner
         const customMessage = prismaErrorMessages[error.code] || "Unknown database error occurred";
         console.log(customMessage);
         console.log(error);
@@ -279,6 +337,28 @@ export class PrismaAcademicWorkRepository implements IAcademicWorkRepository {
       }
     }
     // return
+  }
+
+  async removeMainAdvisor(academicWorkId: string, advisorId: string): Promise<Error | void> {
+    try {
+      const operations = await this._prismaCli.advisor_AcademicWork.updateMany({
+        where: {
+          academicWorkId,
+          advisorId,
+        },
+        data: {
+          isMain: false,
+        },
+      });
+    } catch (error) {
+      if (error instanceof Prisma.PrismaClientKnownRequestError) {
+        const customMessage = prismaErrorMessages[error.code] || "Unknown database error occurred";
+        console.log(customMessage);
+        console.log(error);
+        return new Error(customMessage, error);
+        // throw new Error(customMessage);
+      }
+    }
   }
 
   async getFile(idAcademicWork: string): Promise<null | string> {
@@ -304,7 +384,7 @@ export class PrismaAcademicWorkRepository implements IAcademicWorkRepository {
       return null;
     }
   }
-  async addAcademicWork(project: addAcademicWorkDTO): Promise<Error | IReturnAcademicWorkDTO> {
+  async addAcademicWork(project: addAcademicWorkDTO): Promise<Error | IReturnFullAcademicWorkDTO> {
     // console.log(project.idAdvisors)
     // console.log(project.idCourse)
     console.log("Entrou no addAcademicWork");
@@ -407,7 +487,7 @@ export class PrismaAcademicWorkRepository implements IAcademicWorkRepository {
       return new Error("Unexpected Error to database");
     }
   }
-  async findByIdDoc(id: string): Promise<null | IReturnAcademicWorkDTO> {
+  async findByIdDoc(id: string): Promise<null | IReturnFullAcademicWorkDTO> {
     console.log(`Está buscando id: ${id}`);
     try {
       // console.log("Começo do try")
@@ -444,7 +524,7 @@ export class PrismaAcademicWorkRepository implements IAcademicWorkRepository {
     }
     throw new Error("Unexpected error");
   }
-  async listAllProjects(): Promise<IReturnAcademicWorkDTO[]> {
+  async listAllProjects(): Promise<IReturnFullAcademicWorkDTO[]> {
     try {
       console.log("antes da consulta");
       const listPrismaAcademicWork = await this._prismaCli.academicWork.findMany({

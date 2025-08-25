@@ -6,12 +6,27 @@ import { PrismaAcademicWorkRepository } from "@src/infra/repositories/prisma/pri
 import { PrismaAdvisorRepository } from "@src/infra/repositories/prisma/prisma-advisor-repository.js";
 import { PrismaCourseRepostory } from "@src/infra/repositories/prisma/prisma-course-repostory.js";
 import { FastifyReply, FastifyRequest } from "fastify";
-import { IUpdateAcademicWorkUseCaseDTO, UpdateAcademicWork_useCase } from "@src/domain/application/academicWork-useCases/updateAcademicWork-use-case.js";
-import { typeWork } from "@src/domain/entities/academicWork.js";
-import { UpdateAcademicWorkBasicInfoPROPS, UpdateAcademicWorkBasicInfoUseCase } from "@src/domain/application/academicWork-useCases/UpdateAcademicWorkBasicInfoUse_case.js";
-import { AddAdvisorToAcademicWorkProps, AddAdvisorToAcademicWorkUseCase } from "@src/domain/application/academicWork_Advisors-useCases/addAdvisorToAcademickWork-useCase.js";
-import { DelAdvisorInAcademicWorkUseCase, IDelAdvisorProps } from "@src/domain/application/academicWork_Advisors-useCases/delAdvisorToAcademicWork-useCase.js";
-import { DefineMainAdvisorUseCase, DefineProps } from "@src/domain/application/academicWork_Advisors-useCases/defineMainAdvisor-use-case.js";
+import {
+  IUpdateAcademicWorkUseCaseDTO,
+  UpdateAcademicWork_useCase,
+} from "@src/domain/application/academicWork-useCases/updateAcademicWork-use-case.js";
+// import { typeWork } from "@src/domain/entities/academicWork.js";
+import {
+  UpdateAcademicWorkBasicInfoPROPS,
+  UpdateAcademicWorkBasicInfoUseCase,
+} from "@src/domain/application/academicWork-useCases/UpdateAcademicWorkBasicInfoUse_case.js";
+import {
+  AddAdvisorToAcademicWorkProps,
+  AddAdvisorToAcademicWorkUseCase,
+} from "@src/domain/application/academicWork_Advisors-useCases/addAdvisorToAcademickWork-useCase.js";
+import {
+  DelAdvisorInAcademicWorkUseCase,
+  IDelAdvisorProps,
+} from "@src/domain/application/academicWork_Advisors-useCases/delAdvisorToAcademicWork-useCase.js";
+import {
+  DefineMainAdvisorUseCase,
+  DefineProps,
+} from "@src/domain/application/academicWork_Advisors-useCases/defineMainAdvisor-use-case.js";
 import { DeleteAcademicWorkUseCase } from "@src/domain/application/academicWork-useCases/deleteAcademicWork-use-case.js";
 
 export interface IRequestAcademicWorkController {
@@ -118,8 +133,7 @@ export class academicWorkController {
     //   });
     // console.log("\nPASSOU TUDO\n");
     res.code(200).send({
-      isRight: true,
-      Message: "DEU BOM AKI",
+      Message: "TRABALHO FOI EXCLUÍDO COM SUCESSO",
     });
   }
 
@@ -215,10 +229,11 @@ export class academicWorkController {
       });
 
     res.code(200).send({
-      isRight: result,
-      Message: "DEU BOM AKI",
+      Message: "Novo orientador principal foi definido",
     });
   }
+
+  async changeVisibility(req: string): Promise<void> {}
 
   async update(req: IUpdateRouteRequest, res: FastifyReply): Promise<void> {
     console.log("COMEÇOU A ROTA AKIIIIIIIIIIIIII");
@@ -257,7 +272,6 @@ export class academicWorkController {
       Message: "DEU BOM AKI",
     });
   }
-
   async list(req: FastifyRequest, res: FastifyReply): Promise<void> {
     const repo = await new PrismaAcademicWorkRepository().listAllProjects();
     console.log("askldjfasdfasdjkfasdfa");
@@ -266,7 +280,6 @@ export class academicWorkController {
       result: repo,
     });
   }
-
   async find(req: string, res: FastifyReply): Promise<void> {
     const repo = new PrismaAcademicWorkRepository();
     const academicWork = await repo.findByIdDoc(req);
@@ -297,7 +310,20 @@ export class academicWorkController {
 
   sanitizeReceivedDataToUpdateBasicInfo(request: any): Either<string, void> {
     const { id, fields } = request;
-    const { authors, title, typeWork, year, pageCount, description, courseId, keyWords, ilustration, references, cduCode, cddCode } = fields;
+    const {
+      authors,
+      title,
+      typeWork,
+      year,
+      pageCount,
+      description,
+      courseId,
+      keyWords,
+      ilustration,
+      references,
+      cduCode,
+      cddCode,
+    } = fields;
 
     if (!id) {
       return new Left("ID must be provided.");
@@ -354,10 +380,16 @@ export class academicWorkController {
     }
 
     // Validate references
-    const parseReferences = references ? JSON.parse(references) : "";
-    if (references && (!Array.isArray(parseReferences) || parseReferences.some((reference) => typeof reference !== "number"))) {
+    // const parseReferences = references ? JSON.parse(references) : "";
+    if (references && (!Array.isArray(references) || references.some((reference) => typeof reference !== "number"))) {
       return new Left("References must be an array of numbers.");
     }
+
+    // // Validate references
+    // const parseReferences = JSON.parse(references);
+    // if (!Array.isArray(parseReferences) || parseReferences.some((reference) => typeof reference !== "number")) {
+    //   return new Left("References must be an array of numbers.");
+    // }
     // console.log("antes da verificação do cdu")
     // console.log(cduCode)
     // Validate cduCode (optional)
@@ -384,7 +416,22 @@ export class academicWorkController {
     // if (verify.length > 0)
     //     return new Left("All parameters must be provided");
     // console.log(request);
-    const { authors, idAdvisors, title, typeWork, year, qtdPag, description, idCourse, keyWords, ilustration, references, cduCode, cddCode, file } = request;
+    const {
+      authors,
+      idAdvisors,
+      title,
+      typeWork,
+      year,
+      qtdPag,
+      description,
+      idCourse,
+      keyWords,
+      ilustration,
+      references,
+      cduCode,
+      cddCode,
+      file,
+    } = request;
 
     // Validate authors
     const parseAuthors = authors ? JSON.parse(authors) : "";
@@ -447,7 +494,10 @@ export class academicWorkController {
 
     // Validate references
     const parseReferences = references ? JSON.parse(references) : "";
-    if (references && (!Array.isArray(parseReferences) || parseReferences.some((reference) => typeof reference !== "number"))) {
+    if (
+      references &&
+      (!Array.isArray(parseReferences) || parseReferences.some((reference) => typeof reference !== "number"))
+    ) {
       return new Left("References must be an array of numbers.");
     }
     // console.log("antes da verificação do cdu")
@@ -497,7 +547,19 @@ export class academicWorkController {
 
     console.log("\n\n INICIO SANITIZAÇÃO \n");
     console.log(request);
-    const { authors, idAdvisors, title, typeWork, year, qtdPag, description, idCourse, keyWords, ilustration, references } = request;
+    const {
+      authors,
+      idAdvisors,
+      title,
+      typeWork,
+      year,
+      qtdPag,
+      description,
+      idCourse,
+      keyWords,
+      ilustration,
+      references,
+    } = request;
     console.log("\n\n\n");
     // Validate authors
     const parseAuthors = JSON.parse(authors);
