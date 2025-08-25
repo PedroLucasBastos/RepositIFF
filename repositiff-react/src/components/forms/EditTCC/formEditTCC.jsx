@@ -175,12 +175,6 @@ const FormEditTCC = ({ tccData, onClose }) => {
         payloadFields.authors = originalAuthors;
     }
     
-    if (payloadFields.references && Array.isArray(payloadFields.references)) {
-        payloadFields.references = JSON.stringify(payloadFields.references);
-    }
-    if (payloadFields.keyWords && Array.isArray(payloadFields.keyWords)) {
-        payloadFields.keyWords = JSON.stringify(payloadFields.keyWords);
-    }
     
     const payload = {
         id: tccData.id,

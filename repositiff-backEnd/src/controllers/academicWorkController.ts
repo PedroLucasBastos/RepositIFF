@@ -368,11 +368,9 @@ export class academicWorkController {
     }
 
     // Validate keyWords
-    const parseKeyWords = keyWords ? JSON.parse(keyWords) : "";
-    if (keyWords && (!Array.isArray(parseKeyWords) || parseKeyWords.some((keyword) => typeof keyword !== "string"))) {
+    if (keyWords && (!Array.isArray(keyWords) || keyWords.some((keyword) => typeof keyword !== "string"))) {
       return new Left("Keywords must be an array of strings.");
     }
-
     // Validate ilustration
 
     if (ilustration && typeof ilustration !== "string") {
