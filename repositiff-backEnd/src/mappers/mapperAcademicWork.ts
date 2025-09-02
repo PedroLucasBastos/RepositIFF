@@ -90,10 +90,11 @@ export class MapperAcademicWork {
         keyWords: academicWorkDATA.keyWords,
         illustration: academicWorkDATA.ilustration as Illustration,
         references: academicWorkDATA.references,
-        file: academicWorkDATA.file,
-        cutterNumber: academicWorkDATA.cutterNumber,
       },
-      data.id
+      data.id,
+      academicWorkDATA.academicWorkStatus,
+      academicWorkDATA.cutterNumber,
+      academicWorkDATA.file
     );
     return result.value;
   }

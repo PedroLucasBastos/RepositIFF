@@ -5,7 +5,8 @@ import { EitherOO, Left, Right } from "@src/error_handling/either.js";
 import { DomainError } from "@src/error_handling/domainServicesErrors.js";
 import { AcademicWorkValitador } from "./validators/academicWorkFValidate.js";
 import { Author } from "./author.js";
-import { AcademicWorkFile } from "./academicWorkFile.js";
+import { CutterTable } from "../services/cutterNumber.js";
+// import { CutterNumberService } from "@src/domain/services/cutterNumberService.js";
 
 // export type author = {
 //     nome: string;
@@ -38,39 +39,57 @@ export interface academicWorkProps {
   typeWork: typeWork;
   keyWords: string[];
   illustration: Illustration;
-  cutterNumber: string;
+  // cutterNumber?: string;
   references: number[];
-  file?: string;
+  // file?: string;
   cduCode?: string;
   cddCode?: string;
 }
 
 export class AcademicWork {
   private _id: string;
-  private _academicWorkVisibility: academicWorkVisibility;
+  private _academicWorkVisibility: boolean;
   private _file: string;
+  private _cutterNumber: string;
+
   private constructor(
     private _props: academicWorkProps,
     id?: string,
-    academicWorkStatus?: academicWorkVisibility
+    academicWorkStatus?: boolean,
+    cutterNumber?: string,
+    file?: string
   ) {
     this._id = id || crypto.randomUUID();
-    this._file = this._props.file || crypto.randomUUID();
-    this._academicWorkVisibility = academicWorkStatus ?? academicWorkVisibility.Private;
+    this._file = file || crypto.randomUUID();
+    this._academicWorkVisibility = academicWorkStatus ?? false;
+    this._cutterNumber =
+      cutterNumber || new CutterTable().generateCutterNumber(this._props.authors[0], this._props.title);
+    // this._props.cutterNumber = await this.generateCutterNumber(this._props.authors[0], this._props.title);
   }
 
-  static createAcademicWorkFactory(props: academicWorkProps, id?: string, academicWorkStatus?: academicWorkVisibility): EitherOO<DomainError, AcademicWork> {
+  static createAcademicWorkFactory(
+    props: academicWorkProps,
+    id?: string,
+    academicWorkStatus?: boolean,
+    cutterNumber?: string,
+    file?: string
+  ): EitherOO<DomainError, AcademicWork> {
     const result = AcademicWorkValitador.validateInitiateProps(props);
+
     if (result.isLeft()) return new Left(result.value);
-    return new Right(new AcademicWork(props, id, academicWorkStatus));
+    return new Right(new AcademicWork(props, id, academicWorkStatus, cutterNumber));
   }
 
-  public changeVisibility(): void {
-    if (this._academicWorkVisibility === academicWorkVisibility.Public) this._academicWorkVisibility = academicWorkVisibility.Private;
-    if (this._academicWorkVisibility === academicWorkVisibility.Private && AcademicWorkValitador.validateChangeVisibility(this._props).isRight()) {
-      this._academicWorkVisibility === academicWorkVisibility.Private;
-    }
-  }
+  // public changeVisibility(): void {
+  //   if (this._academicWorkVisibility === academicWorkVisibility.Public)
+  //     this._academicWorkVisibility = academicWorkVisibility.Private;
+  //   if (
+  //     this._academicWorkVisibility === academicWorkVisibility.Private &&
+  //     AcademicWorkValitador.validateChangeVisibility(this._props).isRight()
+  //   ) {
+  //     this._academicWorkVisibility === academicWorkVisibility.Private;
+  //   }
+  // }
 
   // public set file(file: string) {
   //     this._props.file = file;
@@ -82,7 +101,7 @@ export class AcademicWork {
     return this._props.illustration;
   }
 
-  public get status(): academicWorkVisibility {
+  public get status(): boolean {
     return this._academicWorkVisibility;
   }
 
@@ -125,8 +144,8 @@ export class AcademicWork {
     return this._props.keyWords;
   }
 
-  public get cutterNumber(): string | undefined {
-    return this._props.cutterNumber;
+  public get cutterNumber(): string {
+    return this._cutterNumber;
   }
 
   public get cduCode(): string | undefined {
@@ -145,7 +164,7 @@ export class AcademicWork {
   //     this._props.file = url;
   // }
 
-  public get academicWorkStatus(): academicWorkVisibility {
+  public get academicWorkStatus(): boolean {
     return this._academicWorkVisibility;
   }
 

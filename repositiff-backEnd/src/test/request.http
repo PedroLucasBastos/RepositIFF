@@ -8,7 +8,7 @@ Content-Type: application/json
 
 {
     "name": "Beltrano",
-    "email": "beltrano@beltrano.com",
+    "email": "pedro19792001@gmail.com",
     "registrationNumber": "2013655865",
     "password": "abc@123",
     "confirmPassword": "abc@123"
@@ -22,6 +22,25 @@ Content-Type: application/json
     "registrationNumber": "2013655865",
     "password": "abc@123",
     "cargo": "Librarian"
+}
+###
+
+POST  http://localhost:3333/librarian/reset-password-request
+Content-Type: application/json
+
+{
+    "id": "e47ebba4-f3b7-4bab-821c-edac97a24a04"
+}
+
+###
+POST  http://localhost:3333/librarian/reset-password
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6ImU0N2ViYmE0LWYzYjctNGJhYi04MjFjLWVkYWM5N2EyNGEwNCIsImlhdCI6MTc1Njc3OTgxNCwiZXhwIjoxNzU2ODA4NjE0fQ.9Rd3M7lyRu_qLqX0itTDg5OezfeCPUvWuZ84a_15GS4
+Content-Type: application/json
+
+{
+    "id": "e47ebba4-f3b7-4bab-821c-edac97a24a04",
+    "newPassword": "2asdfkljasdklfjasklfjsdkljfkasdjfiejklasdjklfjasdiofjasdiofjioejioasdjfioasdjfioejklasdjfaiosdjf",
+    "confirmPassword": "2asdfkljasdklfjasklfjsdkljfkasdjfiejklasdjklfjasdiofjasdiofjioejioasdjfioasdjfioejklasdjfaiosdjf"
 }
 
 ###
