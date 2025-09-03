@@ -11,6 +11,7 @@ import ManageAdvisor from "./pages/librarianDashboard/manageAdvisor/manageAdviso
 import EditProfile from "./components/editProfile/editProfile";
 import CourseManagement from "./pages/adminDashboard/courseManagement/courseManagement";
 import ProtectedRoute from "./components/protectedRoute/protectedRoute"; // 👈 Importa a proteção
+import PasswordRecovery from "./pages/passwordRecovery/passwordRecovery";
 
 function App() {
   const location = useLocation();
@@ -27,6 +28,7 @@ function App() {
         <Route path="/login" element={<Login />} />
         <Route path="/admin" element={<AdminDashboard />} />
         <Route path="/admin/course-management" element={<CourseManagement />} />
+        <Route path="/reset-password" element={<PasswordRecovery />} />
 
         {/* 🔒 Rota protegida para bibliotecário */}
         <Route
@@ -50,6 +52,7 @@ function LibrarianLayout() {
       <Route path="/" element={<LibrarianDashboard />} />
       <Route path="gerenciarOrientador" element={<ManageAdvisor />} />
       <Route path="editarPerfil" element={<EditProfile />} />
+
     </Routes>
   );
 }
