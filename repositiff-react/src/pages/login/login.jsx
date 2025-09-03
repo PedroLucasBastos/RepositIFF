@@ -1,9 +1,10 @@
 import React, { useState } from "react";
 import Lottie from "lottie-react";
-import Cookies from "js-cookie"; // Importar js-cookie
-import axios from "axios"; // Importar axios
+import Cookies from "js-cookie";
+import axios from "axios";
 import animationData from "../../assets/lotties/animacaoLogin.json";
-import { Alert } from "antd";
+// ALTERADO: Adicionado Switch
+import { Alert, Switch } from "antd"; 
 import { useNavigate } from "react-router-dom";
 import { EyeInvisibleOutlined, EyeOutlined } from "@ant-design/icons";
 
@@ -13,6 +14,13 @@ function Login() {
   const navigate = useNavigate();
   const [passwordVisible, setPasswordVisible] = useState(false);
 
+  const [userType, setUserType] = useState("librarian");
+
+  // NOVO: Função para lidar com a mudança do Switch
+  const handleUserTypeChange = (checked) => {
+    // Se 'checked' for true, o usuário é admin, senão é bibliotecário
+    setUserType(checked ? "admin" : "librarian");
+  };
 
   const handleFormSubmit = async (e) => {
     e.preventDefault();
@@ -28,37 +36,39 @@ function Login() {
       return;
     }
 
-    try {
-      // Payload da requisição
-      const payload = { registrationNumber, password };
+    // ALTERADO: URLs dinâmicas baseadas no userType
+    const apiUrl =
+      userType === "admin"
+        ? "http://localhost:3333/librarian/login"
+        : "http://localhost:3333/librarian/login";
 
-      // Chamada à API usando Axios
-      const response = await axios.post(
-        "http://localhost:3333/librarian/login",
-        payload,
-        {
-          headers: {
-            "Content-Type": "application/json",
-          },
-        }
-      );
+    const redirectPath = userType === "admin" ? "/admin" : "/bibliotecario";
+
+    try {
+      const payload = { registrationNumber, password };
+      
+      // ALTERADO: Usa a apiUrl dinâmica
+      const response = await axios.post(apiUrl, payload, {
+        headers: {
+          "Content-Type": "application/json",
+        },
+      });
 
       const { token } = response.data;
 
       if (token) {
-        // Salvar o token nos cookies com expiração de 12 horas
         Cookies.set("authToken", token, { expires: 0.5, path: "/" });
-        // Token expira em 12 horas
         setMessage("Login bem-sucedido!");
-        navigate("/bibliotecario");
+        
+        // ALTERADO: Usa o redirectPath dinâmico
+        navigate(redirectPath);
       } else {
         setErrorMessage("Erro ao processar a resposta do servidor.");
       }
     } catch (error) {
       console.error("Erro ao fazer login:", error);
-      // Verificar se o erro tem uma mensagem vinda do servidor
       if (error.response && error.response.data.msg) {
-        setErrorMessage(error.response.data.msg); // Exibe a mensagem de erro do servidor
+        setErrorMessage(error.response.data.msg);
       } else {
         setErrorMessage("Erro ao conectar-se ao servidor.");
       }
@@ -67,7 +77,7 @@ function Login() {
 
   return (
     <div className="flex h-screen flex-col lg:flex-row">
-      {/* Coluna esquerda com animação */}
+      {/* ... (Coluna da animação - sem alterações) ... */}
       <div className="lg:w-1/2 w-full bg-transparent flex items-center justify-center relative">
         <Lottie
           animationData={animationData}
@@ -88,10 +98,20 @@ function Login() {
             </p>
           </div>
 
+          {/* NOVO: Componente Switch para selecionar o tipo de usuário */}
+          <div className="flex items-center justify-center gap-4 mb-6">
+            <span className={`font-medium ${userType === 'librarian' ? 'text-iffEscuro' : 'text-gray-500'}`}>
+              Bibliotecário 📚
+            </span>
+            <Switch onChange={handleUserTypeChange} />
+            <span className={`font-medium ${userType === 'admin' ? 'text-iffEscuro' : 'text-gray-500'}`}>
+              Administrador 👨‍💼
+            </span>
+          </div>
+
           {message && (
             <Alert message={message} type="success" showIcon className="mb-4" />
           )}
-
           {errorMessage && (
             <Alert
               message={errorMessage}
@@ -101,6 +121,7 @@ function Login() {
             />
           )}
 
+          {/* ... (Restante do formulário - sem alterações) ... */}
           <form
             onSubmit={handleFormSubmit}
             noValidate
@@ -139,12 +160,10 @@ function Login() {
                 </div>
                 <div className="relative">
                 <input
-                    // O tipo muda com base no estado
                     type={passwordVisible ? "text" : "password"}
                     name="password"
                     id="password"
                     placeholder="Digite sua senha"
-                    // Adicionado padding à direita (pr-10) para o ícone não cobrir o texto
                     className="w-full px-4 py-3 pr-10 border rounded-md text-gray-700 dark:text-gray-800 bg-gray-100 dark:bg-gray-700 dark:border-gray-600 focus:outline-none focus:ring-2 focus:ring-iffEscuro"
                 />
                 <div className="absolute inset-y-0 right-0 flex items-center pr-3 cursor-pointer" onClick={() => setPasswordVisible(!passwordVisible)}>
