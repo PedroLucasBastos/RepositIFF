@@ -5,4 +5,5 @@ export interface IFileStorage {
   upload(key: string, file: Buffer): Promise<Error | void>;
   download(key: string): Promise<Error | string>;
   delete(key: string): Promise<Error | void>;
+  checkIfDocumentExists(key: string): Promise<Error | boolean>;
 }

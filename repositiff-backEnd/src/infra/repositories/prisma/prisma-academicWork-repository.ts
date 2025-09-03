@@ -175,13 +175,21 @@ export class PrismaAcademicWorkRepository implements IAcademicWorkRepository {
       return new Error("Unexpected error");
     }
   }
-  async changeVsibility(id: string, status: boolean): Promise<Error | IReturnBasicAcademicWork> {
+  async changeVsibility(id: string, status: boolean): Promise<Error | IReturnFullAcademicWorkDTO> {
     try {
       const prismaRequest = await this._prismaCli.academicWork.update({
         where: { id: id },
         data: { academicWorkVisibility: status },
+        include: {
+          advisors: {
+            select: {
+              Advisor: true,
+            },
+          },
+          course: true,
+        },
       });
-      return MapperAcademicWork.toBasicInfoDTO(prismaRequest);
+      return MapperAcademicWork.toDTO(prismaRequest);
     } catch (error) {
       if (error instanceof Prisma.PrismaClientKnownRequestError) {
         const customMessage = prismaErrorMessages[error.code] || "Unknown database error occurred";
@@ -631,17 +639,17 @@ export class PrismaAcademicWorkRepository implements IAcademicWorkRepository {
         description: prismaData.description,
         course: prismaData.course,
         keyWords: prismaData.keyWords,
-        cutterNumber: prismaData.cutterNumber,
         cduCode: prismaData.cduCode,
         cddCode: prismaData.cddCode,
-        file: prismaData.file,
         authors: prismaData.authors,
         advisors: advisorMapped,
         illustration: prismaData.illustration,
         references: prismaData.references,
       },
       prismaData.id,
-      prismaData.academicWorkStatus
+      prismaData.academicWorkStatus,
+      prismaData.cutterNumber,
+      prismaData.file
     );
     if (academicWorkCreated.isLeft())
       throw new Error("ERROR_TO_MAPPING_ACADEMICWORK_VALUES", {

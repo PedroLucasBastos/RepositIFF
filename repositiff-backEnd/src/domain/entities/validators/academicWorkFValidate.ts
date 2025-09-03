@@ -37,7 +37,6 @@ export class AcademicWorkValitador {
       AcademicWorkValitador.validateDescription(props.description),
       AcademicWorkValitador.validateCourse(props.course),
       AcademicWorkValitador.validateKeyWords(props.keyWords),
-      AcademicWorkValitador.validateCutterNumber(props.cutterNumber),
       props.cduCode ? AcademicWorkValitador.validateCduCode(props.cduCode) : new Right(undefined),
       props.cddCode ? AcademicWorkValitador.validateCddCode(props.cddCode) : new Right(undefined),
     ]
@@ -85,7 +84,8 @@ export class AcademicWorkValitador {
   }
 
   static validateTypeWork(type: string): EitherOO<DomainError, void> {
-    if (!Object.values(typeWork).includes(type as typeWork)) return new Left(new DomainError(ErrorCategory.Application, "ERROR_TYPEWORK", `Error to convert typework`));
+    if (!Object.values(typeWork).includes(type as typeWork))
+      return new Left(new DomainError(ErrorCategory.Application, "ERROR_TYPEWORK", `Error to convert typework`));
     return new Right(undefined);
   }
 
@@ -147,14 +147,14 @@ export class AcademicWorkValitador {
     return new Right(undefined);
   }
 
-  static validateCutterNumber(cutterNumber?: string): EitherOO<DomainError, void> {
-    if (!cutterNumber || cutterNumber.length < 0) {
-      console.log("\n CUTTER INVÁLIDO");
-      console.log(cutterNumber);
-      return new Left(AcademicWorkErros.InvalidParameters("The Cutter Number is invalid S2"));
-    }
-    return new Right(undefined);
-  }
+  // static validateCutterNumber(cutterNumber?: string): EitherOO<DomainError, void> {
+  //   if (!cutterNumber || cutterNumber.length < 0) {
+  //     console.log("\n CUTTER INVÁLIDO");
+  //     console.log(cutterNumber);
+  //     return new Left(AcademicWorkErros.InvalidParameters("The Cutter Number is invalid S2"));
+  //   }
+  //   return new Right(undefined);
+  // }
 
   static validateCduCode(cduCode?: string): EitherOO<DomainError, void> {
     if (!cduCode || cduCode.length < 0) {
@@ -184,7 +184,7 @@ export class AcademicWorkValitador {
       AcademicWorkValitador.validateCourse(props.course),
       AcademicWorkValitador.validateKeyWords(props.keyWords),
       // AcademicWorkValitador.validateTypeWork(props.file),
-      AcademicWorkValitador.validateCutterNumber(props.cutterNumber),
+      // AcademicWorkValitador.validateCutterNumber(props.cutterNumber),
       AcademicWorkValitador.validateCduCode(props.cduCode),
       AcademicWorkValitador.validateCddCode(props.cddCode),
     ]
