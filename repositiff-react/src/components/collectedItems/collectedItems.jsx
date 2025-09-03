@@ -1,6 +1,7 @@
 import "./collectedItems.css";
-
+import { useNavigate } from "react-router-dom";
 function CollectedItems() {
+  const navigate = useNavigate();
   return (
     <div className="itens-container mt-20">
       <p className="text-[20px] sm:text-[24px] md:text-[28px] lg:text-[32px] xl:text-[34px] mx-auto text-center text-gray-500">
@@ -18,6 +19,7 @@ function CollectedItems() {
                 src="/images/livros.svg"
                 title="livros"
                 className="max-w-[100px]"
+                onClick={() => navigate('/search')}
               />
             </button>
             <span className="mt-2 text-center text-gray-700">
@@ -30,6 +32,7 @@ function CollectedItems() {
                 src="/images/logoEngenhariaComputacao.svg"
                 title="logoEngenharia"
                 className="max-w-[100px]"
+                onClick={() => navigate('/search/EngenhariaComputacao')}
               />
             </button>
             <span className="mt-2 text-center text-gray-700">
@@ -42,6 +45,7 @@ function CollectedItems() {
                 src="/images/alimentos.svg"
                 title="logoEngenharia"
                 className="max-w-[100px]"
+                onClick={() => navigate('/search/CienciaTecnologiaAlimentos')}
               />
             </button>
             <span className="mt-2 text-center text-gray-700">

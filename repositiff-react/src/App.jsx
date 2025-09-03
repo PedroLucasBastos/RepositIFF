@@ -12,6 +12,10 @@ import EditProfile from "./components/editProfile/editProfile";
 import CourseManagement from "./pages/adminDashboard/courseManagement/courseManagement";
 import ProtectedRoute from "./components/protectedRoute/protectedRoute"; // 👈 Importa a proteção
 import PasswordRecovery from "./pages/passwordRecovery/passwordRecovery";
+import SearchPage from "./pages/searches/SearchPage";
+import SearchCE from "./pages/searches/SearchCE";
+import SearchFST from "./pages/searches/SearchFST";
+import TccDetailsPage from "./pages/searches/TccDetailsPage";
 
 function App() {
   const location = useLocation();
@@ -29,6 +33,10 @@ function App() {
         <Route path="/admin" element={<AdminDashboard />} />
         <Route path="/admin/course-management" element={<CourseManagement />} />
         <Route path="/reset-password" element={<PasswordRecovery />} />
+        <Route path="/search" element={<SearchPage />} />
+        <Route path="/search/EngenhariaComputacao" element={<SearchCE />} />
+        <Route path="/search/CienciaTecnologiaAlimentos" element={<SearchFST />} />
+        <Route path="/tcc/:id" element={<TccDetailsPage />} />
 
         {/* 🔒 Rota protegida para bibliotecário */}
         <Route
