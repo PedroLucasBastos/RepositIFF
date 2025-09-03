@@ -80,23 +80,6 @@ export class AcademicWork {
     return new Right(new AcademicWork(props, id, academicWorkStatus, cutterNumber));
   }
 
-  // public changeVisibility(): void {
-  //   if (this._academicWorkVisibility === academicWorkVisibility.Public)
-  //     this._academicWorkVisibility = academicWorkVisibility.Private;
-  //   if (
-  //     this._academicWorkVisibility === academicWorkVisibility.Private &&
-  //     AcademicWorkValitador.validateChangeVisibility(this._props).isRight()
-  //   ) {
-  //     this._academicWorkVisibility === academicWorkVisibility.Private;
-  //   }
-  // }
-
-  // public set file(file: string) {
-  //     this._props.file = file;
-  // }
-
-  // Getters
-
   public get ilustration(): Illustration {
     return this._props.illustration;
   }

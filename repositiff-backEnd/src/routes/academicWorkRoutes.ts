@@ -219,6 +219,16 @@ export async function academicWorkRoutes(fastify: FastifyInstance) {
     }
   );
 
+  fastify.post("/changeVisibility", async (req: FastifyRequest<{ Body: { id: string } }>, res: FastifyReply) => {
+    console.log(req.body);
+    try {
+      // const body = req.body;
+      await controller.changeVisibility(req, res);
+    } catch (error: any) {
+      res.code(500).send({ error: error.message, message: "Change visibility has failed" });
+    }
+  });
+
   fastify.post("/deleteAdvisor", async (req: FastifyRequest<{ Body: IDelAdvisorProps }>, res: FastifyReply) => {
     console.log(req.body);
     try {

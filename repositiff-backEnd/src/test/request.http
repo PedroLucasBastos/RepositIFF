@@ -20,7 +20,7 @@ Content-Type: application/json
 
 {
     "registrationNumber": "2013655865",
-    "password": "abc@123",
+    "password": "2asdfkljasdklfjasklfjsdkljfkasdjfiejklasdjklfjasdiofjasdiofjioejioasdjfioasdjfioejklasdjfaiosdjf",
     "cargo": "Librarian"
 }
 ###
@@ -130,4 +130,11 @@ Content-Type: application/json
 
 # TESTE PARA ACADEMIC WORK
 
+###
 
+POST http://localhost:3333/academicWork/changeVisibility
+Content-Type: application/json
+
+{
+    "id": "eec6f623-2a9f-4233-82dd-309fdc54a3de"
+}

@@ -28,6 +28,8 @@ import {
   DefineProps,
 } from "@src/domain/application/academicWork_Advisors-useCases/defineMainAdvisor-use-case.js";
 import { DeleteAcademicWorkUseCase } from "@src/domain/application/academicWork-useCases/deleteAcademicWork-use-case.js";
+import { Prisma } from "@prisma/client";
+import { ChangeVisibilityUseCase } from "@src/domain/application/academicWork-useCases/changeVisibility-use-case.js";
 
 export interface IRequestAcademicWorkController {
   authors: string[];
@@ -233,7 +235,28 @@ export class academicWorkController {
     });
   }
 
-  async changeVisibility(req: string): Promise<void> {}
+  async changeVisibility(req: FastifyRequest<{ Body: { id: string } }>, res: FastifyReply): Promise<void> {
+    const id = req.body.id;
+    if (!id)
+      return res.status(400).send({
+        Error: "ID is required",
+      });
+
+    const repo = new PrismaAcademicWorkRepository();
+    const file = new CloudFlareFileStorage();
+
+    const useCase = new ChangeVisibilityUseCase(repo, file);
+    const result = await useCase.execute(id);
+
+    if (result.isLeft())
+      return res.status(400).send({
+        Error: result.value,
+      });
+
+    res.code(200).send({
+      Message: "Visibilidade alterada com sucesso",
+    });
+  }
 
   async update(req: IUpdateRouteRequest, res: FastifyReply): Promise<void> {
     console.log("COMEÇOU A ROTA AKIIIIIIIIIIIIII");

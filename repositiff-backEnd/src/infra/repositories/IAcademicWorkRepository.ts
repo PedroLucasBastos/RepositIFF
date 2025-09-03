@@ -43,7 +43,7 @@ export interface updateAcademicWorkDTO {
 
 export interface IReturnFullAcademicWorkDTO {
   id: string;
-  academicWorkStatus: string;
+  academicWorkStatus: boolean;
   authors: string[];
   advisors: IAdvisorDTO[];
   course: IReturnCourseDTO;
@@ -130,7 +130,7 @@ export interface IAcademicWorkRepository {
   updateAcademicWork(project: updateAcademicWorkDTO, id: string): Promise<Error | IReturnFullAcademicWorkDTO>;
   updateAcademicWorkFields(project: updateAcademicWorkFieldsDTO): Promise<Error | IReturnAcademicWorkUpdateFields>;
   selectAcademicWork(id: string): Promise<Error | (null | IReturnFullAcademicWorkDTO)>;
-  changeVsibility(id: string, status: boolean): Promise<Error | IReturnBasicAcademicWork>;
+  changeVsibility(id: string, status: boolean): Promise<Error | IReturnFullAcademicWorkDTO>;
   // updateAcademicWorkAdvisors(newAdvisor: string): Promise<Error | void>;
   addAdvisorToAcademicWork(academicWorkId: string, advisorId: string): Promise<Error | void>;
   deleteAdvisorToAcademicWork(academicWorkId: string, advisorId: string): Promise<Error | void>;

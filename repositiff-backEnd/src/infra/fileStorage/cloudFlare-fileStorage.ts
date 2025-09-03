@@ -1,4 +1,13 @@
-import { DeleteObjectCommand, GetObjectAclCommand, GetObjectCommand, ListObjectsV2Command, PutObjectCommand, PutObjectCommandOutput, S3Client } from "@aws-sdk/client-s3";
+import {
+  DeleteObjectCommand,
+  GetObjectAclCommand,
+  GetObjectCommand,
+  HeadObjectCommand,
+  ListObjectsV2Command,
+  PutObjectCommand,
+  PutObjectCommandOutput,
+  S3Client,
+} from "@aws-sdk/client-s3";
 import { IFileStorage } from "./IFileStorage.js";
 import "dotenv/config"; // Carrega automaticamente as variáveis do .env
 import { getSignedUrl } from "@aws-sdk/s3-request-presigner";
@@ -30,6 +39,23 @@ export class CloudFlareFileStorage implements IFileStorage {
       },
     });
   }
+  async checkIfDocumentExists(key: string): Promise<Error | boolean> {
+    try {
+      await this._r2.send(
+        new HeadObjectCommand({
+          Bucket: process.env.CLOUDFLARE_BUCKET_NAME!,
+          Key: key,
+        })
+      );
+      return true;
+    } catch (err: any) {
+      if (err.name === "NotFound" || err.$metadata?.httpStatusCode === 404) {
+        console.log("Arquivo não encontrado");
+        return false;
+      }
+      return err;
+    }
+  }
   async delete(key: string): Promise<Error | void> {
     try {
       await this._r2.send(
@@ -39,8 +65,6 @@ export class CloudFlareFileStorage implements IFileStorage {
         })
       );
     } catch (error) {}
-
-    
   }
   async upload(key: string, file: Buffer): Promise<Error | void> {
     console.log(key);
