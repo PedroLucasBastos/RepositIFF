@@ -47,11 +47,24 @@ export class PrismaAcademicWorkRepository implements IAcademicWorkRepository {
           ([_, v]) => v !== undefined && v !== null && v !== "" && !(typeof v === "number" && isNaN(v))
         )
       );
+
       const prismaData = await this._prismaCli.academicWork.update({
         where: { id },
         data: cleanedData,
       });
 
+      if (idCourse) {
+        const newCourseRelationShip = await this._prismaCli.academicWork.update({
+          where: { id },
+          data: {
+            course: {
+              connect: {
+                id: idCourse,
+              },
+            },
+          },
+        });
+      }
       //     console.log("antes da transação")
       // // const result = await this._prismaCli.$transaction(operations);
       // console.log("depois da transação")

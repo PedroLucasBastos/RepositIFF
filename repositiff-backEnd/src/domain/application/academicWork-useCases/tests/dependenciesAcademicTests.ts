@@ -1,6 +1,6 @@
 import { PrismaAdvisorRepository } from "@src/infra/repositories/prisma/prisma-advisor-repository.js";
 import { Advisor } from "@src/domain/entities/advisor.js";
-import { Course } from "@src/domain/entities/course.js";
+import { Course, degreeType } from "@src/domain/entities/course.js";
 import { PrismaCourseRepostory } from "@src/infra/repositories/prisma/prisma-course-repostory.js";
 import { CreateAdvisorUseCase } from "../../advisor-useCases/createAdvisor-useCase.js";
 import { AdvisorsProducts } from "../../advisor-useCases/tests/advisorsProducts.js";
@@ -48,6 +48,18 @@ export class DependeciesAcademicTest {
     let advisor = advisorUseCaseOrError.value as Advisor;
 
     return advisor;
+  }
+
+  static async aditionalCourse(): Promise<Course> {
+    const courseRepo = new PrismaCourseRepostory();
+    const useCaseCourse = new CreateCourseUseCase(courseRepo);
+    const sut = {
+      name: "Engenharia da Computação",
+      courseCode: "CO255",
+      degreeType: degreeType.Bachelor,
+    };
+    const result = await useCaseCourse.execute(sut);
+    return result.value as Course;
   }
 
   static async basicInfo(): Promise<Course> {
