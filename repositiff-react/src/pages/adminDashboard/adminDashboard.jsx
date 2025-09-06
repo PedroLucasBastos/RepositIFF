@@ -1,6 +1,6 @@
-import React, { useState, useEffect } from "react";
+import  { useState, useEffect } from "react";
 import { useNavigate, useLocation } from "react-router-dom";
-import { Dropdown, Menu, Avatar, Modal, message } from "antd";
+import {  Menu, Modal, message } from "antd";
 import { UserOutlined, LogoutOutlined, PlusOutlined } from "@ant-design/icons";
 import Cookies from "js-cookie";
 import Lottie from "lottie-react";
@@ -129,11 +129,7 @@ const AdminDashboard = () => {
       {/* header */}
       <div className="flex justify-between items-center p-4 bg-gray-100 shadow-md">
         <h1 className="text-2xl font-bold">Dashboard do Administrador</h1>
-        <Dropdown overlay={menu} trigger={["click"]}>
-          <a onClick={(e) => e.preventDefault()}>
-            <Avatar size="large" icon={<UserOutlined />} />
-          </a>
-        </Dropdown>
+        
       </div>
 
       {/* Painel */}
