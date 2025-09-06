@@ -52,16 +52,7 @@ function Header() {
           </li>
           <li onClick={() => scrollToSection("about")}>Sobre</li>
           <li>
-            <a href="#indicadores">Indicadores</a>
-          </li>
-          <li>
-            <a href="#contato">Contato</a>
-          </li>
-          <li>
             <Link to="/login">Login</Link>
-          </li>
-          <li>
-            <a href="#faq">FAQ</a>
           </li>
         </ul>
 
