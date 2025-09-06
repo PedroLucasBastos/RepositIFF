@@ -209,7 +209,7 @@ const SearchPage = () => {
             <div className="flex flex-col md:flex-row gap-8">
                 {/* Filtros na lateral */}
                 <aside className="w-full md:w-1/4">
-                    <div className="p-6 bg-gray-50 rounded-lg shadow sticky top-8">
+                    <div className="p-6 bg-gray-50 rounded-lg shadow  top-8">
                         <div className="flex justify-between items-center mb-4">
                             <h2 className="text-xl font-semibold">Refinar a Busca</h2>
                             <Button onClick={handleClearAllFilters} type="link" size="small" className="text-iffEscuro">Limpar Tudo</Button>
