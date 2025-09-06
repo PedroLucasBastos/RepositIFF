@@ -110,10 +110,38 @@ function Login() {
           </div>
 
           <div className="flex items-center justify-center gap-4 mb-6">
-            <span className={`font-medium ${userType === 'librarian' ? 'text-iffEscuro' : 'text-gray-500'}`}>Bibliotecário 📚</span>
-            <Switch onChange={handleUserTypeChange} />
-            <span className={`font-medium ${userType === 'admin' ? 'text-iffEscuro' : 'text-gray-500'}`}>Administrador 👨‍💼</span>
-          </div>
+                <div className="relative flex w-full max-w-[320px] p-1 bg-from-iffClaro rounded-full">
+                  {/* Fundo deslizante da chave */}
+                  <span
+                    aria-hidden="true"
+                    className={`absolute pointer-events-none top-1 h-8 w-1/2 rounded-full bg-white shadow-sm transition-transform duration-300 ease-in-out
+                               ${userType === 'admin' ? 'translate-x-full' : 'translate-x-0'}`}
+                  ></span>
+
+                  {/* Botão Bibliotecário */}
+                  <button
+                    type="button"
+                    onClick={() => setUserType('librarian')}
+                    className={`relative z-10 w-1/2 py-2 text-sm font-semibold rounded-full transition-colors duration-300 outline-none focus-visible:ring-2 focus-visible:ring-iffEscuro focus-visible:ring-offset-2 ${
+                      userType === 'librarian' ? 'text-iffEscuro' : 'text-gray-600 hover:text-gray-800'
+                    }`}
+                  >
+                    <span className={`font-medium ${userType === 'librarian' ? 'text-iffEscuro' : 'text-gray-500'}`}>Bibliotecário 📚</span>
+                  </button>
+
+                  {/* Botão Administrador */}
+                  <button
+                    type="button"
+                    onClick={() => setUserType('admin')}
+                    className={`relative z-10 w-1/2 py-2 text-sm font-semibold rounded-full transition-colors duration-300 outline-none focus-visible:ring-2 focus-visible:ring-iffEscuro focus-visible:ring-offset-2 ${
+                      userType === 'admin' ? 'text-iffEscuro' : 'text-gray-600 hover:text-gray-800'
+                    }`}
+                  >
+                    <span className={`font-medium ${userType === 'admin' ? 'text-iffEscuro' : 'text-gray-500'}`}>Administrador 👨‍💼</span>
+                  </button>
+                </div>
+              </div>
+          
 
           {message && <Alert message={message} type="success" showIcon className="mb-4" />}
           {errorMessage && <Alert message={errorMessage} type="error" showIcon className="mb-4" />}

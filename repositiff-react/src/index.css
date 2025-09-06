@@ -78,3 +78,9 @@ body, header {
 .ant-switch-checked {
   background-color: #2F9E41 !important; /* substitua pelo valor de iffEscuro */
 }
+
+.ant-btn-link:hover,
+.ant-btn-link:focus {
+  /* Substitua #A3D9B1 pelo valor exato da sua cor iffClaro */
+  color: rgb(173 249 118 / var(--tw-bg-opacity, 1))!important; 
+}
