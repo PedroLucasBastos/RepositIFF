@@ -95,13 +95,6 @@ const LibrarianDashboard = () => {
     <div>
       <div className="flex justify-between items-center p-4 bg-gray-100 shadow-md">
         <h1 className="text-2xl font-bold">Dashboard do Bibliotecário</h1>
-        <Dropdown overlay={menu} trigger={["click"]}>
-          <a onClick={(e) => e.preventDefault()}>
-            <Space>
-              <Avatar size="large" icon={<UserOutlined />} />
-            </Space>
-          </a>
-        </Dropdown>
       </div>
 
       <div className="min-h-screen">

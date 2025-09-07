@@ -16,21 +16,30 @@ import SearchPage from "./pages/searches/SearchPage";
 import SearchCE from "./pages/searches/SearchCE";
 import SearchFST from "./pages/searches/SearchFST";
 import TccDetailsPage from "./pages/searches/TccDetailsPage";
+import AdminHeader from "./components/header/AdminHeader/adminHeader";
 
 function App() {
   const location = useLocation();
 
   // Define qual cabeçalho usar com base na rota
-  const isLoggedInRoute = location.pathname.startsWith("/bibliotecario");
+  const isLibrarianRoute = location.pathname.startsWith("/bibliotecario");
+  const isAdminRoute = location.pathname.startsWith("/admin");
+  
 
   return (
     <>
-      {isLoggedInRoute ? <LoggedInHeader /> : <Header />}
+      {isAdminRoute ? (
+        <AdminHeader />
+      ) : isLibrarianRoute ? (
+        <LoggedInHeader />
+      ) : (
+        <Header />
+      )}
+
       <Routes>
         <Route path="*" element={<NotFound />} />
         <Route path="/" element={<Home />} />
         <Route path="/login" element={<Login />} />
-        <Route path="/admin" element={<AdminDashboard />} />
         <Route path="/admin/course-management" element={<CourseManagement />} />
         <Route path="/reset-password" element={<PasswordRecovery />} />
         <Route path="/search" element={<SearchPage />} />
@@ -46,6 +55,14 @@ function App() {
               <LibrarianLayout />
             </ProtectedRoute>
           }
+        />
+        <Route
+        element={
+          <ProtectedRoute>
+            <AdminDashboard />
+          </ProtectedRoute>
+        }
+        path="/admin"
         />
       </Routes>
       <Rodape />

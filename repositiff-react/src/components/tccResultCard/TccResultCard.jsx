@@ -19,6 +19,10 @@ const TccResultCard = ({ tcc }) => {
     : 'Orientador não informado';
 
   const isPublic = tcc.visibility === true;
+  
+  const keywords = tcc.keyWords && tcc.keyWords.length > 0
+    ? tcc.keyWords.join(', ')
+    : '';
 
   return (
     <div className="p-6 border rounded-lg shadow-sm hover:shadow-md transition-shadow">
@@ -38,6 +42,16 @@ const TccResultCard = ({ tcc }) => {
       <p className="text-sm text-gray-500 mb-4">
         Publicado em {publicationYear}
       </p>
+      {keywords && (
+          <p className="text-xs text-gray-500 mb-4 italic">
+            <strong>Palavras-chave:</strong> {keywords}
+          </p>
+        )}
+      {tcc.description && (
+          <p className="text-sm text-gray-700 mb-4 line-clamp-2">
+            {tcc.description}
+          </p>
+        )}
 
       <Button 
         className="bg-botaoIFF hover:bg-green-800"
