@@ -9,7 +9,7 @@ export interface findAdvisorByRegistrationNumber {
   registrationNumber: string;
 }
 export class AdvisorController {
-  async create(req: FastifyRequest<{ Body: AdvisorProps }>, res: FastifyReply): Promise<void> {
+  async create(req: any, res: FastifyReply): Promise<void> {
     const sanitizeOrError = this.sanitizeReceivedData(req.body);
     if (sanitizeOrError.isLeft())
       res.code(400).send({
@@ -18,11 +18,14 @@ export class AdvisorController {
     const { name, surname, registrationNumber } = req.body;
     const repo = new PrismaAdvisorRepository();
     const createUseCase = new CreateAdvisorUseCase(repo);
-    const resultOrError = await createUseCase.execute({
-      name: name,
-      surname: surname,
-      registrationNumber: registrationNumber,
-    });
+    const resultOrError = await createUseCase.execute(
+      {
+        name: name,
+        surname: surname,
+        registrationNumber: registrationNumber,
+      },
+      req.userId
+    );
     if (resultOrError.isLeft())
       return res.code(400).send({
         Message: "Dont be possible registred a advisor",
@@ -33,7 +36,7 @@ export class AdvisorController {
     });
   }
 
-  async update(req: FastifyRequest<{ Body: UpdateAdvisorPropsDTO }>, res: FastifyReply): Promise<void> {
+  async update(req: any, res: FastifyReply): Promise<void> {
     const idAdvisor = req.body.advisorIdentification;
     const fields = req.body.updateFields;
 
@@ -51,10 +54,13 @@ export class AdvisorController {
 
     const repo = new PrismaAdvisorRepository();
     const updateUseCase = new UpdateAdvisorUseCase(repo);
-    const updateOrError = await updateUseCase.execute({
-      advisorIdentification: idAdvisor,
-      updateFields: fields,
-    });
+    const updateOrError = await updateUseCase.execute(
+      {
+        advisorIdentification: idAdvisor,
+        updateFields: fields,
+      },
+      req.userId
+    );
     if (updateOrError.isLeft())
       res.code(400).send({
         error: updateOrError.value,
@@ -64,7 +70,7 @@ export class AdvisorController {
     });
   }
 
-  async delete(req: FastifyRequest<{ Body: deleteAdvisor }>, res: FastifyReply): Promise<void> {
+  async delete(req: any, res: FastifyReply): Promise<void> {
     const advisorIdentification = req.body.advisorIdentification;
     const sanitizeOrError = this.sanitizeReceivedData(advisorIdentification);
     if (sanitizeOrError.isLeft())
@@ -73,7 +79,7 @@ export class AdvisorController {
       });
     const repo = new PrismaAdvisorRepository();
     const deleteUseCase = new DeleteAdvisorUseCase(repo);
-    const deleteOrError = await deleteUseCase.execute(advisorIdentification);
+    const deleteOrError = await deleteUseCase.execute(advisorIdentification, req.userId);
     if (deleteOrError.isLeft())
       res.code(400).send({
         Message: "Unable to delete advisor",
@@ -84,9 +90,12 @@ export class AdvisorController {
     });
   }
 
-  async findAdvisorByRegistrationNumber(req: FastifyRequest<{ Body: { registrationNumber: string } }>, res: FastifyReply) {}
+  async findAdvisorByRegistrationNumber(
+    req: FastifyRequest<{ Body: { registrationNumber: string } }>,
+    res: FastifyReply
+  ) {}
 
-  async listAllAdvisors(res: FastifyReply) {
+  async listAllAdvisors(req: any, res: FastifyReply) {
     const repo = new PrismaAdvisorRepository();
     const listAdvisor = await repo.listAllAdvisors();
     const countAdvisor = await repo.countAllAdvisors();

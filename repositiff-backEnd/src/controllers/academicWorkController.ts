@@ -57,7 +57,7 @@ export interface IUpdateRouteRequest {
 
 // interface IReque
 export class academicWorkController {
-  async cadastrated(req: IRequestAcademicWorkController, res: FastifyReply): Promise<void> {
+  async cadastrated(req: any, res: FastifyReply): Promise<void> {
     console.log("\n INICIO DA REQUISIÇÃO DE ADIÇÃO");
     console.log(req);
     console.log("\n");
@@ -95,22 +95,25 @@ export class academicWorkController {
     });
 
     console.log("\n\n");
-    const result = await useCase.execute({
-      authors: parameters.authors,
-      idAdvisors: parameters.idAdvisors,
-      title: parameters.title,
-      typeWork: parameters.typeWork,
-      year: parameters.year,
-      qtdPag: parameters.qtdPag,
-      description: parameters.description,
-      idCourse: parameters.idCourse,
-      keyWords: parameters.keyWords,
-      ilustration: parameters.ilustration,
-      references: parameters.references,
-      cddCode: parameters.optinalParameters.cddCode,
-      cduCode: parameters.optinalParameters.cduCode,
-      file: parameters.optinalParameters.file,
-    });
+    const result = await useCase.execute(
+      {
+        authors: parameters.authors,
+        idAdvisors: parameters.idAdvisors,
+        title: parameters.title,
+        typeWork: parameters.typeWork,
+        year: parameters.year,
+        qtdPag: parameters.qtdPag,
+        description: parameters.description,
+        idCourse: parameters.idCourse,
+        keyWords: parameters.keyWords,
+        ilustration: parameters.ilustration,
+        references: parameters.references,
+        cddCode: parameters.optinalParameters.cddCode,
+        cduCode: parameters.optinalParameters.cduCode,
+        file: parameters.optinalParameters.file,
+      },
+      req.userId
+    );
 
     if (result.isLeft())
       return res.status(400).send({
@@ -123,12 +126,12 @@ export class academicWorkController {
     });
   }
 
-  async deleteAcademicWork(req: string, res: FastifyReply): Promise<void> {
+  async deleteAcademicWork(req: any, res: FastifyReply): Promise<void> {
     // const { id } = req;
     const repo = new PrismaAcademicWorkRepository();
     const flare = new CloudFlareFileStorage();
 
-    const useCase = new DeleteAcademicWorkUseCase(repo, flare).execute(req);
+    const useCase = new DeleteAcademicWorkUseCase(repo, flare).execute(req, req.userId);
     // if (result.isLeft())
     //   return res.status(400).send({
     //     Error: result.value,
@@ -139,7 +142,7 @@ export class academicWorkController {
     });
   }
 
-  async basicUpdate(req: UpdateAcademicWorkBasicInfoPROPS, res: FastifyReply): Promise<void> {
+  async basicUpdate(req: any, res: FastifyReply): Promise<void> {
     console.log("\n\nCOMEÇOU O CONTROLLER DE BASIC\n");
 
     const { id, fields } = req;
@@ -155,7 +158,7 @@ export class academicWorkController {
     const repo = new PrismaAcademicWorkRepository();
     const useCase = new UpdateAcademicWorkBasicInfoUseCase(repo);
 
-    const result = await useCase.execute({ id, fields });
+    const result = await useCase.execute({ id, fields }, req.userId);
 
     console.log("\n\nRESULTADO DA SANITIZAÇÃO\n");
     console.log(resultSanitize);
@@ -172,16 +175,19 @@ export class academicWorkController {
     });
   }
 
-  async addAdvisor(req: AddAdvisorToAcademicWorkProps, res: FastifyReply): Promise<void> {
+  async addAdvisor(req: any, res: FastifyReply): Promise<void> {
     const repo = new PrismaAcademicWorkRepository();
     const useCase = new AddAdvisorToAcademicWorkUseCase(repo);
 
     // const { id, academicWorkId, advisorId, isMain } = req;
-    const result = await useCase.execute({
-      academicWorkId: req.academicWorkId,
-      advisorId: req.advisorId,
-      // isMain: req.isMain,
-    });
+    const result = await useCase.execute(
+      {
+        academicWorkId: req.academicWorkId,
+        advisorId: req.advisorId,
+        // isMain: req.isMain,
+      },
+      req.userId
+    );
     if (result.isLeft())
       return res.status(400).send({
         Error: result.value,
@@ -192,16 +198,19 @@ export class academicWorkController {
     });
   }
 
-  async delAdvisor(req: IDelAdvisorProps, res: FastifyReply): Promise<void> {
+  async delAdvisor(req: any, res: FastifyReply): Promise<void> {
     const repo = new PrismaAcademicWorkRepository();
     const useCase = new DelAdvisorInAcademicWorkUseCase(repo);
 
     // const { id, academicWorkId, advisorId, isMain } = req;
 
-    const result = await useCase.execute({
-      academicWorkId: req.academicWorkId,
-      advisorId: req.advisorId,
-    });
+    const result = await useCase.execute(
+      {
+        academicWorkId: req.academicWorkId,
+        advisorId: req.advisorId,
+      },
+      req.userId
+    );
 
     if (result.isLeft())
       return res.status(400).send({
@@ -214,16 +223,19 @@ export class academicWorkController {
     });
   }
 
-  async defineMainAdvisor(req: DefineProps, res: FastifyReply): Promise<void> {
+  async defineMainAdvisor(req: any, res: FastifyReply): Promise<void> {
     const repo = new PrismaAcademicWorkRepository();
     const useCase = new DefineMainAdvisorUseCase(repo);
 
     // const { id, academicWorkId, advisorId, isMain } = req;
 
-    const result = await useCase.execute({
-      academicWorkId: req.academicWorkId,
-      advisorId: req.advisorId,
-    });
+    const result = await useCase.execute(
+      {
+        academicWorkId: req.academicWorkId,
+        advisorId: req.advisorId,
+      },
+      req.userId
+    );
 
     if (result.isLeft())
       return res.status(400).send({
@@ -235,7 +247,7 @@ export class academicWorkController {
     });
   }
 
-  async changeVisibility(req: FastifyRequest<{ Body: { id: string } }>, res: FastifyReply): Promise<void> {
+  async changeVisibility(req: any, res: FastifyReply): Promise<void> {
     const id = req.body.id;
     if (!id)
       return res.status(400).send({
@@ -246,7 +258,7 @@ export class academicWorkController {
     const file = new CloudFlareFileStorage();
 
     const useCase = new ChangeVisibilityUseCase(repo, file);
-    const result = await useCase.execute(id);
+    const result = await useCase.execute(id, req.userId);
 
     if (result.isLeft())
       return res.status(400).send({
@@ -258,7 +270,7 @@ export class academicWorkController {
     });
   }
 
-  async update(req: IUpdateRouteRequest, res: FastifyReply): Promise<void> {
+  async update(req: any, res: FastifyReply): Promise<void> {
     console.log("COMEÇOU A ROTA AKIIIIIIIIIIIIII");
     console.log("req");
     console.log(req);
@@ -405,19 +417,6 @@ export class academicWorkController {
     if (references && (!Array.isArray(references) || references.some((reference) => typeof reference !== "number"))) {
       return new Left("References must be an array of numbers.");
     }
-
-    // // Validate references
-    // const parseReferences = JSON.parse(references);
-    // if (!Array.isArray(parseReferences) || parseReferences.some((reference) => typeof reference !== "number")) {
-    //   return new Left("References must be an array of numbers.");
-    // }
-    // console.log("antes da verificação do cdu")
-    // console.log(cduCode)
-    // Validate cduCode (optional)
-
-    // if (cduCode && typeof cduCode !== "string") {
-    //     return new Left("CDU code, if provided, must be a string");
-    // }
 
     if (cduCode && typeof cduCode !== "string") {
       return new Left(`CDU code, if provided, must be a string.CDU: ${cduCode} `);

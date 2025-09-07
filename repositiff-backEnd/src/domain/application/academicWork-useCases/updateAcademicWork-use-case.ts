@@ -1,5 +1,6 @@
 import { AcademicWork } from "@prisma/client";
 import { AcademicWorkValitador } from "@src/domain/entities/validators/academicWorkFValidate.js";
+import { CutterTable } from "@src/domain/services/cutterNumber.js";
 import { DomainError, ErrorCategory } from "@src/error_handling/domainServicesErrors.js";
 import { Either, Left } from "@src/error_handling/either.Funcional.js";
 import { Right } from "@src/error_handling/either.js";
@@ -39,8 +40,11 @@ export class UpdateAcademicWork_useCase {
     const validateResult = AcademicWorkValitador.validateUpdatedProps(props);
     if (validateResult.isLeft()) return new Left(validateResult.value);
 
-    console.log("Props");
-    console.log(props);
+    // console.log("Props");
+    // console.log(props);
+    // if (!props.authors || !props.title) {
+    //   new CutterTable().generateCutterNumber();
+    // }
     const resultUpdated = await this._repo.updateAcademicWork(
       {
         authors: props.authors,
@@ -66,6 +70,12 @@ export class UpdateAcademicWork_useCase {
     }
     if (props.file) {
       await this._storage.upload(resultUpdated.file, props.file);
+    }
+    if (props.authors || props.title) {
+      const authors = props.authors || resultUpdated.authors;
+      const title = props.title || resultUpdated.title;
+      resultUpdated.cutterNumber = new CutterTable().generateCutterNumber(authors[0], title);
+      await this._repo.updateAcademicWork({ cutterNumber: resultUpdated.cutterNumber }, id);
     }
     return new Right(resultUpdated);
   }

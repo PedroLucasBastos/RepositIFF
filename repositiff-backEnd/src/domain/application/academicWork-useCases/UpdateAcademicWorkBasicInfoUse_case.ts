@@ -1,3 +1,4 @@
+import { Role } from "@src/domain/entities/user.js";
 import { AcademicWorkValitador } from "@src/domain/entities/validators/academicWorkFValidate.js";
 import { DomainError, ErrorCategory } from "@src/error_handling/domainServicesErrors.js";
 import { Right } from "@src/error_handling/either.Funcional.js";
@@ -24,7 +25,17 @@ export interface UpdateAcademicWorkBasicInfoPROPS {
 }
 export class UpdateAcademicWorkBasicInfoUseCase {
   constructor(private readonly _repo: IAcademicWorkRepository) {}
-  async execute(props: UpdateAcademicWorkBasicInfoPROPS) {
+  async execute(props: UpdateAcademicWorkBasicInfoPROPS, userRole: string) {
+    if (userRole !== Role.LIBRARIAN) {
+      return new Left(
+        new DomainError(
+          ErrorCategory.Application,
+          "PERMISSION_DENIED",
+          "your role does not have permission",
+          new Error("Permission denied")
+        )
+      );
+    }
     const validateResult = AcademicWorkValitador.validateUpdatedProps(props.fields);
 
     console.log("\nRQEUISIÇÃO QUE CHEGOU AO USE CASE\n");
@@ -50,7 +61,9 @@ export class UpdateAcademicWorkBasicInfoUseCase {
       },
     });
     if (resultUpdated instanceof Error) {
-      return new Left(new DomainError(ErrorCategory.Application, "Error to updated academicWork", resultUpdated.message));
+      return new Left(
+        new DomainError(ErrorCategory.Application, "Error to updated academicWork", resultUpdated.message)
+      );
     }
     return new Right(resultUpdated);
   }

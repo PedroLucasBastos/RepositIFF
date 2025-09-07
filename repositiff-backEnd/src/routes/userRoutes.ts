@@ -1,26 +1,32 @@
-import { LibrarianController, RegisterLibrarianRegisterBody } from "@src/controllers/librarianController.js";
+import { ValidatorJWT } from "@src/controllers/middlewares/validateResetToken.ts/validatorJWT.js";
+import {
+  UserController,
+  RegisterUserRegisterBody as RegisterUserRegisterBody,
+} from "@src/controllers/userController.js";
+import { JWTService } from "@src/infra/security/jwtService.js";
 import { FastifyInstance, FastifyRequest, FastifyReply } from "fastify";
 
 // Plugin de rotas para bibliotecários
 export async function librarianRoutes(fastify: FastifyInstance) {
-  const librarianController = new LibrarianController();
+  const userController = new UserController();
 
   fastify.post(
     "/register",
-    async (req: FastifyRequest<{ Body: RegisterLibrarianRegisterBody }>, reply: FastifyReply) => {
+    // { preHandler: ValidatorJWT.validateAcess(require) },
+    async (req: FastifyRequest<{ Body: RegisterUserRegisterBody }>, reply: FastifyReply) => {
       try {
-        await librarianController.register(req, reply);
+        await userController.register(req, reply);
       } catch (error: any) {
         reply.code(400).send({ error: error.message, message: "Registration asdf failed" });
       }
     }
   );
 
-  fastify.post("/login", async (req: FastifyRequest<{ Body: RegisterLibrarianRegisterBody }>, reply: FastifyReply) => {
+  fastify.post("/login", async (req: FastifyRequest<{ Body: RegisterUserRegisterBody }>, res: FastifyReply) => {
     try {
-      await librarianController.login(req, reply);
+      await userController.login(req, res);
     } catch (error: any) {
-      reply.code(400).send({ error: error.message, message: "Login failed" });
+      res.code(400).send({ error: error.message, message: "Login failed" });
     }
   });
 
@@ -29,7 +35,7 @@ export async function librarianRoutes(fastify: FastifyInstance) {
     async (req: FastifyRequest<{ Body: { id: string } }>, reply: FastifyReply) => {
       try {
         console.log(req.body);
-        await librarianController.resetPasswordRequest(req, reply);
+        await userController.resetPasswordRequest(req, reply);
       } catch (error: any) {
         reply.code(400).send({ error: error.message, message: "Reset password failed" });
       }
@@ -40,7 +46,7 @@ export async function librarianRoutes(fastify: FastifyInstance) {
     "/reset-password",
     async (req: FastifyRequest<{ Body: { newPassword: string; confirmPassword: string } }>, reply: FastifyReply) => {
       try {
-        await librarianController.resetPassword(req, reply);
+        await userController.resetPassword(req, reply);
       } catch (error: any) {
         reply.code(400).send({ error: error.message, message: "Reset password failed" });
       }
@@ -49,7 +55,7 @@ export async function librarianRoutes(fastify: FastifyInstance) {
 
   fastify.get("/list", async (req: FastifyRequest, reply: FastifyReply) => {
     try {
-      await librarianController.listLibrarians(req.headers, reply);
+      await userController.listsUsers(req.headers, reply);
     } catch (error: any) {
       reply.code(400).send({ error: error.message, message: "Listation failed" });
     }

@@ -6,6 +6,7 @@ import { IDelAdvisorProps } from "@src/domain/application/academicWork_Advisors-
 import { FastifyInstance, FastifyReply, FastifyRequest } from "fastify";
 import multipart from "@fastify/multipart";
 import { DefineProps } from "@src/domain/application/academicWork_Advisors-useCases/defineMainAdvisor-use-case.js";
+import { ValidatorJWT } from "@src/controllers/middlewares/validateResetToken.ts/validatorJWT.js";
 
 export async function academicWorkRoutes(fastify: FastifyInstance) {
   const controller = new academicWorkController();
@@ -17,8 +18,9 @@ export async function academicWorkRoutes(fastify: FastifyInstance) {
   //     },
   //   });
 
-  fastify.post("/create", async (req, res) => {
+  fastify.post("/create", { preHandler: ValidatorJWT.validateToken }, async (req, res) => {
     try {
+      // ValidatorJWT.validateToken(req, res);
       const parts = req.parts();
       console.log(parts);
       const body: Record<string, any> = {};
@@ -75,10 +77,12 @@ export async function academicWorkRoutes(fastify: FastifyInstance) {
 
   fastify.put(
     "/basicUpdate",
+    { preHandler: ValidatorJWT.validateToken },
     async (req: FastifyRequest<{ Body: UpdateAcademicWorkBasicInfoPROPS }>, res: FastifyReply) => {
       console.log("\n INICIO DOS TRABALHOS DE BASIC UPDATE");
       console.log(req.body);
       try {
+        // ValidatorJWT.validateToken(req, res);
         const body = req.body;
         await controller.basicUpdate(body, res);
       } catch (error: any) {
@@ -90,6 +94,7 @@ export async function academicWorkRoutes(fastify: FastifyInstance) {
   // ANTIGO UPDATE
   fastify.post("/update", async (req, res) => {
     try {
+      ValidatorJWT.validateToken(req, res);
       const parts = req.parts();
       console.log(parts);
       const body: Record<string, any> = {};
@@ -150,9 +155,10 @@ export async function academicWorkRoutes(fastify: FastifyInstance) {
     }
   });
 
-  fastify.get("/:id", async (request, res) => {
-    const { id } = request.params as { id: string }; // Pegando o parâmetro da URL
+  fastify.get("/:id", { preHandler: ValidatorJWT.validateToken }, async (req, res) => {
+    const { id } = req.params as { id: string }; // Pegando o parâmetro da URL
     try {
+      // ValidatorJWT.validateToken(req, res);
       await controller.find(id, res);
 
       // Agora `req.body` é do tipo IRequestAcademicWorkController
@@ -164,7 +170,7 @@ export async function academicWorkRoutes(fastify: FastifyInstance) {
     }
   });
 
-  fastify.get("/:id/download", async (request, res) => {
+  fastify.get("/:id/download", { preHandler: ValidatorJWT.validateToken }, async (request, res) => {
     const { id } = request.params as { id: string }; // Pegando o parâmetro da URL
     try {
       await controller.download(id, res);
@@ -177,9 +183,10 @@ export async function academicWorkRoutes(fastify: FastifyInstance) {
     }
   });
 
-  fastify.delete("/:id/delete", async (request, res) => {
-    const { id } = request.params as { id: string }; // Pegando o parâmetro da URL
+  fastify.delete("/:id/delete", { preHandler: ValidatorJWT.validateToken }, async (req, res) => {
+    const { id } = req.params as { id: string }; // Pegando o parâmetro da URL
     try {
+      // ValidatorJWT.validateToken(req, res);
       await controller.deleteAcademicWork(id, res);
 
       // Agora `req.body` é do tipo IRequestAcademicWorkController
@@ -191,26 +198,38 @@ export async function academicWorkRoutes(fastify: FastifyInstance) {
     }
   });
 
-  fastify.put("/defineMainAdvisor", async (req: FastifyRequest<{ Body: DefineProps }>, res: FastifyReply) => {
-    console.log(req.body);
-    try {
-      const body = req.body;
-      await controller.defineMainAdvisor(body, res);
-    } catch (error: any) {
-      res.code(500).send({ error: error.message, message: "Updation has failed" });
+  fastify.put(
+    "/defineMainAdvisor",
+    { preHandler: ValidatorJWT.validateToken },
+    async (req: FastifyRequest<{ Body: DefineProps }>, res: FastifyReply) => {
+      console.log(req.body);
+      try {
+        ValidatorJWT.validateToken(req, res);
+        const body = req.body;
+        await controller.defineMainAdvisor(body, res);
+      } catch (error: any) {
+        res.code(500).send({ error: error.message, message: "Updation has failed" });
+      }
     }
-  });
+  );
 
   fastify.post(
     "/uploadFile",
-    async (req: FastifyRequest<{ Body: UpdateAcademicWorkBasicInfoPROPS }>, res: FastifyReply) => {}
+    { preHandler: ValidatorJWT.validateToken },
+    async (req: FastifyRequest<{ Body: UpdateAcademicWorkBasicInfoPROPS }>, res: FastifyReply) => {
+      try {
+        // ValidatorJWT.validateToken(req, res);
+      } catch (error) {}
+    }
   );
 
   fastify.post(
     "/addAdvisor",
+    { preHandler: ValidatorJWT.validateToken },
     async (req: FastifyRequest<{ Body: AddAdvisorToAcademicWorkProps }>, res: FastifyReply) => {
       console.log(req.body);
       try {
+        // ValidatorJWT.validateToken(req, res);
         const body = req.body;
         await controller.addAdvisor(body, res);
       } catch (error: any) {
@@ -219,25 +238,35 @@ export async function academicWorkRoutes(fastify: FastifyInstance) {
     }
   );
 
-  fastify.post("/changeVisibility", async (req: FastifyRequest<{ Body: { id: string } }>, res: FastifyReply) => {
-    console.log(req.body);
-    try {
-      // const body = req.body;
-      await controller.changeVisibility(req, res);
-    } catch (error: any) {
-      res.code(500).send({ error: error.message, message: "Change visibility has failed" });
+  fastify.post(
+    "/changeVisibility",
+    { preHandler: ValidatorJWT.validateToken },
+    async (req: FastifyRequest<{ Body: { id: string } }>, res: FastifyReply) => {
+      console.log(req.body);
+      try {
+        // const body = req.body;
+        // ValidatorJWT.validateToken(req, res);
+        await controller.changeVisibility(req, res);
+      } catch (error: any) {
+        res.code(500).send({ error: error.message, message: "Change visibility has failed" });
+      }
     }
-  });
+  );
 
-  fastify.post("/deleteAdvisor", async (req: FastifyRequest<{ Body: IDelAdvisorProps }>, res: FastifyReply) => {
-    console.log(req.body);
-    try {
-      const body = req.body;
-      await controller.delAdvisor(body, res);
-    } catch (error: any) {
-      res.code(500).send({ error: error.message, message: "Add advsior has failed" });
+  fastify.post(
+    "/deleteAdvisor",
+    { preHandler: ValidatorJWT.validateToken },
+    async (req: FastifyRequest<{ Body: IDelAdvisorProps }>, res: FastifyReply) => {
+      console.log(req.body);
+      try {
+        // ValidatorJWT.validateToken(req, res);
+        const body = req.body;
+        await controller.delAdvisor(body, res);
+      } catch (error: any) {
+        res.code(500).send({ error: error.message, message: "Add advsior has failed" });
+      }
     }
-  });
+  );
 
   fastify.get("/listAdvisors", async (req: any, res: any) => {});
 }

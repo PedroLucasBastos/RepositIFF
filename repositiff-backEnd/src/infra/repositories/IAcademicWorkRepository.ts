@@ -35,6 +35,7 @@ export interface updateAcademicWorkDTO {
   idCourse?: string;
   keyWords?: string[];
   ilustration?: string;
+  cutterNumber?: string;
   references?: number[];
   cduCode?: string;
   cddCode?: string;

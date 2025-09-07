@@ -41,7 +41,7 @@ export class PrismaAcademicWorkRepository implements IAcademicWorkRepository {
     console.log(project);
     try {
       console.log("até tentou");
-      // Limpa os campos que são undefined ou inválidos para o Prisma
+
       const cleanedData = Object.fromEntries(
         Object.entries(props).filter(
           ([_, v]) => v !== undefined && v !== null && v !== "" && !(typeof v === "number" && isNaN(v))

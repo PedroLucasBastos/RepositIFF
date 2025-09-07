@@ -12,7 +12,7 @@ describe("", async () => {
   const repoAdvisor = new PrismaAdvisorRepository();
   const repoCourse = new PrismaCourseRepostory();
   await repoAdvisor.deleteAll();
-  await repoCourse.deleteAll();
+  // await repoCourse.deleteAll();
   // it("Clear tables", async () => {
 
   // });
@@ -112,6 +112,8 @@ describe("", async () => {
     const buffer = await fs.readFile(path.join(__dirname, "teste2.pdf"));
     const file = new File([buffer], "teste2.pdf", { type: "application/pdf" });
     const formData = new FormData();
+    const token =
+      "Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6ImVlZjYwZWNjLTY2YTktNDhhMy1hMzgwLTJjOWE4YTZlMTQxNSIsImlhdCI6MTc1NzIxNzIwOCwiZXhwIjoxNzU3MjQ2MDA4fQ.dLPp-joTpVSuuvn331v2bzSzPEDvST28dTiDZBAYR2o";
     formData.append("authors", JSON.stringify(["Felizberto Moreira", "Amanda Nudes"]));
     formData.append("idAdvisors", JSON.stringify([advisorCorrectly.id]));
     formData.append("title", "Além da Morte: Como Dark Souls Representa os Desafios e Superações da Vida Real");
@@ -131,10 +133,14 @@ describe("", async () => {
     formData.append("ilustration", "Colorful");
     formData.append("references", JSON.stringify([1, 22, 55, 66, 99]));
     formData.append("file", file);
+
     console.log(formData);
     const responsePreRequest: any = await fetch("http://localhost:3333/academicWork/create", {
       method: "POST",
       body: formData,
+      headers: {
+        Authorization: token,
+      },
     });
     if (!responsePreRequest.ok) {
       const errText = await responsePreRequest.text();
