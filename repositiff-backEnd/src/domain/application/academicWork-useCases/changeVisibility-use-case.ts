@@ -1,4 +1,5 @@
 import { AcademicWork } from "@src/domain/entities/academicWork.js";
+import { Role } from "@src/domain/entities/user.js";
 import { DomainError, ErrorCategory } from "@src/error_handling/domainServicesErrors.js";
 import { Either, Left, Right } from "@src/error_handling/either.Funcional.js";
 import { IFileStorage } from "@src/infra/fileStorage/IFileStorage.js";
@@ -20,7 +21,17 @@ export class ChangeVisibilityUseCase {
   
   */
 
-  async execute(academimcWorkId: string): Promise<Either<DomainError, string>> {
+  async execute(academimcWorkId: string, userRole: string): Promise<Either<DomainError, string>> {
+    if (userRole !== Role.LIBRARIAN) {
+      return new Left(
+        new DomainError(
+          ErrorCategory.Application,
+          "PERMISSION_DENIED",
+          "your role does not have permission",
+          new Error("Permission denied")
+        )
+      );
+    }
     const responseConsulting = await this._repo.selectAcademicWork(academimcWorkId);
 
     if (responseConsulting instanceof Error) {

@@ -3,24 +3,25 @@ GET http://localhost:3333/
 
 ###
 
-POST http://localhost:3333/librarian/register
+POST http://localhost:3333/user/register
 Content-Type: application/json
 
 {
     "name": "Beltrano",
     "email": "pedro19792001@gmail.com",
     "registrationNumber": "2013655865",
+    "role": "LIBRARIAN",
     "password": "abc@123",
     "confirmPassword": "abc@123"
 }
 
 ###
-POST http://localhost:3333/librarian/login
+POST http://localhost:3333/user/login
 Content-Type: application/json
 
 {
     "registrationNumber": "2013655865",
-    "password": "2asdfkljasdklfjasklfjsdkljfkasdjfiejklasdjklfjasdiofjasdiofjioejioasdjfioasdjfioejklasdjfaiosdjf",
+    "password": "abc@123",
     "cargo": "Librarian"
 }
 ###
@@ -62,6 +63,7 @@ Authorization: Bearer .eyJpZCI6ImEwMTU0ZmM2LTlhNjQtNDA0YS1hMDZkLWJhOWY3YWZkMzU1Z
 
 ###
 POST  http://localhost:3333/advisor/register
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6ImVlZjYwZWNjLTY2YTktNDhhMy1hMzgwLTJjOWE4YTZlMTQxNSIsImlhdCI6MTc1NzIxNzYxMCwiZXhwIjoxNzU3MjQ2NDEwfQ.wbbyX2dz9TXBeIxvuHGDT9ZAInSv5iXJnlY5joL-uqk
 Content-Type: application/json
 
 {
@@ -92,6 +94,7 @@ Content-Type: application/json
 
 ###
 GET  http://localhost:3333/advisor/list
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6ImVlZjYwZWNjLTY2YTktNDhhMy1hMzgwLTJjOWE4YTZlMTQxNSIsImlhdCI6MTc1NzI2MjEyMCwiZXhwIjoxNzU3MjY1NzIwfQ.14RP2Ce_eF_MmJ2WtovvFlJRg_6oGja8Y1OiHydnHTc
 
 
 ###

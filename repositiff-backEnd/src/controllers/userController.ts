@@ -1,41 +1,42 @@
-import { Librarian, librarianProps } from "@src/domain/entities/librarian.js";
+import { Role, User, userProps } from "@src/domain/entities/user.js";
 import { BcryptService } from "@src/infra/security/bcryptService.js";
 import { FastifyRequest, FastifyReply } from "fastify";
-import { PrismaLibrarianRepository } from "@src/infra/repositories/prisma/prisma-librarian-respository.js";
+import { PrismaUserRepository } from "@src/infra/repositories/prisma/prisma-user-respository.js";
 import { JWTService } from "@src/infra/security/jwtService.js";
 import { EmailMessengerNodemailer } from "@src/infra/emailMessenger/emailMenssagen-nodemailer.js";
 
 // Interface para o corpo da requisição
-export interface RegisterLibrarianRegisterBody {
+export interface RegisterUserRegisterBody {
   name: string;
   email: string;
   registrationNumber: string;
+  role: string;
   password: string;
   confirmPassword: string;
 }
 
-export interface RegisterLibrarianLoginBody {
+export interface RegisterUserLoginBody {
   registrationNumber: string;
   password: string;
 }
 
-export interface HeadersLibrarian {
+export interface HeadersUser {
   authorization: string;
 }
 
-export class LibrarianController {
+export class UserController {
   private _bcrypt: BcryptService;
-  private _librarianRepository: PrismaLibrarianRepository;
+  private _usersRepository: PrismaUserRepository;
   private _jwtService: JWTService | undefined;
 
   constructor() {
     // librarianRepository: PrismaLibrarianRepository = new PrismaLibrarianRepository() // bcryptService: BcryptService = new BcryptService(),
     this._bcrypt = new BcryptService();
-    this._librarianRepository = new PrismaLibrarianRepository();
+    this._usersRepository = new PrismaUserRepository();
   }
 
-  async register(req: FastifyRequest<{ Body: RegisterLibrarianRegisterBody }>, res: FastifyReply): Promise<void> {
-    const { name, email, registrationNumber, password, confirmPassword } = req.body;
+  async register(req: FastifyRequest<{ Body: RegisterUserRegisterBody }>, res: FastifyReply): Promise<void> {
+    const { name, email, registrationNumber, password, role, confirmPassword } = req.body;
 
     // validations
     if (!name) {
@@ -58,8 +59,12 @@ export class LibrarianController {
       return res.status(422).send({ msg: "A senha e a confirmação precisam ser iguais!" });
     }
 
+    if (!role && !Object.values(Role).includes(role as Role)) {
+      return res.status(422).send({ msg: "O cargo é obrigatório e deve ser válido!" });
+    }
+
     // Verifica se o email já existe
-    const existingLibrarian = await this._librarianRepository.findByEmail(email);
+    const existingLibrarian = await this._usersRepository.findByEmail(email);
     if (existingLibrarian) {
       res.code(409).send({ message: "Email already in use" });
       return;
@@ -68,19 +73,20 @@ export class LibrarianController {
     const passwordHash = await this._bcrypt.hashPassword(password);
 
     // Cria o novo bibliotecário
-    const newLibrarian = new Librarian({
+    const newUser = new User({
       name,
       email,
       registrationNumber,
       password: passwordHash,
+      role: role as Role,
     });
     // Salva no banco de dados
-    await this._librarianRepository.newLibrarian(newLibrarian);
+    await this._usersRepository.newUser(newUser);
 
-    res.code(201).send({ message: "Librarian registered successfully" });
+    res.code(201).send({ message: "user registered successfully" });
   }
 
-  async login(req: FastifyRequest<{ Body: RegisterLibrarianRegisterBody }>, res: FastifyReply): Promise<void> {
+  async login(req: FastifyRequest<{ Body: RegisterUserRegisterBody }>, res: FastifyReply): Promise<void> {
     const { registrationNumber, password } = req.body;
     if (!registrationNumber) {
       return res.status(422).send({ msg: "O número de matricula é obrigatório!" });
@@ -89,10 +95,10 @@ export class LibrarianController {
       return res.status(422).send({ msg: "A senha é obrigatória!" });
     }
 
-    const librarian = await this._librarianRepository.findByRegistrationNumber(registrationNumber);
+    const user = await this._usersRepository.findByRegistrationNumber(registrationNumber);
 
-    const isLibrarianInvalid = !librarian;
-    const isPasswordInvalid = librarian && !(await this._bcrypt.comparePasswords(password, librarian.pass));
+    const isLibrarianInvalid = !user;
+    const isPasswordInvalid = user && !(await this._bcrypt.comparePasswords(password, user.pass));
 
     if (isLibrarianInvalid || isPasswordInvalid) {
       return res.status(422).send({ msg: "Usuário ou senha não estão corretos" });
@@ -100,11 +106,12 @@ export class LibrarianController {
 
     try {
       const jwtSecret = process.env.SECRET || "";
-      this._jwtService = new JWTService(jwtSecret, "8h");
+      this._jwtService = new JWTService(jwtSecret);
 
-      const token = this._jwtService.generateToken({ id: librarian.id });
+      const token = this._jwtService.generateToken({ id: user.id });
+      // console.log(JWTService.idUserInToken(token).idp);
       return res.status(200).send({
-        name: librarian.name,
+        name: user.name,
         token: token,
       });
     } catch (error) {
@@ -118,7 +125,7 @@ export class LibrarianController {
       return res.status(422).send({ msg: "O ID é obrigatório!" });
     }
 
-    const librarian = await this._librarianRepository.findById(id);
+    const librarian = await this._usersRepository.findById(id);
     if (!librarian) return res.status(404).send({ msg: "Bibliotecário não encontrado!" });
 
     // Gera um novo token
@@ -171,7 +178,7 @@ export class LibrarianController {
       return res.status(422).send({ msg: "A nova senha e a confirmação precisam ser iguais!" });
     }
 
-    const librarian = await this._librarianRepository.findById(id);
+    const librarian = await this._usersRepository.findById(id);
     if (!librarian) return res.status(404).send({ msg: "Bibliotecário não encontrado!" });
 
     // Atualiza a senha
@@ -180,7 +187,7 @@ export class LibrarianController {
       id: librarian.id,
       password: passwordHash,
     };
-    await this._librarianRepository.update(update_data);
+    await this._usersRepository.update(update_data);
 
     res.status(200).send({ msg: "Senha redefinida com sucesso!" });
   }
@@ -190,11 +197,11 @@ export class LibrarianController {
 
   // }
 
-  async listLibrarians(req: any, res: FastifyReply): Promise<void> {
+  async listsUsers(req: any, res: FastifyReply): Promise<void> {
     const jwtSecret = process.env.SECRET || "";
     const token = req.authorization.split(" ")[1];
     JWTService.verifyToken(token, jwtSecret);
-    const listLibrarians = await this._librarianRepository.listAll();
+    const listLibrarians = await this._usersRepository.listAll();
     return res.status(200).send(listLibrarians);
   }
 }

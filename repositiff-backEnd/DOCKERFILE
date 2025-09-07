@@ -1,0 +1,19 @@
+FROM node:20-alpine
+
+# Define o diretório de trabalho no container
+WORKDIR /app
+
+# Copia apenas as dependências de produção da etapa de build
+# Isso garante que a imagem final não tenha dependências de desenvolvimento.
+COPY --from=build /app/package.json ./
+RUN npm install --only=production
+
+# Copia os arquivos JS compilados (a pasta 'dist') da etapa de build
+COPY --from=build /app/dist ./
+
+# Expõe a porta que a sua aplicação usa
+EXPOSE 3333
+
+# Define o comando padrão para iniciar a aplicação em produção
+# Ele executa o código JavaScript compilado, não o código-fonte TypeScript.
+CMD ["node", "/server.js"]

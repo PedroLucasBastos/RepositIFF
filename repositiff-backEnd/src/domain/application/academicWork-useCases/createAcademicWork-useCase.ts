@@ -5,7 +5,6 @@ import { IFileStorage } from "@src/infra/fileStorage/IFileStorage.js";
 import { Author, AuthorsProps } from "@src/domain/entities/author.js";
 import { IAdvisorRepository } from "@src/infra/repositories/IAdvisorRepository.js";
 import { ICourseRepository } from "@src/infra/repositories/ICourse-repository.js";
-import { IGenerateCutterNumber } from "@src/infra/cutter-number/IGenerateCutterNumber.js";
 import { Advisor } from "@src/domain/entities/advisor.js";
 import { DomainError, ErrorCategory } from "@src/error_handling/domainServicesErrors.js";
 import { EitherOO, Left, Right } from "@src/error_handling/either.js";
@@ -13,6 +12,7 @@ import { AcademicWork, Illustration, typeWork } from "@src/domain/entities/acade
 import { Course } from "@src/domain/entities/course.js";
 import { MapperAcademicWork } from "@src/mappers/mapperAcademicWork.js";
 import { AcademicWorkFile } from "@src/domain/entities/academicWorkFile.js";
+import { Role } from "@src/domain/entities/user.js";
 
 type response = EitherOO<DomainError, AcademicWork>;
 // type FindAdvisorResult = {
@@ -50,7 +50,17 @@ export class CreateProjectUseCase {
     // private academicWorkSearch: IAcademicWorkSearch
   ) {}
 
-  async execute(newAcademicWorkDTO: CreateProjectUseCaseDTO): Promise<response> {
+  async execute(newAcademicWorkDTO: CreateProjectUseCaseDTO, userRole: string): Promise<response> {
+    if (userRole !== Role.LIBRARIAN) {
+      return new Left(
+        new DomainError(
+          ErrorCategory.Application,
+          "PERMISSION_DENIED",
+          "your role does not have permission",
+          new Error("Permission denied")
+        )
+      );
+    }
     const { authors, file, idCourse, idAdvisors, typeWork: type, title } = newAcademicWorkDTO;
     let newFile: AcademicWorkFile;
     let cutterNumber = "cutter-number-test";
@@ -61,7 +71,8 @@ export class CreateProjectUseCase {
     console.log("\n---------------------------------\n\n");
     // console.log("asdklfjasdfieklasdjfioejklasdfjased")
     // Object.values(TypeWork).includes(typeString as TypeWork)
-    if (!Object.values(typeWork).includes(type as typeWork)) return new Left(new DomainError(ErrorCategory.Application, "ERROR_TYPEWORK", `Error to convert typework`));
+    if (!Object.values(typeWork).includes(type as typeWork))
+      return new Left(new DomainError(ErrorCategory.Application, "ERROR_TYPEWORK", `Error to convert typework`));
 
     console.log("passou do primeiro if");
     const advisorsOrError = await this.findAllAdvisors(idAdvisors);
@@ -71,7 +82,14 @@ export class CreateProjectUseCase {
     console.log("Dps de Advisor");
     const courseOrNull = await this._courseRepo.findCourseById(idCourse);
     let courseResult: Course;
-    if (!courseOrNull) return new Left(new DomainError(ErrorCategory.Application, "ERROR_TO_SELECTING_COURSE", `The course ID ${idCourse} is not found in the database`));
+    if (!courseOrNull)
+      return new Left(
+        new DomainError(
+          ErrorCategory.Application,
+          "ERROR_TO_SELECTING_COURSE",
+          `The course ID ${idCourse} is not found in the database`
+        )
+      );
     else courseResult = courseOrNull;
     console.log("Advisor e course foi");
 
@@ -87,14 +105,21 @@ export class CreateProjectUseCase {
       keyWords: newAcademicWorkDTO.keyWords,
       illustration: newAcademicWorkDTO.ilustration as Illustration,
       references: newAcademicWorkDTO.references,
-      cutterNumber: "M934",
+      // cutterNumber: "M934",
       cddCode: newAcademicWorkDTO.cddCode,
       cduCode: newAcademicWorkDTO.cduCode,
     });
 
     console.log("DPS DE INSTANCIAR");
     console.log(academicWorkOrError);
-    if (academicWorkOrError.isLeft()) return new Left(new DomainError(ErrorCategory.Application, "ERROR_TO_INSTATIATE_ACADEMICWORK_ENTITY", academicWorkOrError.value.details));
+    if (academicWorkOrError.isLeft())
+      return new Left(
+        new DomainError(
+          ErrorCategory.Application,
+          "ERROR_TO_INSTATIATE_ACADEMICWORK_ENTITY",
+          academicWorkOrError.value.details
+        )
+      );
     const academicWorkEntity = academicWorkOrError.value as AcademicWork;
     console.log("Na beira de mandar apr o BD");
     const resultDB = await this._academicRepo.addAcademicWork({
@@ -115,7 +140,16 @@ export class CreateProjectUseCase {
       cddCode: academicWorkEntity.cddCode,
       file: academicWorkEntity.file,
     });
-    if (resultDB instanceof Error) return new Left(new DomainError(ErrorCategory.Application, "ERROR_TO_CADASTRATED_ACADEMICWORK", resultDB.message, resultDB, resultDB.name));
+    if (resultDB instanceof Error)
+      return new Left(
+        new DomainError(
+          ErrorCategory.Application,
+          "ERROR_TO_CADASTRATED_ACADEMICWORK",
+          resultDB.message,
+          resultDB,
+          resultDB.name
+        )
+      );
     console.log("Result depois de criar a entidade - ");
 
     if (file != undefined) {
@@ -132,7 +166,16 @@ export class CreateProjectUseCase {
     console.log("\n\n DEPOIS DO ULTIMO MAPPING \n\n");
     console.log(academicWorkResult);
 
-    if (academicWorkResult instanceof DomainError) return new Left(new DomainError(ErrorCategory.Application, "ERROR_TO_MAPPING_ACADEMICWORK", academicWorkResult.message, academicWorkResult, academicWorkResult.name));
+    if (academicWorkResult instanceof DomainError)
+      return new Left(
+        new DomainError(
+          ErrorCategory.Application,
+          "ERROR_TO_MAPPING_ACADEMICWORK",
+          academicWorkResult.message,
+          academicWorkResult,
+          academicWorkResult.name
+        )
+      );
     console.log("VERIFICAÇÃO");
     console.log(`ID DA ENTIDADE: ${resultDB.id}`);
     console.log(`ID da volta do DB: ${academicWorkResult.id}`);
@@ -159,7 +202,14 @@ export class CreateProjectUseCase {
     );
     const invalidAdvisors = advisorsList.filter((result) => result.advisor === null).map((result) => result.id);
 
-    if (invalidAdvisors.length > 0) return new Left(new DomainError(ErrorCategory.Application, "ERROR_TO_SELECTING_ADVISORS", `Any supervisor ID provided is incorrect \n Invalid IDs: ${invalidAdvisors}`));
+    if (invalidAdvisors.length > 0)
+      return new Left(
+        new DomainError(
+          ErrorCategory.Application,
+          "ERROR_TO_SELECTING_ADVISORS",
+          `Any supervisor ID provided is incorrect \n Invalid IDs: ${invalidAdvisors}`
+        )
+      );
     return new Right(advisorsList.map((advisor) => advisor.advisor as Advisor));
   }
 }
