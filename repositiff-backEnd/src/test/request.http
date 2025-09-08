@@ -22,7 +22,6 @@ Content-Type: application/json
 {
     "registrationNumber": "2013655865",
     "password": "abc@123",
-    "cargo": "Librarian"
 }
 ###
 

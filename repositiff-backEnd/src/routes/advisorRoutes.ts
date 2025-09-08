@@ -52,10 +52,10 @@ export async function advisorRoutes(fastify: FastifyInstance) {
   });
   fastify.get(
     "/list",
-    { preHandler: ValidatorJWT.validateToken },
+    // { preHandler: ValidatorJWT.validateToken },
     async (req: FastifyRequest<{ Body: deleteAdvisor }>, reply: FastifyReply) => {
       try {
-        await controller.listAllAdvisors(reply);
+        await controller.listAllAdvisors(req, reply);
       } catch (error: any) {
         reply.code(500).send({ error: error.message, message: "Delete has failed." });
       }
