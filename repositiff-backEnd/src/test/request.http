@@ -7,10 +7,10 @@ POST http://localhost:3333/user/register
 Content-Type: application/json
 
 {
-    "name": "Beltrano",
-    "email": "pedro19792001@gmail.com",
-    "registrationNumber": "2013655865",
-    "role": "LIBRARIAN",
+    "name": "simoes",
+    "email": "asdfasdfasdf11223123",
+    "registrationNumber": "1122222211222222",
+    "role": "ADMIN",
     "password": "abc@123",
     "confirmPassword": "abc@123"
 }
@@ -20,8 +20,9 @@ POST http://localhost:3333/user/login
 Content-Type: application/json
 
 {
-    "registrationNumber": "2013655865",
+    "registrationNumber": "1122222211222222",
     "password": "abc@123",
+    "asdf": "asdf"
 }
 ###
 
@@ -102,10 +103,11 @@ GET  http://localhost:3333/course/list
 ###
 POST  http://localhost:3333/course/register
 Content-Type: application/json
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjdmOThkMjIyLTBlMzgtNDY5NS04OTI2LTIzMmNiMmIyOGUyZSIsImlhdCI6MTc1NzI5NzkxMywiZXhwIjoxNzU3MzAxNTEzfQ.3sk0hFTbSJ2aDj1uDGs7s4ASkGx3EHAt408mGAVN_e4
 
 {
     "name": "Sistemas de Informação",
-    "courseCode": "CO1025",
+    "courseCode": "CO1231025",
     "degreeType": "BACHELOR"
 }
 

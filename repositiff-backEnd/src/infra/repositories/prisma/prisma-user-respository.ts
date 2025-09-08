@@ -1,12 +1,21 @@
 import { User, userProps } from "@src/domain/entities/user.js";
-import { IUsersRepository, IUserDTO, IUserUpdateDTO } from "../ILibrarianRepostory.js";
-import { PrismaClient } from "@prisma/client";
+import { IUsersRepository, IUserDTO, IUserUpdateDTO } from "../IUserRepostory.js";
+import { Prisma, PrismaClient } from "@prisma/client";
 
+const prismaErrorMessages: Record<string, string> = {
+  P2002: "Duplicate value for unique field(s) - PRISMA ERROR CODE P2002",
+  P2003: "Foreign key constraint failed - PRISMA ERROR CODE P2003",
+  P2000: "Value is too long for a column - PRISMA ERROR CODE P2000",
+  P2025: "Record not found - PRISMA ERROR CODE P2025",
+  P2006: "Invalid data for a column - PRISMA ERROR CODE P2006",
+  P2016: "Invalid connection to the database - PRISMA ERROR CODE P2016",
+};
 export class PrismaUserRepository implements IUsersRepository {
   private _prismaCli: PrismaClient;
   constructor() {
     this._prismaCli = new PrismaClient();
   }
+
   async update(user: IUserUpdateDTO): Promise<void> {
     try {
       await this._prismaCli.user.update({
@@ -35,14 +44,20 @@ export class PrismaUserRepository implements IUsersRepository {
           email: user.email,
           registrationNumber: user.registrationNumber,
           pass: user.pass,
+          role: user.role,
         },
       });
       // console.log("Librarian as registred!");
       // return librarianRegistred;
     } catch (error) {
-      console.error("Error details: ", error); // Adicione essa linha para imprimir o erro específico
-      console.log("Librarian failed to registered!");
-      return Promise.reject();
+      if (error instanceof Prisma.PrismaClientKnownRequestError) {
+        // The .code property can be accessed in a type-safe manner
+        const customMessage = prismaErrorMessages[error.code] || "Unknown database error occurred";
+        console.log(customMessage);
+        console.log(error);
+        throw new Error(customMessage);
+      }
+      console.log(error);
     }
   }
   async findById(id: string): Promise<IUserDTO | null> {

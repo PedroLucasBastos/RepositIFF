@@ -15,10 +15,7 @@ export interface ICourseUpdateFields {
   degreeType?: degreeType;
 }
 export class UpdateCourseUseCase {
-  constructor(
-    private _repo: ICourseRepository,
-    private userRole: string
-  ) {}
+  constructor(private _repo: ICourseRepository) {}
   async execute(props: ICourseUpdateProps, userRole: string): Promise<EitherOO<DomainError, Course>> {
     if (userRole !== Role.ADMIN) {
       return new Left(

@@ -18,7 +18,7 @@ export class DependeciesAcademicTest {
     const useCaseAdvisor = new CreateAdvisorUseCase(advisorRepo);
     const advisorValid = AdvisorsProducts.valid();
 
-    const advisorUseCaseOrError = await useCaseAdvisor.execute(advisorValid);
+    const advisorUseCaseOrError = await useCaseAdvisor.execute(advisorValid, "LIBRARIAN");
 
     if (advisorUseCaseOrError.isLeft()) {
       throw new Error("Deu merda aki");
@@ -28,7 +28,7 @@ export class DependeciesAcademicTest {
     const courseRepo = new PrismaCourseRepostory();
     const sut = CoursesToTests.Correctly();
     const useCaseCourse = new CreateCourseUseCase(courseRepo);
-    const result = await useCaseCourse.execute(sut);
+    const result = await useCaseCourse.execute(sut, "ADMIN");
     const course = result.value as Course;
 
     return {
@@ -40,11 +40,14 @@ export class DependeciesAcademicTest {
   static async aditionalAdvisor(): Promise<Advisor> {
     const advisorRepo = new PrismaAdvisorRepository();
     const useCaseAdvisor = new CreateAdvisorUseCase(advisorRepo);
-    const advisorUseCaseOrError = await useCaseAdvisor.execute({
-      name: "Raquel-adicional",
-      surname: "Duarte",
-      registrationNumber: "5555555",
-    });
+    const advisorUseCaseOrError = await useCaseAdvisor.execute(
+      {
+        name: "Raquel-adicional",
+        surname: "Duarte",
+        registrationNumber: "5555555",
+      },
+      "LIBRARIAN"
+    );
     let advisor = advisorUseCaseOrError.value as Advisor;
 
     return advisor;
@@ -58,7 +61,7 @@ export class DependeciesAcademicTest {
       courseCode: "CO255",
       degreeType: degreeType.Bachelor,
     };
-    const result = await useCaseCourse.execute(sut);
+    const result = await useCaseCourse.execute(sut, "ADMIN");
     return result.value as Course;
   }
 
@@ -66,7 +69,7 @@ export class DependeciesAcademicTest {
     const courseRepo = new PrismaCourseRepostory();
     const sut = CoursesToTests.Correctly();
     const useCaseCourse = new CreateCourseUseCase(courseRepo);
-    const result = useCaseCourse.execute(sut);
+    const result = useCaseCourse.execute(sut, "ADMIN");
     const course = (await result).value as Course;
     return course;
   }

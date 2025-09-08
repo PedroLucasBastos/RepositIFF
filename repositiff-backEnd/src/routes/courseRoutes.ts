@@ -9,23 +9,19 @@ import { FastifyInstance, FastifyReply, FastifyRequest } from "fastify";
 
 export async function courseRoutes(fastify: FastifyInstance) {
   const controller = new CourseController();
-  fastify.post(
-    "/register",
-    { preHandler: ValidatorJWT.validateToken },
-    async (req: FastifyRequest<{ Body: ICourseProps }>, reply: FastifyReply) => {
-      console.log(req.body);
-      try {
-        await controller.create(req, reply);
-      } catch (error: any) {
-        reply.code(500).send({ error: error.message, message: "Registration has failed" });
-      }
+  fastify.post("/register", { preHandler: ValidatorJWT.validateToken }, async (req: any, reply: FastifyReply) => {
+    console.log(req.body);
+    try {
+      await controller.create(req, reply);
+    } catch (error: any) {
+      reply.code(500).send({ error: error.message, message: "Registration has failed" });
     }
-  );
+  });
 
   fastify.put(
     "/update",
     { preHandler: ValidatorJWT.validateToken },
-    async (req: FastifyRequest<{ Body: ICourseUpdateProps }>, reply: FastifyReply) => {
+    async (req: FastifyRequest<{ Body: any }>, reply: FastifyReply) => {
       console.log(req.body);
       try {
         await controller.update(req, reply);
@@ -38,7 +34,7 @@ export async function courseRoutes(fastify: FastifyInstance) {
   fastify.delete(
     "/delete",
     { preHandler: ValidatorJWT.validateToken },
-    async (req: FastifyRequest<{ Body: IDeleteProps }>, reply: FastifyReply) => {
+    async (req: FastifyRequest<{ Body: any }>, reply: FastifyReply) => {
       console.log(req.body);
       try {
         await controller.delete(req, reply);
@@ -48,7 +44,7 @@ export async function courseRoutes(fastify: FastifyInstance) {
     }
   );
 
-  fastify.get("/list", async (req: FastifyRequest<{}>, reply: FastifyReply) => {
+  fastify.get("/list", async (req: any, reply: FastifyReply) => {
     console.log(req.body);
     try {
       await controller.listAll(reply);
