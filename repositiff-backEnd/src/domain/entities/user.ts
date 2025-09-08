@@ -41,4 +41,8 @@ export class User {
   get pass(): string {
     return this._props.password;
   }
+
+  get role(): Role {
+    return this._props.role;
+  }
 }

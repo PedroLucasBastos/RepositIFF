@@ -5,6 +5,7 @@ import { PrismaAdvisorRepository } from "@src/infra/repositories/prisma/prisma-a
 import { FastifyReply, FastifyRequest } from "fastify";
 import { UpdateAdvisorPropsDTO, UpdateAdvisorUseCase } from "@src/domain/application/advisor-useCases/updateAdvisor.js";
 import { deleteAdvisor, DeleteAdvisorUseCase } from "@src/domain/application/advisor-useCases/deleteAdvisor-useCase.js";
+import { PrismaUserRepository } from "@src/infra/repositories/prisma/prisma-user-respository.js";
 export interface findAdvisorByRegistrationNumber {
   registrationNumber: string;
 }
@@ -18,13 +19,14 @@ export class AdvisorController {
     const { name, surname, registrationNumber } = req.body;
     const repo = new PrismaAdvisorRepository();
     const createUseCase = new CreateAdvisorUseCase(repo);
+    const user = await new PrismaUserRepository().findById(req.userId);
     const resultOrError = await createUseCase.execute(
       {
         name: name,
         surname: surname,
         registrationNumber: registrationNumber,
       },
-      req.userId
+      user?.role || ""
     );
     if (resultOrError.isLeft())
       return res.code(400).send({
@@ -51,7 +53,7 @@ export class AdvisorController {
       res.code(400).send({
         Error: sanitizeFieldsOrError.value,
       });
-
+    const user = await new PrismaUserRepository().findById(req.userId);
     const repo = new PrismaAdvisorRepository();
     const updateUseCase = new UpdateAdvisorUseCase(repo);
     const updateOrError = await updateUseCase.execute(
@@ -59,7 +61,7 @@ export class AdvisorController {
         advisorIdentification: idAdvisor,
         updateFields: fields,
       },
-      req.userId
+      user?.role || ""
     );
     if (updateOrError.isLeft())
       res.code(400).send({
@@ -79,7 +81,8 @@ export class AdvisorController {
       });
     const repo = new PrismaAdvisorRepository();
     const deleteUseCase = new DeleteAdvisorUseCase(repo);
-    const deleteOrError = await deleteUseCase.execute(advisorIdentification, req.userId);
+    const user = await new PrismaUserRepository().findById(req.userId);
+    const deleteOrError = await deleteUseCase.execute(advisorIdentification, user?.role || "");
     if (deleteOrError.isLeft())
       res.code(400).send({
         Message: "Unable to delete advisor",

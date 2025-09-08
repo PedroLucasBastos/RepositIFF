@@ -30,6 +30,7 @@ import {
 import { DeleteAcademicWorkUseCase } from "@src/domain/application/academicWork-useCases/deleteAcademicWork-use-case.js";
 import { Prisma } from "@prisma/client";
 import { ChangeVisibilityUseCase } from "@src/domain/application/academicWork-useCases/changeVisibility-use-case.js";
+import { PrismaUserRepository } from "@src/infra/repositories/prisma/prisma-user-respository.js";
 
 export interface IRequestAcademicWorkController {
   authors: string[];
@@ -95,6 +96,7 @@ export class academicWorkController {
     });
 
     console.log("\n\n");
+    const user = await new PrismaUserRepository().findById(req.userId);
     const result = await useCase.execute(
       {
         authors: parameters.authors,
@@ -112,7 +114,7 @@ export class academicWorkController {
         cduCode: parameters.optinalParameters.cduCode,
         file: parameters.optinalParameters.file,
       },
-      req.userId
+      user?.role || ""
     );
 
     if (result.isLeft())
@@ -130,8 +132,9 @@ export class academicWorkController {
     // const { id } = req;
     const repo = new PrismaAcademicWorkRepository();
     const flare = new CloudFlareFileStorage();
+    const user = await new PrismaUserRepository().findById(req.userId);
 
-    const useCase = new DeleteAcademicWorkUseCase(repo, flare).execute(req, req.userId);
+    const useCase = new DeleteAcademicWorkUseCase(repo, flare).execute(req, user?.role || "");
     // if (result.isLeft())
     //   return res.status(400).send({
     //     Error: result.value,
@@ -157,8 +160,9 @@ export class academicWorkController {
 
     const repo = new PrismaAcademicWorkRepository();
     const useCase = new UpdateAcademicWorkBasicInfoUseCase(repo);
+    const user = await new PrismaUserRepository().findById(req.userId);
 
-    const result = await useCase.execute({ id, fields }, req.userId);
+    const result = await useCase.execute({ id, fields }, user?.role || "");
 
     console.log("\n\nRESULTADO DA SANITIZAÇÃO\n");
     console.log(resultSanitize);
@@ -178,6 +182,7 @@ export class academicWorkController {
   async addAdvisor(req: any, res: FastifyReply): Promise<void> {
     const repo = new PrismaAcademicWorkRepository();
     const useCase = new AddAdvisorToAcademicWorkUseCase(repo);
+    const user = await new PrismaUserRepository().findById(req.userId);
 
     // const { id, academicWorkId, advisorId, isMain } = req;
     const result = await useCase.execute(
@@ -186,7 +191,7 @@ export class academicWorkController {
         advisorId: req.advisorId,
         // isMain: req.isMain,
       },
-      req.userId
+      user?.role || ""
     );
     if (result.isLeft())
       return res.status(400).send({
@@ -203,13 +208,14 @@ export class academicWorkController {
     const useCase = new DelAdvisorInAcademicWorkUseCase(repo);
 
     // const { id, academicWorkId, advisorId, isMain } = req;
+    const user = await new PrismaUserRepository().findById(req.userId);
 
     const result = await useCase.execute(
       {
         academicWorkId: req.academicWorkId,
         advisorId: req.advisorId,
       },
-      req.userId
+      user?.role || ""
     );
 
     if (result.isLeft())
@@ -228,13 +234,14 @@ export class academicWorkController {
     const useCase = new DefineMainAdvisorUseCase(repo);
 
     // const { id, academicWorkId, advisorId, isMain } = req;
+    const user = await new PrismaUserRepository().findById(req.userId);
 
     const result = await useCase.execute(
       {
         academicWorkId: req.academicWorkId,
         advisorId: req.advisorId,
       },
-      req.userId
+      user?.role || ""
     );
 
     if (result.isLeft())
@@ -256,9 +263,10 @@ export class academicWorkController {
 
     const repo = new PrismaAcademicWorkRepository();
     const file = new CloudFlareFileStorage();
+    const user = await new PrismaUserRepository().findById(req.userId);
 
     const useCase = new ChangeVisibilityUseCase(repo, file);
-    const result = await useCase.execute(id, req.userId);
+    const result = await useCase.execute(id, user?.role || "");
 
     if (result.isLeft())
       return res.status(400).send({

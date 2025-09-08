@@ -7,12 +7,10 @@ import { ICourseRepository } from "@src/infra/repositories/ICourse-repository.js
 type response = EitherOO<DomainError, Course>;
 
 export class CreateCourseUseCase {
-  constructor(
-    private _repo: ICourseRepository,
-    private userRole: string
-  ) {}
+  constructor(private _repo: ICourseRepository) {}
 
   async execute(newCourseProps: ICourseProps, userRole: string): Promise<response> {
+    console.log("User role in CreateCourseUseCase:", userRole);
     if (userRole !== Role.ADMIN) {
       return new Left(
         new DomainError(

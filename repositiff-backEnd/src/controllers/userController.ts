@@ -37,7 +37,8 @@ export class UserController {
 
   async register(req: FastifyRequest<{ Body: RegisterUserRegisterBody }>, res: FastifyReply): Promise<void> {
     const { name, email, registrationNumber, password, role, confirmPassword } = req.body;
-
+    console.log("\n\n\nREQUISIÇÃO DE REGISTRO: ");
+    console.log(req.body);
     // validations
     if (!name) {
       return res.status(422).send({ msg: "O nome é obrigatório!" });
@@ -80,13 +81,20 @@ export class UserController {
       password: passwordHash,
       role: role as Role,
     });
+
+    console.log("\n\n\nNOVO USUÁRIO: ");
+    console.log(newUser);
+
     // Salva no banco de dados
     await this._usersRepository.newUser(newUser);
 
     res.code(201).send({ message: "user registered successfully" });
   }
 
-  async login(req: FastifyRequest<{ Body: RegisterUserRegisterBody }>, res: FastifyReply): Promise<void> {
+  async login(
+    req: FastifyRequest<{ Body: { registrationNumber: string; password: string } }>,
+    res: FastifyReply
+  ): Promise<void> {
     const { registrationNumber, password } = req.body;
     if (!registrationNumber) {
       return res.status(422).send({ msg: "O número de matricula é obrigatório!" });
@@ -119,13 +127,16 @@ export class UserController {
     }
   }
 
-  async resetPasswordRequest(req: FastifyRequest<{ Body: { id: string } }>, res: FastifyReply): Promise<void> {
-    const { id } = req.body;
-    if (!id) {
-      return res.status(422).send({ msg: "O ID é obrigatório!" });
+  async resetPasswordRequest(
+    req: FastifyRequest<{ Body: { registrationNumber: string } }>,
+    res: FastifyReply
+  ): Promise<void> {
+    const { registrationNumber } = req.body;
+    if (!registrationNumber) {
+      return res.status(422).send({ msg: "O número de matrícula é obrigatório!" });
     }
 
-    const librarian = await this._usersRepository.findById(id);
+    const librarian = await this._usersRepository.findByRegistrationNumber(registrationNumber);
     if (!librarian) return res.status(404).send({ msg: "Bibliotecário não encontrado!" });
 
     // Gera um novo token
