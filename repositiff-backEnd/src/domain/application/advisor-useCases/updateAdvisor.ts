@@ -17,10 +17,7 @@ export interface UpdateFieldsDTO {
   registrationNumber?: string;
 }
 export class UpdateAdvisorUseCase {
-  constructor(
-    private advisorRepository: IAdvisorRepository,
-    private userRole: string
-  ) {}
+  constructor(private advisorRepository: IAdvisorRepository) {}
   async execute(updateAdvisorProps: UpdateAdvisorPropsDTO, userRole: string): Promise<EitherOO<Error, Advisor>> {
     if (userRole !== Role.LIBRARIAN) {
       return new Left(

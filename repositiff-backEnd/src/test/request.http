@@ -20,7 +20,7 @@ POST http://localhost:3333/user/login
 Content-Type: application/json
 
 {
-    "registrationNumber": "1122222211222222",
+    "registrationNumber": "11111111111",
     "password": "abc@123",
     "asdf": "asdf"
 }
