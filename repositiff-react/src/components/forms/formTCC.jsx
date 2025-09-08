@@ -13,6 +13,7 @@ import { PlusOutlined, DeleteOutlined, InboxOutlined } from "@ant-design/icons";
 import "./formTCC.css";
 import PropTypes from "prop-types";
 import DatePickerEstilizado from "../datepicker/DatePickerEstilizado";
+import Cookies from "js-cookie";
 
 const { Option } = Select;
 const { Dragger } = Upload;
@@ -97,16 +98,27 @@ const FormTCC = ({ onClose }) => {
       message.error("Selecione um arquivo para upload");
       return;
     }
+    
+    // Obtenha o token do cookie
+    const authToken = Cookies.get("authToken");
+
+    if (!authToken) {
+      message.error("Sessão expirada. Faça login novamente.");
+      return;
+    }
 
     fetch("http://localhost:3333/academicWork/create", {
       method: "POST",
+      headers: {
+        "Authorization": `Bearer ${authToken}`
+      },
       body: formData,
     })
       .then((resp) => {
         if (resp.ok || resp.status === 400) { //pelativo até ajustar erro do cutter
           message.success("TCC cadastrado com sucesso!");
           if (onClose) {
-          onClose(); 
+          onClose();
         }
         } else {
           resp.text().then((text) => {
@@ -411,4 +423,3 @@ FormTCC.propTypes = {
 };
 
 export default FormTCC;
-

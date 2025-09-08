@@ -40,15 +40,12 @@ function InitialSearch() {
         <div className="flex w-full max-w-[900px] items-center space-x-2">
           <Input
             type="search"
-            placeholder="Busca por título, autor, palavra-chave..."
+            placeholder="Busca por título ou palavra-chave..."
             // ADICIONADO: Conecta o input ao estado
             value={searchTerm}
             onChange={(e) => setSearchTerm(e.target.value)}
           />
-          {/* Este botão não é mais necessário dentro do formulário principal */}
-          {/* <Button className="bg-botaoIFF hover:bg-green-800 " type="submit">
-            Todos os campos
-          </Button> */}
+         
         </div>
         <div className="mt-5 flex justify-center space-x-4">
           <Button className="bg-botaoIFF hover:bg-green-800" type="submit">

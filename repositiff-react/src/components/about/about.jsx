@@ -26,15 +26,9 @@ function About() {
           curso de forma gratuita.
         </p>
         <p className="mt-4 text-gray-700 text-base md:text-lg leading-relaxed">
-          Lorem ipsum dolor sit amet, consectetur adipiscing elit. Suspendisse
-          ut enim eget arcu porttitor cursus. Phasellus nec metus vitae ex
-          iaculis posuere sit amet ut nisi. Sed congue urna in turpis semper,
-          vel molestie sapien dapibus. Curabitur tempor, neque quis fermentum
-          bibendum, nulla urna tempor nisl, ac commodo orci metus vitae felis.
-          Praesent ac convallis lectus. Phasellus quis diam consectetur,
-          scelerisque ex id, volutpat elit. Aliquam eget quam magna. Aliquam
-          ultrices mi a urna cursus, sed semper lectus iaculis. Nam eget massa
-          lacus.
+          A plataforma garante a preservação digital e o acesso duradouro à produção discente, 
+          consolidando o legado acadêmico do campus. Nosso objetivo é estimular a pesquisa e maximizar 
+          o impacto do conhecimento gerado aqui, beneficiando a comunidade interna e externa.
         </p>
       </div>
     </div>
