@@ -93,10 +93,19 @@ export class academicWorkController {
       cddCode: parameters.optinalParameters.cddCode,
       cduCode: parameters.optinalParameters.cduCode,
       file: parameters.optinalParameters.file,
+      userId: req.userId,
     });
 
     console.log("\n\n");
+
+    console.log(`userId: ${req.userId}`);
     const user = await new PrismaUserRepository().findById(req.userId);
+
+    if (!user) {
+      return res.status(404).send({
+        Error: "USER_NOT_FOUND",
+      });
+    }
     const result = await useCase.execute(
       {
         authors: parameters.authors,

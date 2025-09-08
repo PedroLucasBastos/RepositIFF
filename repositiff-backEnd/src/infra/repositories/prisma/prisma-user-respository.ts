@@ -80,8 +80,16 @@ export class PrismaUserRepository implements IUsersRepository {
       };
       return userMapping;
     } catch (error) {
-      throw new Error("Error to findById Methods.   " + error);
+      if (error instanceof Prisma.PrismaClientKnownRequestError) {
+        // The .code property can be accessed in a type-safe manner
+        const customMessage = prismaErrorMessages[error.code] || "Unknown database error occurred";
+        console.log(customMessage);
+        console.log(error);
+        throw new Error(customMessage);
+      }
+      console.log(error);
     }
+    return null;
   }
   async findByEmail(email: string): Promise<User | void> {
     try {

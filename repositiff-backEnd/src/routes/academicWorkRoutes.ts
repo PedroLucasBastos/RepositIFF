@@ -18,11 +18,11 @@ export async function academicWorkRoutes(fastify: FastifyInstance) {
   //     },
   //   });
 
-  fastify.post("/create", { preHandler: ValidatorJWT.validateToken }, async (req, res) => {
+  fastify.post("/create", { preHandler: ValidatorJWT.validateToken }, async (req: any, res) => {
     try {
       // ValidatorJWT.validateToken(req, res);
       const parts = req.parts();
-      console.log(parts);
+      // console.log(parts);
       const body: Record<string, any> = {};
       let fileBuffer;
 
@@ -43,7 +43,7 @@ export async function academicWorkRoutes(fastify: FastifyInstance) {
         // cont++;
       }
       // console.log('natantantantananta')
-      const requestObj: IRequestAcademicWorkController = {
+      const requestObj: any = {
         authors: body.authors,
         idAdvisors: body.idAdvisors,
         title: body.title,
@@ -60,6 +60,7 @@ export async function academicWorkRoutes(fastify: FastifyInstance) {
           cddCode: body.cddCode,
           file: fileBuffer?.buffer,
         },
+        userId: req.userId,
       };
       console.log("ACABOU DE CHEGAR - ACADEMICWORK ROUTES");
       console.log(requestObj);
