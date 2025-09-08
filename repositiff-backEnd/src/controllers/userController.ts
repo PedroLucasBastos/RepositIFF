@@ -119,13 +119,16 @@ export class UserController {
     }
   }
 
-  async resetPasswordRequest(req: FastifyRequest<{ Body: { id: string } }>, res: FastifyReply): Promise<void> {
-    const { id } = req.body;
-    if (!id) {
-      return res.status(422).send({ msg: "O ID é obrigatório!" });
+  async resetPasswordRequest(
+    req: FastifyRequest<{ Body: { registrationNumber: string } }>,
+    res: FastifyReply
+  ): Promise<void> {
+    const { registrationNumber } = req.body;
+    if (!registrationNumber) {
+      return res.status(422).send({ msg: "O número de matrícula é obrigatório!" });
     }
 
-    const librarian = await this._usersRepository.findById(id);
+    const librarian = await this._usersRepository.findByRegistrationNumber(registrationNumber);
     if (!librarian) return res.status(404).send({ msg: "Bibliotecário não encontrado!" });
 
     // Gera um novo token

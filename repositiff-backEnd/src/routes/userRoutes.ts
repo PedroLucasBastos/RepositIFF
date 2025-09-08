@@ -32,7 +32,7 @@ export async function librarianRoutes(fastify: FastifyInstance) {
 
   fastify.post(
     "/reset-password-request",
-    async (req: FastifyRequest<{ Body: { id: string } }>, reply: FastifyReply) => {
+    async (req: FastifyRequest<{ Body: { registrationNumber: string } }>, reply: FastifyReply) => {
       try {
         console.log(req.body);
         await userController.resetPasswordRequest(req, reply);
