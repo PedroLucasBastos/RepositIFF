@@ -22,7 +22,7 @@ export async function librarianRoutes(fastify: FastifyInstance) {
     }
   );
 
-  fastify.post("/login", async (req: FastifyRequest<{ Body: RegisterUserRegisterBody }>, res: FastifyReply) => {
+  fastify.post("/login", async (req: any, res: FastifyReply) => {
     try {
       await userController.login(req, res);
     } catch (error: any) {
