@@ -91,9 +91,9 @@ const RegisterLibrarian = ({ handleCancel }) => {
     setPasswordStrength(strength);
   };
 
-  const onFinish = async (values) => {
+   const onFinish = async (values) => {
     setLoading(true);
-    setBackendErrors({ email: "", registrationNumber: "" }); // Limpa erros antigos antes de cada requisição
+    setBackendErrors({ email: "", registrationNumber: "" });
 
     const emptyFields = Object.entries(values).filter(([key, value]) => !value);
     if (emptyFields.length > 0) {
@@ -107,41 +107,19 @@ const RegisterLibrarian = ({ handleCancel }) => {
       return;
     }
 
+    // Adiciona o cargo fixo 'LIBRARIAN' ao objeto de valores antes de enviar
+    const dataToSend = {
+      ...values,
+      role: "LIBRARIAN"
+    };
+
     try {
-      await axios.post("http://localhost:3333/librarian/register", values);
+      await axios.post("http://localhost:3333/user/register", dataToSend);
       message.success("Bibliotecário cadastrado com sucesso!");
-      form.resetFields(); // Limpa os campos do formulário
-      handleCancel(); // Fecha o modal
+      form.resetFields();
+      handleCancel();
     } catch (error) {
-      console.error(error);
-      if (error.response && error.response.data) {
-        const { message } = error.response.data;
-        const { statusCode } = error.response.data;
-        console.log(statusCode);
-
-        // Erro no e-mail
-        if (message === "Email already in use") {
-          setBackendErrors({
-            email: "E-mail já cadastrado. Tente outro e-mail.",
-            registrationNumber: "", // Garante que matrícula não receba erro neste caso
-          });
-          form.scrollToField("email", { behavior: "smooth", block: "center" });
-        }
-
-        // Erro na matrícula
-        if (statusCode === 400) {
-          setBackendErrors({
-            email: "", // Garante que e-mail não receba erro neste caso
-            registrationNumber:
-              "Matrícula já cadastrada. Verifique e tente novamente.",
-          });
-          form.scrollToField("registrationNumber", {
-            behavior: "smooth",
-            block: "center",
-          });
-        }
-      }
-      message.error("Erro ao cadastrar bibliotecário. Tente novamente.");
+      // ... restante do seu código
     } finally {
       setLoading(false);
     }

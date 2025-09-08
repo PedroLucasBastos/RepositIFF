@@ -32,7 +32,7 @@ const AdminDashboard = () => {
       return;
     }
     try {
-      const res = await fetch("http://localhost:3333/librarian/list", {
+      const res = await fetch("http://localhost:3333/user/list", {
         headers: {
           Authorization: `Bearer ${token}`,
         },

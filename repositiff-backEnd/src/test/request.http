@@ -7,12 +7,21 @@ POST http://localhost:3333/user/register
 Content-Type: application/json
 
 {
+<<<<<<< Updated upstream
     "name": "simoes",
     "email": "asdfasdfasdf11223123",
     "registrationNumber": "1122222211222222",
     "role": "ADMIN",
     "password": "abc@123",
     "confirmPassword": "abc@123"
+=======
+    "name": "Beltrano",
+    "email": "pedro19792001@gmail.com",
+    "registrationNumber": "201919700080",
+    "role": "ADMIN",
+    "password": "12345",
+    "confirmPassword": "12345"
+>>>>>>> Stashed changes
 }
 
 ###
@@ -141,4 +150,13 @@ Content-Type: application/json
 
 {
     "id": "eec6f623-2a9f-4233-82dd-309fdc54a3de"
+}
+###
+POST  http://localhost:3333/course/register
+Content-Type: application/json
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjVhMzI4MjI4LTFlYTMtNGU2MS04YmQ0LTJiOWJhYWIzMjA3NSIsImlhdCI6MTc1NzI5NjczNiwiZXhwIjoxNzU3MzAwMzM2fQ.vAgUfKnkbMcrFDmMuTNzmbsslBmpNooeuFfXMGt0Il4
+{
+    "name": "Sistemas de Informação",
+    "courseCode": "CO1025",
+    "degreeType": "BACHELOR"
 }

@@ -50,7 +50,7 @@ function Login() {
       setErrorMessage("Por favor, preencha todos os campos.");
       return;
     }
-    const apiUrl = userType === "admin" ? "http://localhost:3333/librarian/login" : "http://localhost:3333/librarian/login";
+    const apiUrl = userType === "admin" ? "http://localhost:3333/user/login" : "http://localhost:3333/user/login";
     const redirectPath = userType === "admin" ? "/admin" : "/bibliotecario";
     try {
       const payload = { registrationNumber, password };

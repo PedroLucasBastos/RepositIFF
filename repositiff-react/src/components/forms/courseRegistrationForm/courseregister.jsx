@@ -2,6 +2,7 @@ import React, { useState } from "react";
 import { Form, Input, Button, message, Select } from "antd";
 import axios from "axios";
 import PropTypes from "prop-types";
+import Cookies from "js-cookie";
 
 // Recebe a nova prop 'onCourseRegistered'
 const RegisterCourse = ({ handleCancel, onCourseRegistered }) => {
@@ -18,11 +19,20 @@ const RegisterCourse = ({ handleCancel, onCourseRegistered }) => {
     setBackendErrors({ name: "", courseCode: "", degreeType: "" });
 
     try {
-      // **IMPORTANTE**: Verifique se esta é a sua URL de cadastro correta
-      await axios.post("http://localhost:3333/course/register", values);
+      // Pega o token do cookie
+      const token = Cookies.get("authToken");
+
+      // Cria a configuração de headers com o token
+      const headers = {
+        'Authorization': `Bearer ${token}`
+      };
+      console.log('Headers:', headers);
+      console.log('Values:', values);
+      // Passa os headers na requisição POST
+      await axios.post("http://localhost:3333/course/register", values, { headers });
+      
       message.success("Curso cadastrado com sucesso!");
 
-      // AQUI A MÁGICA ACONTECE!
       // Avisa o componente pai que um novo curso foi registrado
       onCourseRegistered();
 
@@ -31,14 +41,17 @@ const RegisterCourse = ({ handleCancel, onCourseRegistered }) => {
     } catch (error) {
       console.error(error);
       if (error.response && error.response.data) {
-        const { message, statusCode } = error.response.data;
+        // CORREÇÃO: Renomeia 'message' para 'backendMessage' para evitar conflito
+        const { message: backendMessage, statusCode } = error.response.data;
 
-        if (message === "Course name already in use") {
+        if (backendMessage === "Course name already in use") {
           setBackendErrors({ name: "Nome do curso já cadastrado.", courseCode: "", degreeType: "" });
           form.scrollToField("name");
-        } else if (statusCode === 400) {
-          setBackendErrors({ name: "", courseCode: "Código do curso já cadastrado.", degreeType: "" });
-          form.scrollToField("courseCode");
+        } else if (backendMessage === "Course code already in use") {
+           setBackendErrors({ name: "", courseCode: "Código do curso já cadastrado.", degreeType: "" });
+           form.scrollToField("courseCode");
+        } else if (statusCode === 401) {
+            message.error("Não autorizado. Você precisa ser um administrador para cadastrar um curso.");
         } else {
            message.error("Erro ao cadastrar o curso. Tente novamente.");
         }
@@ -106,7 +119,7 @@ const RegisterCourse = ({ handleCancel, onCourseRegistered }) => {
 
 RegisterCourse.propTypes = {
   handleCancel: PropTypes.func.isRequired,
-  onCourseRegistered: PropTypes.func.isRequired, // Adiciona a nova prop
+  onCourseRegistered: PropTypes.func.isRequired,
 };
 
 export default RegisterCourse;

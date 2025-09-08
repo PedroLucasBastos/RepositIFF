@@ -1,7 +1,7 @@
 import React, { useState } from "react";
 import { Form, Input, Button, message } from "antd";
-import axios from "axios";
 import PropTypes from "prop-types";
+import Cookies from "js-cookie";
 
 const AdvisorForm = ({ handleCancel }) => {
   const [loading, setLoading] = useState(false);
@@ -11,8 +11,8 @@ const AdvisorForm = ({ handleCancel }) => {
   });
 
   // Função para traduzir erros do back-end
-  const translateBackendError = (error) => {
-    if (error.details === "Advisor already exists on the platform") {
+  const translateBackendError = (errorDetails) => {
+    if (errorDetails === "Advisor already exists on the platform") {
       return "Número de matrícula já cadastrada. Verifique e tente novamente.";
     }
     return "Erro ao cadastrar orientador. Tente novamente.";
@@ -21,57 +21,66 @@ const AdvisorForm = ({ handleCancel }) => {
   // Função chamada ao enviar o formulário
   const onFinish = async (values) => {
     setLoading(true);
-    setBackendErrors({ registrationNumber: "" }); // Limpar erros anteriores
+    setBackendErrors({ registrationNumber: "" });
 
     try {
-      // Enviando os dados no formato correto
+      // 1. Pega o token do cookie
+      const token = Cookies.get("authToken");
+
+      if (!token) {
+        message.error("Sessão expirada. Faça login novamente.");
+        setLoading(false);
+        return;
+      }
+
+      // 2. Constrói o corpo da requisição com os valores do formulário
       const { name, surname, registrationNumber } = values;
       const payload = { name, surname, registrationNumber };
 
-      await axios.post("http://localhost:3333/advisor/register", payload);
+      // 3. Usa a API fetch com o método POST e o token no cabeçalho
+      const response = await fetch("http://localhost:3333/advisor/register", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          "Authorization": `Bearer ${token}`,
+        },
+        body: JSON.stringify(payload),
+      });
+
+      // 4. Trata a resposta
+      if (!response.ok) {
+        const errorData = await response.json();
+        const errorDetails = errorData.Error?.details;
+        const errorMessage = translateBackendError(errorDetails);
+
+        if (errorDetails === "Advisor already exists on the platform") {
+          setBackendErrors({ registrationNumber: errorMessage });
+          form.setFields([
+            { name: "registrationNumber", errors: [errorMessage] },
+          ]);
+          form.scrollToField("registrationNumber", {
+            behavior: "smooth",
+            block: "center",
+          });
+        } else {
+          message.error(errorMessage);
+        }
+        throw new Error("Erro na resposta da API");
+      }
+
       message.success("Orientador cadastrado com sucesso!");
-      form.resetFields(); // Limpar campos do formulário
+      form.resetFields();
 
       if (handleCancel) {
-        handleCancel(); // Fechar modal após o cadastro com sucesso
+        handleCancel();
       }
     } catch (error) {
-      if (error.response) {
-        const errorData = error.response.data?.Error; // Usando 'Error' com maiúscula
-        const details = errorData?.details;
-
-        if (details) {
-          const backendMessage = translateBackendError(errorData);
-          if (details === "Advisor already exists on the platform") {
-            setBackendErrors({
-              registrationNumber: backendMessage,
-            });
-            form.setFields([
-              {
-                name: "registrationNumber",
-                errors: [backendMessage], // Definir a mensagem de erro no campo
-              },
-            ]);
-            form.scrollToField("registrationNumber", {
-              behavior: "smooth",
-              block: "center",
-            });
-          } else {
-            message.error(backendMessage);
-          }
-        } else {
-          message.error("Erro inesperado no servidor. Verifique os logs.");
-        }
-      } else if (error.request) {
-        message.error("Nenhuma resposta do servidor. Tente novamente.");
-      } else {
-        message.error(
-          "Erro na configuração da requisição. Verifique o console."
-        );
-        console.error("Erro na configuração da requisição:", error.message);
+      console.error(error);
+      if (error.message !== "Erro na resposta da API") {
+        message.error("Erro ao conectar com o servidor. Tente novamente.");
       }
     } finally {
-      setLoading(false); // Garantir que o botão não fique travado
+      setLoading(false);
     }
   };
 
@@ -134,9 +143,8 @@ const AdvisorForm = ({ handleCancel }) => {
   );
 };
 
-// Definir valores padrão para props
 AdvisorForm.defaultProps = {
-  handleCancel: () => {}, // Função vazia caso não seja passada
+  handleCancel: () => {},
 };
 
 AdvisorForm.propTypes = {

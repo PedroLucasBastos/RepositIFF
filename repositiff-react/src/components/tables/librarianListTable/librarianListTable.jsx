@@ -86,7 +86,7 @@ const LibrarianListTable = ({ data, loading, onRefresh }) => {
 
     try {
       // CORREÇÃO: O ID do bibliotecário agora é adicionado diretamente à URL
-      await axios.delete(`http://localhost:3333/librarian/delete/${selectedLibrarianId}`, {
+      await axios.delete(`http://localhost:3333/user/delete/${selectedLibrarianId}`, {
         headers: {
           Authorization: `Bearer ${token}`,
         },
