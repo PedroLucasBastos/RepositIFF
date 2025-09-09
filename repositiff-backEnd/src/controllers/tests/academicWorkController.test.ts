@@ -113,7 +113,7 @@ describe("", async () => {
     const file = new File([buffer], "teste2.pdf", { type: "application/pdf" });
     const formData = new FormData();
     const token =
-      "Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjA3YzViN2MzLTJiZWItNDk3ZC1iMjZiLWZkOWVkOTY4ZmE5ZCIsImlhdCI6MTc1NzMwMTM4MSwiZXhwIjoxNzU3MzA0OTgxfQ.gNaYvnfZs8-lnQiAXORfKSH9V1AznwXUhNc3drtH2Bo";
+      "Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6ImFlYWVkZDBkLTdjOTYtNDgwNi1hMjM1LWM5OWQ4ZWUzMGU3MCIsImlhdCI6MTc1NzM4MjE4OSwiZXhwIjoxNzU3Mzg5Mzg5fQ.jLqNziJuFvvHP8ktLILkGQuNeQvf8KQBDt5xmWNcEYM";
     formData.append("authors", JSON.stringify(["Felizberto Moreira", "Amanda Nudes"]));
     formData.append("idAdvisors", JSON.stringify([advisorCorrectly.id]));
     formData.append("title", "Além da Morte: Como Dark Souls Representa os Desafios e Superações da Vida Real");
@@ -158,6 +158,7 @@ describe("", async () => {
       method: "PUT",
       headers: {
         "Content-Type": "application/json",
+        Authorization: token,
       },
       body: JSON.stringify({
         id: academicWorkID,

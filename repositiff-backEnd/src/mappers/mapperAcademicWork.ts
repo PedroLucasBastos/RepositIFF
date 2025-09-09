@@ -1,7 +1,7 @@
 import { DomainError, ErrorCategory } from "@src/error_handling/domainServicesErrors.js";
 import {
   IReturnFullAcademicWorkDTO,
-  IReturnAcademicWorkUpdateFields,
+  IBasicInfoAcademicWork,
   IReturnBasicAcademicWork,
 } from "@src/infra/repositories/IAcademicWorkRepository.js";
 import { MapperAdvisor } from "./mapperAdvisor.js";

@@ -13,7 +13,7 @@ import {
 // import { typeWork } from "@src/domain/entities/academicWork.js";
 import {
   UpdateAcademicWorkBasicInfoPROPS,
-  UpdateAcademicWorkBasicInfoUseCase,
+  BasicUpdateAcademicWorkUseCase,
 } from "@src/domain/application/academicWork-useCases/UpdateAcademicWorkBasicInfoUse_case.js";
 import {
   AddAdvisorToAcademicWorkProps,
@@ -60,7 +60,7 @@ export interface IUpdateRouteRequest {
 export class academicWorkController {
   async cadastrated(req: any, res: FastifyReply): Promise<void> {
     console.log("\n INICIO DA REQUISIÇÃO DE ADIÇÃO");
-    console.log(req);
+    // console.log(req);
     console.log("\n");
     const resultSanitize = this.sanitizeReceivedDataToAdd(req);
     if (resultSanitize.isLeft()) {
@@ -156,26 +156,32 @@ export class academicWorkController {
 
   async basicUpdate(req: any, res: FastifyReply): Promise<void> {
     console.log("\n\nCOMEÇOU O CONTROLLER DE BASIC\n");
-
-    const { id, fields } = req;
-
-    const resultSanitize = this.sanitizeReceivedDataToUpdateBasicInfo(req);
+    // console.log(req);
+    console.log("\n\n\n");
+    const { id, fields } = req.body;
+    const userId = req.userId;
+    console.log(req.body);
+    console.log(`\n Id: ${id} \n`);
+    console.log(`\n fields: ${fields} \n`);
+    console.log(`\n userId: ${userId} \n`);
+    const resultSanitize = this.sanitizeReceivedDataToUpdateBasicInfo(req.body);
     if (resultSanitize.isLeft()) {
       return res.status(400).send({
         Error: "ERROR_WITH_SINTAX_REQUEST",
         detail: resultSanitize.value,
       });
     }
-
+    console.log("passou da sanitização - basic info");
     const repo = new PrismaAcademicWorkRepository();
-    const useCase = new UpdateAcademicWorkBasicInfoUseCase(repo);
-    const user = await new PrismaUserRepository().findById(req.userId);
+    const useCase = new BasicUpdateAcademicWorkUseCase(repo);
+
+    const user = await new PrismaUserRepository().findById(userId);
 
     const result = await useCase.execute({ id, fields }, user?.role || "");
 
-    console.log("\n\nRESULTADO DA SANITIZAÇÃO\n");
-    console.log(resultSanitize);
-    console.log("\nRESULTADO DA SANITIZAÇÃO\n\n");
+    // console.log("\n\nRESULTADO DA SANITIZAÇÃO\n");
+    // console.log(resultSanitize);
+    // console.log("\nRESULTADO DA SANITIZAÇÃO\n\n");
 
     if (result.isLeft())
       return res.status(400).send({
@@ -361,6 +367,8 @@ export class academicWorkController {
   }
 
   sanitizeReceivedDataToUpdateBasicInfo(request: any): Either<string, void> {
+    console.log("SANITIZAÇÃO BASIC INFO\n");
+    console.log(request);
     const { id, fields } = request;
     const {
       authors,
@@ -443,6 +451,7 @@ export class academicWorkController {
     if (cddCode && typeof cddCode !== "string") {
       return new Left("CDD code, if provided, must be a string.");
     }
+    console.log("TUDO CERTO AQUI - sanitização basic info");
     return new Right(undefined);
   }
 

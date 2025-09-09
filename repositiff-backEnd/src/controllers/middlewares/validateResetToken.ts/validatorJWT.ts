@@ -9,7 +9,7 @@ export class ValidatorJWT {
     console.log("TOKEN: ");
     console.log(authHeader);
     if (!authHeader) {
-      return res.status(401).send({ msg: "Token não fornecido!" });
+      return res.status(401).send({ msg: "Token não fornecido!asd" });
     }
 
     const token = authHeader.split(" ")[1]; // Bearer <TOKEN>
@@ -26,38 +26,39 @@ export class ValidatorJWT {
       req.userId = payload.id;
       // console.log(`\n\nPAYLOAD DECODIFICADO NO VALIDATETOKEN: ${payload}`);
       console.log(payload.id);
-    } catch (err) {
-      return res.status(401).send({ msg: "Token inválido ou expirado!" });
+    } catch (err: any) {
+      console.log(err);
+      return res.status(401).send({ msg: "Token inválido ou expirado! aaaaaaaa", error: err });
     }
   }
 
-  static async validateAcess(req: any, res: any, userRepository: IUsersRepository, role: Role): Promise<void> {
-    const authHeader = req.headers["authorization"];
-    console.log("TOKEN: ");
-    console.log(authHeader);
-    if (!authHeader) {
-      return res.status(401).send({ msg: "Token não fornecido!" });
-    }
+  // static async validateAcess(req: any, res: any, userRepository: IUsersRepository, role: Role): Promise<void> {
+  //   const authHeader = req.headers["authorization"];
+  //   console.log("TOKEN: ");
+  //   console.log(authHeader);
+  //   if (!authHeader) {
+  //     return res.status(401).send({ msg: "Token não fornecido!" });
+  //   }
 
-    const token = authHeader.split(" ")[1]; // Bearer <TOKEN>
-    if (!token) {
-      return res.status(401).send({ msg: "Token inválido!" });
-    }
+  //   const token = authHeader.split(" ")[1]; // Bearer <TOKEN>
+  //   if (!token) {
+  //     return res.status(401).send({ msg: "Token inválido!" });
+  //   }
 
-    const jwtSecret = process.env.SECRET || "";
+  //   const jwtSecret = process.env.SECRET || "";
 
-    let payload: any;
-    try {
-      console.log(`PAYLOAD: ${token}`);
-      payload = JWTService.verifyToken(token, jwtSecret);
-      const userResult = await userRepository.findById(payload.id);
-      if (!userResult) return res.status(401).send({ msg: "Token vinculado a um usuário que não está no sistema" });
+  //   let payload: any;
+  //   try {
+  //     console.log(`PAYLOAD: ${token}`);
+  //     payload = JWTService.verifyToken(token, jwtSecret);
+  //     const userResult = await userRepository.findById(payload.id);
+  //     if (!userResult) return res.status(401).send({ msg: "Token vinculado a um usuário que não está no sistema" });
 
-      if (!Object.values(Role).includes(role as Role)) {
-        return res.status(401).send({ msg: "Acesso negado para esse usuário" });
-      }
-    } catch (err) {
-      return res.status(401).send({ msg: "Token inválido ou expirado!" });
-    }
-  }
+  //     if (!Object.values(Role).includes(role as Role)) {
+  //       return res.status(401).send({ msg: "Acesso negado para esse usuário" });
+  //     }
+  //   } catch (err) {
+  //     return res.status(401).send({ msg: "Token inválido ou expirado!" });
+  //   }
+  // }
 }

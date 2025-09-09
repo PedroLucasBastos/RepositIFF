@@ -76,28 +76,26 @@ export async function academicWorkRoutes(fastify: FastifyInstance) {
     }
   });
 
-  fastify.put(
-    "/basicUpdate",
-    { preHandler: ValidatorJWT.validateToken },
-    async (req: FastifyRequest<{ Body: UpdateAcademicWorkBasicInfoPROPS }>, res: FastifyReply) => {
-      console.log("\n INICIO DOS TRABALHOS DE BASIC UPDATE");
-      console.log(req.body);
-      try {
-        // ValidatorJWT.validateToken(req, res);
-        const body = req.body;
-        await controller.basicUpdate(body, res);
-      } catch (error: any) {
-        res.code(500).send({ error: error.message, message: "Updation has failed" });
-      }
+  fastify.put("/basicUpdate", { preHandler: ValidatorJWT.validateToken }, async (req: any, res: FastifyReply) => {
+    console.log("\n INICIO DOS TRABALHOS DE BASIC UPDATE");
+    // console.log(req);
+    try {
+      // ValidatorJWT.validateToken(req, res);
+      // const body = req.body;
+      // console.log(body);
+      // console.log(req);
+      await controller.basicUpdate(req, res);
+    } catch (error: any) {
+      res.code(500).send({ error: error.message, message: "Updation has failed" });
     }
-  );
+  });
 
   // ANTIGO UPDATE
   fastify.post("/update", async (req, res) => {
     try {
       ValidatorJWT.validateToken(req, res);
       const parts = req.parts();
-      console.log(parts);
+      // console.log(parts);
       const body: Record<string, any> = {};
       let fileBuffer;
 
@@ -118,7 +116,7 @@ export async function academicWorkRoutes(fastify: FastifyInstance) {
         // cont++;
       }
 
-      console.log(body);
+      // console.log(body);
       const requestObj: IUpdateAcademicWorkUseCaseDTO = {
         authors: body.authors,
         idAdvisors: body.idAdvisors,
@@ -258,7 +256,7 @@ export async function academicWorkRoutes(fastify: FastifyInstance) {
     "/deleteAdvisor",
     { preHandler: ValidatorJWT.validateToken },
     async (req: FastifyRequest<{ Body: IDelAdvisorProps }>, res: FastifyReply) => {
-      console.log(req.body);
+      // console.log(req.body);
       try {
         // ValidatorJWT.validateToken(req, res);
         const body = req.body;
