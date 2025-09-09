@@ -6,7 +6,6 @@ import { Right } from "@src/error_handling/either.Funcional.js";
 import { Left } from "@src/error_handling/either.Funcional.js";
 import { IFileStorage } from "@src/infra/fileStorage/IFileStorage.js";
 import { IAcademicWorkRepository } from "@src/infra/repositories/IAcademicWorkRepository.js";
-import { IReturnFullAcademicWorkDTO } from "../../../infra/repositories/IAcademicWorkRepository";
 
 export interface UpdateAcademicWorkBasicInfoPROPS {
   id: string;
@@ -23,10 +22,14 @@ export interface UpdateAcademicWorkBasicInfoPROPS {
     references?: number[];
     cduCode?: string;
     cddCode?: string;
+    file?: Buffer;
   };
 }
 export class BasicUpdateAcademicWorkUseCase {
-  constructor(private readonly _repo: IAcademicWorkRepository) {}
+  constructor(
+    private readonly _repo: IAcademicWorkRepository,
+    private _fileStorage: IFileStorage
+  ) {}
   async execute(props: UpdateAcademicWorkBasicInfoPROPS, userRole: string) {
     if (userRole !== Role.LIBRARIAN) {
       return new Left(
@@ -58,6 +61,9 @@ export class BasicUpdateAcademicWorkUseCase {
       const name = props.fields.authors?.[0] || selectAcademicWork.authors[0];
       const title = props.fields.title || selectAcademicWork.title;
       cutterNumber = new CutterTable().generateCutterNumber(name, title);
+    }
+    if (selectAcademicWork && props.fields.file != undefined) {
+      await this._fileStorage.upload(selectAcademicWork.file, props.fields.file);
     }
     if (validateResult.isLeft()) return new Left(validateResult.value);
     const resultUpdated = await this._repo.updateAcademicWorkFields({
