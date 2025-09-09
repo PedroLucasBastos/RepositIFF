@@ -390,7 +390,7 @@ export class academicWorkController {
     }
     // Validate authors
     // const parseAuthors = JSON.parse(authors);
-    if (!Array.isArray(authors) || authors.some((author) => typeof author !== "string")) {
+    if (authors && (!Array.isArray(authors) || authors.some((author) => typeof author !== "string"))) {
       return new Left("Authors must be an array of strings.");
     }
 

@@ -72,6 +72,7 @@ export class PrismaAcademicWorkRepository implements IAcademicWorkRepository {
 
       const result: IBasicInfoAcademicWork = {
         id: prismaData.id,
+        authors: prismaData.authors,
         title: prismaData.title,
         typeWork: prismaData.typeWork,
         year: prismaData.year,
