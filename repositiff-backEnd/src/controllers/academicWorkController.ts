@@ -173,7 +173,7 @@ export class academicWorkController {
     }
     console.log("passou da sanitização - basic info");
     const repo = new PrismaAcademicWorkRepository();
-    const useCase = new BasicUpdateAcademicWorkUseCase(repo);
+    const useCase = new BasicUpdateAcademicWorkUseCase(repo, new CloudFlareFileStorage());
 
     const user = await new PrismaUserRepository().findById(userId);
 

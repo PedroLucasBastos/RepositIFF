@@ -154,10 +154,10 @@ export class CreateProjectUseCase {
 
     if (file != undefined) {
       // console.log()
-      newFile = new AcademicWorkFile({
-        title: title,
-        key: academicWorkEntity.id,
-      });
+      // newFile = new AcademicWorkFile({
+      //   title: title,
+      //   key: academicWorkEntity.id,
+      // });
       await this._fileStorage.upload(academicWorkEntity.file, file);
     }
     console.log("\n\n QUASE ACABANDO AKI \n\n");
