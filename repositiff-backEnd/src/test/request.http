@@ -7,21 +7,12 @@ POST http://localhost:3333/user/register
 Content-Type: application/json
 
 {
-<<<<<<< Updated upstream
-    "name": "simoes",
-    "email": "asdfasdfasdf11223123",
-    "registrationNumber": "1122222211222222",
-    "role": "ADMIN",
-    "password": "abc@123",
-    "confirmPassword": "abc@123"
-=======
-    "name": "Beltrano",
+    "name": "Pedro Lucas",
     "email": "pedro19792001@gmail.com",
     "registrationNumber": "201919700080",
     "role": "ADMIN",
-    "password": "12345",
-    "confirmPassword": "12345"
->>>>>>> Stashed changes
+    "password": "123",
+    "confirmPassword": "123"
 }
 
 ###

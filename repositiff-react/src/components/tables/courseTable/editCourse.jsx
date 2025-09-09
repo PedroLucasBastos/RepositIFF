@@ -2,6 +2,7 @@ import React, { useEffect, useState } from "react";
 import { Form, Input, Select, Spin, Modal, Button, message } from "antd";
 import axios from "axios";
 import PropTypes from "prop-types";
+import Cookies from "js-cookie";
 
 const { Option } = Select;
 
@@ -63,8 +64,17 @@ const EditCourse = ({ courseId, isVisible, handleCancel, fetchCourses }) => {
         courseId,
         updateFields,
       };
+      const authToken = Cookies.get("authToken");
+          if (!authToken) {
+            message.error("Sessão expirada. Faça login novamente.");
+            return;
+          }
 
-      await axios.put("http://localhost:3333/course/update", dataToSend);
+      await axios.put("http://localhost:3333/course/update", dataToSend,{
+                headers: {
+                    Authorization: `Bearer ${authToken}`,
+                },
+            });
 
       message.success("Curso atualizado com sucesso!");
       handleCancel(); // Fechar o modal

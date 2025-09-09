@@ -83,6 +83,7 @@ const LibrarianListTable = ({ data, loading, onRefresh }) => {
       message.error("Autenticação necessária. Por favor, faça login novamente.");
       return;
     }
+    console.log(selectedLibrarianId)
 
     try {
       // CORREÇÃO: O ID do bibliotecário agora é adicionado diretamente à URL
@@ -92,6 +93,7 @@ const LibrarianListTable = ({ data, loading, onRefresh }) => {
         },
         // A propriedade 'data' foi removida pois não é mais necessária
       });
+      console.log(selectedLibrarianId)
 
       message.success("Bibliotecário excluído com sucesso!");
       handleCancelDelete(); // Fecha todos os modais

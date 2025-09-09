@@ -5,8 +5,10 @@ import {
   EyeOutlined,
   EditOutlined,
   DeleteOutlined,
+  UnlockFilled, // Novo ícone
+  LockFilled, // Novo ícone
 } from "@ant-design/icons";
-
+import Cookies from "js-cookie";
 
 const TCCListTable = ({ data, loading, onRefresh, onEdit }) => {
   const [searchText, setSearchText] = useState("");
@@ -17,6 +19,9 @@ const TCCListTable = ({ data, loading, onRefresh, onEdit }) => {
   const [recordToDelete, setRecordToDelete] = useState(null);
   const [deleteConfirmationInput, setDeleteConfirmationInput] = useState("");
   const [isConfirmingDelete, setIsConfirmingDelete] = useState(false);
+  
+  const [isVisibilityModalVisible, setIsVisibilityModalVisible] = useState(false);
+  const [recordToChangeVisibility, setRecordToChangeVisibility] = useState(null);
 
   useEffect(() => {
     setDataSource(data);
@@ -55,7 +60,8 @@ const TCCListTable = ({ data, loading, onRefresh, onEdit }) => {
             <strong>Ano:</strong> {record.year}
           </p>
           <p>
-            <strong>Visibilidade:</strong> {record.visibility}
+            {/* O campo de visibilidade é agora um booleano (academicWorkStatus) */}
+            <strong>Visibilidade:</strong> {record.academicWorkStatus ? "Público" : "Privado"}
           </p>
         </div>
       ),
@@ -74,9 +80,14 @@ const TCCListTable = ({ data, loading, onRefresh, onEdit }) => {
     setIsDeleteModalVisible(true);
   };
 
-  // --- 👇 FUNÇÃO DE CONFIRMAÇÃO COM A NOVA LÓGICA DO MODAL DE SUCESSO 👇 ---
   const handleConfirmDelete = async () => {
     if (!recordToDelete) return;
+    
+    const authToken = Cookies.get("authToken");
+    if (!authToken) {
+      message.error("Sessão expirada. Faça login novamente.");
+      return;
+    }
 
     setIsConfirmingDelete(true);
     try {
@@ -84,6 +95,9 @@ const TCCListTable = ({ data, loading, onRefresh, onEdit }) => {
         `http://localhost:3333/academicWork/${recordToDelete.id}/delete`,
         {
           method: "DELETE",
+          headers: {
+            "Authorization": `Bearer ${authToken}`
+          },
         }
       );
       
@@ -94,15 +108,12 @@ const TCCListTable = ({ data, loading, onRefresh, onEdit }) => {
         throw new Error(errorMessage);
       }
       
-      // PASSO 1: Fecha o modal de confirmação
       setIsDeleteModalVisible(false);
 
-      // PASSO 2: Mostra o modal de sucesso estático do Ant Design
       Modal.success({
         title: 'Excluído com Sucesso!',
         content: result.Message || 'O trabalho acadêmico foi removido.',
         okText: 'Concluir',
-        // PASSO 3: A atualização SÓ acontece quando o usuário clica em "Concluir"
         async onOk() {
           if (onRefresh) {
             await onRefresh();
@@ -114,7 +125,6 @@ const TCCListTable = ({ data, loading, onRefresh, onEdit }) => {
       console.error("Falha ao excluir trabalho acadêmico:", error);
       message.error("Falha ao excluir trabalho acadêmico: " + error.message);
     } finally {
-      // Limpa os estados, independentemente de sucesso ou falha
       setIsConfirmingDelete(false); 
       setDeleteConfirmationInput("");
       setRecordToDelete(null);
@@ -127,8 +137,63 @@ const TCCListTable = ({ data, loading, onRefresh, onEdit }) => {
     setRecordToDelete(null);
   };
 
+  const handleChangeVisibility = async () => {
+    if (!recordToChangeVisibility) return;
+
+    const authToken = Cookies.get("authToken");
+    if (!authToken) {
+      message.error("Sessão expirada. Faça login novamente.");
+      return;
+    }
+
+
+    try {
+      const response = await fetch(
+        `http://localhost:3333/academicWork/changeVisibility`,
+        {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+            "Authorization": `Bearer ${authToken}`,
+          },
+          body: JSON.stringify({ id: recordToChangeVisibility.id }),
+        }
+      );
+     
+
+      // Verifica apenas o status da resposta, que é o que o back-end retorna
+      if (!response.ok) {
+        const errorData = await response.json();
+        const errorMessage = errorData.Message || "Erro ao alterar visibilidade.";
+        throw new Error(errorMessage);
+      }
+
+      // Se a resposta for OK, exibe a mensagem de sucesso
+      const result = await response.json();
+      message.success(result.Message || "Visibilidade alterada com sucesso!");
+      setIsVisibilityModalVisible(false);
+      
+      // Recarrega os dados para que o cadeado mude de cor
+      if (onRefresh) {
+        onRefresh();
+      }
+
+    } catch (error) {
+      console.error("Falha ao alterar a visibilidade:", error);
+      message.error("Falha ao alterar a visibilidade: " + error.message);
+    } finally {
+      setRecordToChangeVisibility(null);
+    }
+    
+  };
+  
+  const handleOpenVisibilityModal = (record) => {
+    setRecordToChangeVisibility(record);
+    setIsVisibilityModalVisible(true);
+  };
+
+  // Ajuste nas colunas para refletir a nova lógica
   const columns = [
-    // ... (suas colunas continuam as mesmas)
     {
       title: "Título",
       dataIndex: "title",
@@ -153,11 +218,33 @@ const TCCListTable = ({ data, loading, onRefresh, onEdit }) => {
       key: "year",
       sorter: (a, b) => a.year - b.year,
     },
+    // Coluna de Visibilidade: agora usa a propriedade booleana `academicWorkStatus`
     {
       title: "Visibilidade",
-      dataIndex: "visibility",
       key: "visibility",
-      sorter: (a, b) => a.visibility.localeCompare(b.visibility),
+      render: (_, record) => (
+        <Tooltip
+          title={
+            record.academicWorkStatus // Verifica a propriedade booleana
+              ? "Trabalho Público"
+              : "Trabalho Privado"
+          }
+        >
+          <Space>
+            {record.academicWorkStatus ? ( // Renderiza o ícone com base no booleano
+              <UnlockFilled
+                style={{ color: "green", fontSize: "1.2em", cursor: "pointer" }}
+                onClick={() => handleOpenVisibilityModal(record)}
+              />
+            ) : (
+              <LockFilled
+                style={{ color: "red", fontSize: "1.2em", cursor: "pointer" }}
+                onClick={() => handleOpenVisibilityModal(record)}
+              />
+            )}
+          </Space>
+        </Tooltip>
+      ),
     },
     {
       title: "Ações",
@@ -205,7 +292,7 @@ const TCCListTable = ({ data, loading, onRefresh, onEdit }) => {
         dataSource={filteredData}
         columns={columns}
         pagination={{ pageSize: 5 }}
-        rowKey={(record) => record.id} // Recomendo usar o 'id' como chave
+        rowKey={(record) => record.id}
         loading={loading}
       />
 
@@ -234,6 +321,28 @@ const TCCListTable = ({ data, loading, onRefresh, onEdit }) => {
             value={deleteConfirmationInput}
             onChange={(e) => setDeleteConfirmationInput(e.target.value)}
           />
+        </Modal>
+      )}
+
+      {recordToChangeVisibility && (
+        <Modal
+          title={`Alterar Visibilidade para ${recordToChangeVisibility.academicWorkStatus ? "Privado" : "Público"}`}
+          visible={isVisibilityModalVisible}
+          onOk={handleChangeVisibility}
+          onCancel={() => setIsVisibilityModalVisible(false)}
+          okText="Confirmar"
+          cancelText="Cancelar"
+        >
+          <p>
+            Você tem certeza que deseja alterar a visibilidade do trabalho **"{recordToChangeVisibility.title}"**?
+          </p>
+          <p>
+            Essa ação irá tornar o trabalho{" "}
+            <strong>
+              {recordToChangeVisibility.academicWorkStatus ? "privado" : "público"}
+            </strong>{" "}
+            para os usuários.
+          </p>
         </Modal>
       )}
     </div>
