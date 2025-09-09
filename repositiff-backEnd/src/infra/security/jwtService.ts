@@ -8,7 +8,7 @@ export class JWTService {
   private _secret: string;
   private _expiresIn: string;
 
-  constructor(secret: string, expiresIn: string = "1h") {
+  constructor(secret: string, expiresIn: string = "2h") {
     if (!secret) {
       throw new Error("JWT secret must be provided");
     }

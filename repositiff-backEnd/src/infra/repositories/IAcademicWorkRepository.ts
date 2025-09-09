@@ -92,6 +92,7 @@ export interface updateAcademicWorkFieldsDTO {
     description?: string;
     idCourse?: string;
     keyWords?: string[];
+    cutterNumber?: string;
     ilustration?: string;
     references?: number[];
     cduCode?: string;
@@ -104,8 +105,9 @@ export interface updateAdvisorsDTO {
   newAdvisor: string;
 }
 
-export interface IReturnAcademicWorkUpdateFields {
+export interface IBasicInfoAcademicWork {
   id: string;
+  authors: string[];
   academicWorkVisibility: boolean;
   title: string;
   typeWork: string;
@@ -129,7 +131,7 @@ export interface academicAssociativeAdvisors {
 export interface IAcademicWorkRepository {
   addAcademicWork(project: addAcademicWorkDTO): Promise<Error | IReturnFullAcademicWorkDTO>;
   updateAcademicWork(project: updateAcademicWorkDTO, id: string): Promise<Error | IReturnFullAcademicWorkDTO>;
-  updateAcademicWorkFields(project: updateAcademicWorkFieldsDTO): Promise<Error | IReturnAcademicWorkUpdateFields>;
+  updateAcademicWorkFields(project: updateAcademicWorkFieldsDTO): Promise<Error | IBasicInfoAcademicWork>;
   selectAcademicWork(id: string): Promise<Error | (null | IReturnFullAcademicWorkDTO)>;
   changeVsibility(id: string, status: boolean): Promise<Error | IReturnFullAcademicWorkDTO>;
   // updateAcademicWorkAdvisors(newAdvisor: string): Promise<Error | void>;

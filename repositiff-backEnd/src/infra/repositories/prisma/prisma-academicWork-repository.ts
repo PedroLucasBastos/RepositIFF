@@ -2,7 +2,7 @@ import { academicWorkVisibility, AcademicWork } from "@src/domain/entities/acade
 import {
   addAcademicWorkDTO,
   IAcademicWorkRepository,
-  IReturnAcademicWorkUpdateFields,
+  IBasicInfoAcademicWork,
   IReturnFullAcademicWorkDTO,
   updateAcademicWorkDTO,
   updateAcademicWorkFieldsDTO,
@@ -33,9 +33,7 @@ export class PrismaAcademicWorkRepository implements IAcademicWorkRepository {
   constructor() {
     this._prismaCli = new PrismaClient();
   }
-  async updateAcademicWorkFields(
-    project: updateAcademicWorkFieldsDTO
-  ): Promise<Error | IReturnAcademicWorkUpdateFields> {
+  async updateAcademicWorkFields(project: updateAcademicWorkFieldsDTO): Promise<Error | IBasicInfoAcademicWork> {
     const { id, fields } = project;
     const { idCourse, ...props } = fields;
     console.log(project);
@@ -72,7 +70,7 @@ export class PrismaAcademicWorkRepository implements IAcademicWorkRepository {
       // console.log(result)
       // console.log("===============================================")
 
-      const result: IReturnAcademicWorkUpdateFields = {
+      const result: IBasicInfoAcademicWork = {
         id: prismaData.id,
         title: prismaData.title,
         typeWork: prismaData.typeWork,
