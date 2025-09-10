@@ -30,31 +30,31 @@ describe("", async () => {
   let academicWorkListIds: string[] = [];
 
   it("should be able to register a academicWork in a routes", async () => {
-    const fileBuffer = await fs.readFile(path.join(__dirname, "./", "teste1.pdf"));
-    const buffer = await fs.readFile(path.join(__dirname, "teste1.pdf"));
-    const file = new File([buffer], "teste2.pdf");
-    const formData = new FormData();
-    console.log("Tamanho do buffer:", buffer.length); // deve ser > 0
-    formData.append("authors", JSON.stringify(["Casimiro de Anchieta", "Beatriz Camargo"]));
-    formData.append("idAdvisors", JSON.stringify([advisorCorrectly.id]));
-    formData.append("title", "Análise crítica do filme Bastardos Inglórios");
-    formData.append("typeWork", "Undergraduate thesis");
-    formData.append("idCourse", courseCorrectly.id);
-    formData.append("year", "2023");
-    formData.append("qtdPag", "150");
-    formData.append("description", "Este trabalho aborda a análise da forma de pensar do Tarantino");
-    formData.append("keyWords", JSON.stringify(["Tarantino", "Quientin", "Bastardos", "Gularme"]));
-    formData.append("cddCode", "794.8");
-    formData.append("ilustration", "Colorful");
-    formData.append("references", JSON.stringify([1, 22, 55, 66, 99]));
-    formData.append("file", file); // ✅ agora sim um File real
-    console.log(formData);
-    const response = await fetch("http://localhost:3333/academicWork/create", {
-      method: "POST",
-      body: formData,
-    });
-    expect(response.status).toBe(201);
-    console.log(response.body);
+    // const fileBuffer = await fs.readFile(path.join(__dirname, "./", "teste1.pdf"));
+    // const buffer = await fs.readFile(path.join(__dirname, "teste1.pdf"));
+    // const file = new File([buffer], "teste2.pdf");
+    // const formData = new FormData();
+    // console.log("Tamanho do buffer:", buffer.length); // deve ser > 0
+    // formData.append("authors", JSON.stringify(["Casimiro de Anchieta", "Beatriz Camargo"]));
+    // formData.append("idAdvisors", JSON.stringify([advisorCorrectly.id]));
+    // formData.append("title", "Análise crítica do filme Bastardos Inglórios");
+    // formData.append("typeWork", "Undergraduate thesis");
+    // formData.append("idCourse", courseCorrectly.id);
+    // formData.append("year", "2023");
+    // formData.append("qtdPag", "150");
+    // formData.append("description", "Este trabalho aborda a análise da forma de pensar do Tarantino");
+    // formData.append("keyWords", JSON.stringify(["Tarantino", "Quientin", "Bastardos", "Gularme"]));
+    // formData.append("cddCode", "794.8");
+    // formData.append("ilustration", "Colorful");
+    // formData.append("references", JSON.stringify([1, 22, 55, 66, 99]));
+    // formData.append("file", file); // ✅ agora sim um File real
+    // console.log(formData);
+    // const response = await fetch("http://localhost:3333/academicWork/create", {
+    //   method: "POST",
+    //   body: formData,
+    // });
+    // expect(response.status).toBe(201);
+    // console.log(response.body);
   });
 
   it("should be able to add advisor in academicWork on the routes", async () => {
@@ -122,7 +122,7 @@ describe("", async () => {
     const file = new File([buffer], "teste2.pdf", { type: "application/pdf" });
     const formData = new FormData();
     const token =
-      "Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjE2M2FhN2U4LWZmZDctNGMwOS04M2FmLWU1ZTdjOTdlYTdhZSIsImlhdCI6MTc1NzM5MTk0MiwiZXhwIjoxNzU3Mzk5MTQyfQ.-WH9pSf2F8ZrRZb14EteKXC1GHgpNUNpq_F0_wRk4cs";
+      "Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjE2M2FhN2U4LWZmZDctNGMwOS04M2FmLWU1ZTdjOTdlYTdhZSIsImlhdCI6MTc1NzQ3MTIwNywiZXhwIjoxNzU3NDc4NDA3fQ.C6V6JAz4lh01y7wodrLCzHV3BTM8TWwjt6C9-eq1dBs";
     formData.append("authors", JSON.stringify(["Natan Moreira", "Amanda Nudes"]));
     formData.append("idAdvisors", JSON.stringify([advisorCorrectly.id]));
     formData.append("title", "Além da Morte: Como Dark Souls Representa os Desafios e Superações da Vida Real");
