@@ -47,7 +47,7 @@ const PasswordRecovery = () => {
 
     try {
       await axios.post(
-        'http://localhost:3333/librarian/reset-password',
+        'http://localhost:3333/user/reset-password',
         {
           newPassword,
           confirmPassword,

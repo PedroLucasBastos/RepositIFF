@@ -20,6 +20,8 @@ import {
 import PropTypes from "prop-types";
 import "./formEditTCC.css";
 import DatePickerEstilizado from "@/components/datepicker/DatePickerEstilizado";
+import Cookies from "js-cookie";
+
 
 const { Option } = Select;
 const { Dragger } = Upload;
@@ -89,6 +91,7 @@ const FormEditTCC = ({ tccData, onClose }) => {
   }, []);
 
   useEffect(() => {
+    console.log("dados trabalho", tccData);
     const assignedAdvisorIds = [];
     if (currentMainAdvisor) assignedAdvisorIds.push(currentMainAdvisor.id);
     if (currentCoAdvisor) assignedAdvisorIds.push(currentCoAdvisor.id);
@@ -180,13 +183,19 @@ const FormEditTCC = ({ tccData, onClose }) => {
         id: tccData.id,
         fields: payloadFields
     };
-    
+    const authToken = Cookies.get("authToken");
+    console.log("Token de autenticação:", authToken);
+    if (!authToken) {
+      message.error("Sessão expirada. Faça login novamente.");
+      onClose();
+      return;
+    }
     console.log("Payload para basicUpdate:", payload);
-
+    console.log("Token de autenticação:", authToken);
     try {
       const resp = await fetch("http://localhost:3333/academicWork/basicUpdate", {
         method: "PUT",
-        headers: { "Content-Type": "application/json" },
+        headers: { "Content-Type": "application/json" , "Authorization": `Bearer ${authToken}`},
         body: JSON.stringify(payload),
       });
 
@@ -213,11 +222,17 @@ const FormEditTCC = ({ tccData, onClose }) => {
       message.error("Não é possível adicionar um co-orientador sem um orientador principal.");
       return;
     }
+    const authToken = Cookies.get("authToken");
+    if (!authToken) {
+      message.error("Sessão expirada. Faça login novamente.");
+      onClose();
+      return;
+    }
 
     try {
       const addResp = await fetch("http://localhost:3333/academicWork/addAdvisor", {
         method: "POST",
-        headers: { "Content-Type": "application/json" },
+        headers: { "Content-Type": "application/json", "Authorization": `Bearer ${authToken}` },
         body: JSON.stringify({ academicWorkId: tccData.id, advisorId: advisorId}),
       });
       if (!addResp.ok) throw new Error("Erro ao associar orientador.");
@@ -253,10 +268,19 @@ const FormEditTCC = ({ tccData, onClose }) => {
   console.log("ID do Orientador Principal (antes):", currentMainAdvisor?.id);
   console.log("ID do Co-Orientador (antes):", currentCoAdvisor?.id);
   console.log("------------------------------------");
+
+    const authToken = Cookies.get("authToken");
+    if (!authToken) {
+      message.error("Sessão expirada. Faça login novamente.");
+      onClose();
+      return;
+    }
+    
+
     try {
       const removeResp = await fetch("http://localhost:3333/academicWork/deleteAdvisor", {
         method: "POST",
-        headers: { "Content-Type": "application/json" },
+        headers: { "Content-Type": "application/json","Authorization ": `Bearer ${authToken}` },
         body: JSON.stringify({ academicWorkId: tccData.id, advisorId: advisorId }),
       });
       if (!removeResp.ok) throw new Error("Erro ao remover orientador.");
@@ -341,7 +365,7 @@ const FormEditTCC = ({ tccData, onClose }) => {
               <Button
                 type="text"
                 icon={<DeleteOutlined style={{ color: "red" }} />}
-                onClick={() => handleRemoveAdvisorRole(currentMainAdvisor.id)}
+                onClick={() => handleRemoveAdvisorRole(currentMainAdvisor?.id)}
               />
             </Space>
           ) : (
@@ -378,7 +402,7 @@ const FormEditTCC = ({ tccData, onClose }) => {
               <Button
                 type="text"
                 icon={<DeleteOutlined style={{ color: "red" }} />}
-                onClick={() => handleRemoveAdvisorRole(currentCoAdvisor.id)}
+                onClick={() => handleRemoveAdvisorRole(currentCoAdvisor?.id)}
               />
             </Space>
           ) : (

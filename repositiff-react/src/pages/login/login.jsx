@@ -73,18 +73,18 @@ function Login() {
     }
   };
 
-  // ALTERADO: Função para enviar o pedido de recuperação de senha com ID
+  // ALTERADO: Função para enviar o pedido de recuperação de senha com MATRÍCULA
   const handlePasswordResetRequest = async () => {
     if (!resetId) {
-      toast.error("Por favor, insira seu ID de usuário.");
+      toast.error("Por favor, insira sua matrícula.");
       return;
     }
     try {
-      // Envia o 'id' no corpo da requisição
-      await axios.post("http://localhost:3333/librarian/reset-password-request", {
-        id: resetId,
+      // Envia a matrícula no corpo da requisição com o nome de campo correto
+      await axios.post("http://localhost:3333/user/reset-password-request", {
+        registrationNumber: resetId,
       });
-      toast.success("Se o ID estiver correto, você receberá um link para redefinir sua senha no seu e-mail cadastrado.");
+      toast.success("Se a matrícula estiver correta, você receberá um link para redefinir sua senha no seu e-mail cadastrado.");
       setIsModalOpen(false); // Fecha o modal
       setResetId(""); // Limpa o campo
     } catch (error) {
@@ -168,20 +168,20 @@ function Login() {
                         <DialogTitle>Recuperar Senha</DialogTitle>
                         {/* ALTERADO: Descrição do modal */}
                         <DialogDescription>
-                          Digite seu ID de usuário abaixo para receber um link de recuperação no seu e-mail.
+                          Digite sua matricula para receber um link de recuperação no seu e-mail.
                         </DialogDescription>
                       </DialogHeader>
                       <div className="grid gap-4 py-4">
                         <div className="grid grid-cols-4 items-center gap-4">
-                           {/* ALTERADO: Label e Input para ID */}
-                          <label htmlFor="id-reset" className="text-right">ID de Usuário</label>
+                           {/* ALTERADO: Label e Input para MATRÍCULA */}
+                          <label htmlFor="id-reset" className="text-right">Matrícula</label>
                           <Input
                             id="id-reset"
                             type="text"
                             value={resetId}
                             onChange={(e) => setResetId(e.target.value)}
                             className="col-span-3"
-                            placeholder="Cole seu ID aqui"
+                            placeholder="Digite sua matrícula"
                           />
                         </div>
                       </div>
