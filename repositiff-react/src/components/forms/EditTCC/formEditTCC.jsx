@@ -515,8 +515,8 @@ const FormEditTCC = ({ tccData, onClose }) => {
         </Form.Item>
         <Form.Item
           name="description"
-          label="Descrição"
-          rules={[{ required: true, message: "A descrição é obrigatória" }]}
+          label="Resumo"
+          rules={[{ required: true, message: "O resumo é obrigatória" }]}
         >
           <Input.TextArea autoSize={{ minRows: 3, maxRows: 10 }} />
         </Form.Item>
