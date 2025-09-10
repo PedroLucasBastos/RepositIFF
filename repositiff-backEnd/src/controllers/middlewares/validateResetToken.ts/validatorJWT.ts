@@ -34,32 +34,27 @@ export class ValidatorJWT {
 
   static async getUserId(req: any, res: any): Promise<string | undefined> {
     const authHeader = req.headers["authorization"];
-    console.log("TOKEN: ");
-    console.log(authHeader);
+    console.log("TOKEN: ", authHeader);
+
+    // 👉 Se não tiver token, não faz nada
     if (!authHeader) {
       return undefined;
     }
 
     const token = authHeader.split(" ")[1]; // Bearer <TOKEN>
-    if (!token) {
-      return undefined;
-    }
-
     const jwtSecret = process.env.SECRET || "";
 
-    let payload: any;
     try {
       console.log(`PAYLOAD: ${token}`);
-      payload = JWTService.verifyToken(token, jwtSecret);
+      const payload: any = JWTService.verifyToken(token, jwtSecret);
+      req.userId = payload.id;
+      console.log("UserID:", payload.id);
       return payload.id;
-      // console.log(`\n\nPAYLOAD DECODIFICADO NO VALIDATETOKEN: ${payload}`);
-      // console.log(payload.id);
     } catch (err: any) {
       console.log(err);
-      return undefined;
+      return res.status(401).send({ msg: "Token inválido ou expirado!", error: err });
     }
   }
-
   // static async validateAcess(req: any, res: any, userRepository: IUsersRepository, role: Role): Promise<void> {
   //   const authHeader = req.headers["authorization"];
   //   console.log("TOKEN: ");
