@@ -92,7 +92,8 @@ const CourseTable = () => {
               }
     try {
       await axios.delete("http://localhost:3333/course/delete", {
-        data: { courseId: selectedCourseId },headers: {
+        data: { courseId: selectedCourseId },
+        headers: {
                     Authorization: `Bearer ${authToken}`,
                 },
       });
