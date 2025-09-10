@@ -7,8 +7,7 @@ import { IAcademicWorkRepository } from "@src/infra/repositories/IAcademicWorkRe
 export class DeleteAcademicWorkUseCase {
   constructor(
     private _academicRepo: IAcademicWorkRepository,
-    private _fileStorage: IFileStorage,
-    private userRole: string
+    private _fileStorage: IFileStorage
   ) {}
 
   async execute(id: string, userRole: string): Promise<void | Error> {
@@ -20,6 +19,8 @@ export class DeleteAcademicWorkUseCase {
     if (!fileName) return new Error("asdçfjasdklfj");
 
     this._fileStorage.delete(fileName);
-    this._academicRepo.deleteAcademicWork(id);
+    const result = this._academicRepo.deleteAcademicWork(id);
+    console.log("\nRESULTADO DA EXCLUSÃO\n");
+    console.log(result);
   }
 }

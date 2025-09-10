@@ -47,13 +47,17 @@ export async function advisorRoutes(fastify: FastifyInstance) {
     }
   );
 
-  fastify.delete("/delete", async (req: FastifyRequest<{ Body: deleteAdvisor }>, reply: FastifyReply) => {
-    try {
-      await controller.delete(req, reply);
-    } catch (error: any) {
-      reply.code(500).send({ error: error.message, message: "Delete has failed." });
+  fastify.delete(
+    "/delete",
+    { preHandler: ValidatorJWT.validateToken },
+    async (req: FastifyRequest<{ Body: deleteAdvisor }>, reply: FastifyReply) => {
+      try {
+        await controller.delete(req, reply);
+      } catch (error: any) {
+        reply.code(500).send({ error: error.message, message: "Delete has failed." });
+      }
     }
-  });
+  );
   fastify.get(
     "/list",
     // { preHandler: ValidatorJWT.validateToken },

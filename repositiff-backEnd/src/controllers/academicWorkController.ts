@@ -141,11 +141,12 @@ export class academicWorkController {
 
   async deleteAcademicWork(req: any, res: FastifyReply): Promise<void> {
     // const { id } = req;
+    const { id } = req.params as { id: string };
     const repo = new PrismaAcademicWorkRepository();
     const flare = new CloudFlareFileStorage();
     const user = await new PrismaUserRepository().findById(req.userId);
 
-    const useCase = new DeleteAcademicWorkUseCase(repo, flare).execute(req, user?.role || "");
+    const useCase = new DeleteAcademicWorkUseCase(repo, flare).execute(id, user?.role || "");
     // if (result.isLeft())
     //   return res.status(400).send({
     //     Error: result.value,
