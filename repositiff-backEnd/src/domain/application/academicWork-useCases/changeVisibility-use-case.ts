@@ -41,6 +41,7 @@ export class ChangeVisibilityUseCase {
       return new Left(new DomainError(ErrorCategory.Application, "ACADEMIC_WORK_NOT_FOUND", "Academic work not found"));
     }
 
+    console.log(responseConsulting);
     if (responseConsulting.academicWorkStatus === true) {
       const result = await this._repo.changeVsibility(academimcWorkId, false);
       if (result instanceof Error) {

@@ -225,20 +225,17 @@ export async function academicWorkRoutes(fastify: FastifyInstance) {
   //   }
   // );
 
-  fastify.post(
-    "/addAdvisor",
-    { preHandler: ValidatorJWT.validateToken },
-    async (req: FastifyRequest<{ Body: AddAdvisorToAcademicWorkProps }>, res: FastifyReply) => {
-      console.log(req.body);
-      try {
-        // ValidatorJWT.validateToken(req, res);
-        const body = req.body;
-        await controller.addAdvisor(body, res);
-      } catch (error: any) {
-        res.code(500).send({ error: error.message, message: "Add advsior has failed" });
-      }
+  fastify.post("/addAdvisor", { preHandler: ValidatorJWT.validateToken }, async (req: any, res: FastifyReply) => {
+    console.log(req.body);
+    try {
+      // ValidatorJWT.validateToken(req, res);
+      const body = req.body;
+      body.userId = req.userId;
+      await controller.addAdvisor(body, res);
+    } catch (error: any) {
+      res.code(500).send({ error: error.message, message: "Add advsior has failed" });
     }
-  );
+  });
 
   fastify.post(
     "/changeVisibility",
@@ -255,20 +252,17 @@ export async function academicWorkRoutes(fastify: FastifyInstance) {
     }
   );
 
-  fastify.post(
-    "/deleteAdvisor",
-    { preHandler: ValidatorJWT.validateToken },
-    async (req: FastifyRequest<{ Body: IDelAdvisorProps }>, res: FastifyReply) => {
-      // console.log(req.body);
-      try {
-        // ValidatorJWT.validateToken(req, res);
-        const body = req.body;
-        await controller.delAdvisor(body, res);
-      } catch (error: any) {
-        res.code(500).send({ error: error.message, message: "Add advsior has failed" });
-      }
+  fastify.delete("/deleteAdvisor", { preHandler: ValidatorJWT.validateToken }, async (req: any, res: FastifyReply) => {
+    // console.log(req.body);
+    try {
+      // ValidatorJWT.validateToken(req, res);
+      const body = req.body;
+      body.userId = req.userId;
+      await controller.delAdvisor(body, res);
+    } catch (error: any) {
+      res.code(500).send({ error: error.message, message: "Add advsior has failed" });
     }
-  );
+  });
 
   fastify.get("/listAdvisors", async (req: any, res: any) => {});
 }

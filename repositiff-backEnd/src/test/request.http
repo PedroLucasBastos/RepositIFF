@@ -99,7 +99,7 @@ Content-Type: application/json
 
 ###
 GET  http://localhost:3333/advisor/list
-Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6ImVlZjYwZWNjLTY2YTktNDhhMy1hMzgwLTJjOWE4YTZlMTQxNSIsImlhdCI6MTc1NzI2MjEyMCwiZXhwIjoxNzU3MjY1NzIwfQ.14RP2Ce_eF_MmJ2WtovvFlJRg_6oGja8Y1OiHydnHTc
+# Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6ImVlZjYwZWNjLTY2YTktNDhhMy1hMzgwLTJjOWE4YTZlMTQxNSIsImlhdCI6MTc1NzI2MjEyMCwiZXhwIjoxNzU3MjY1NzIwfQ.14RP2Ce_eF_MmJ2WtovvFlJRg_6oGja8Y1OiHydnHTc
 
 
 ###
@@ -146,7 +146,7 @@ Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjE2M2FhN2U4L
 Content-Type: application/json
 
 {
-    "id": "ed4c73d3-fd08-477a-8435-54f8ce973000"
+    "id": "f2f05936-e960-4506-8144-ff3a72137e73"
 }
 ###
 POST  http://localhost:3333/course/register
@@ -166,4 +166,27 @@ Content-Type: application/json
 
 {
     
+}
+
+
+###
+
+POST http://localhost:3333/academicWork/addAdvisor
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjE2M2FhN2U4LWZmZDctNGMwOS04M2FmLWU1ZTdjOTdlYTdhZSIsImlhdCI6MTc1NzQ3MzcyNSwiZXhwIjoxNzU3NDgwOTI1fQ.CaI3mDqcVu-KMkDcXZ3phYocItuxvO0UwQegLEKaPL8
+Content-Type: application/json
+
+{
+    "academicWorkId": "f2f05936-e960-4506-8144-ff3a72137e73",
+    "advisorId": "ac9dac50-d9e8-423f-b69c-a5ee577823b7"
+}
+
+###
+
+DELETE http://localhost:3333/academicWork/deleteAdvisor
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjE2M2FhN2U4LWZmZDctNGMwOS04M2FmLWU1ZTdjOTdlYTdhZSIsImlhdCI6MTc1NzQ3MzcyNSwiZXhwIjoxNzU3NDgwOTI1fQ.CaI3mDqcVu-KMkDcXZ3phYocItuxvO0UwQegLEKaPL8
+Content-Type: application/json
+
+{
+    "academicWorkId": "f2f05936-e960-4506-8144-ff3a72137e73",
+    "advisorId": "ac9dac50-d9e8-423f-b69c-a5ee577823b7"
 }
