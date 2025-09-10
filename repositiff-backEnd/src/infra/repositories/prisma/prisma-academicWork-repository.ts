@@ -507,13 +507,14 @@ export class PrismaAcademicWorkRepository implements IAcademicWorkRepository {
       return new Error("Unexpected Error to database");
     }
   }
-  async findByIdDoc(id: string): Promise<null | IReturnFullAcademicWorkDTO> {
+  async findByIdDoc(id: string, statusVisibility?: boolean): Promise<null | IReturnFullAcademicWorkDTO> {
     console.log(`Está buscando id: ${id}`);
     try {
       // console.log("Começo do try")
-      const prismaAcademicWork = await this._prismaCli.academicWork.findUnique({
+      const prismaAcademicWork = await this._prismaCli.academicWork.findFirst({
         where: {
           id: id,
+          academicWorkVisibility: statusVisibility,
         },
         include: {
           advisors: {

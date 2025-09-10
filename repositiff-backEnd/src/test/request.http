@@ -1,5 +1,5 @@
 GET http://localhost:3333/
-
+Content-Type: application/json
 
 ###
 
@@ -7,21 +7,12 @@ POST http://localhost:3333/user/register
 Content-Type: application/json
 
 {
-<<<<<<< Updated upstream
-    "name": "simoes",
-    "email": "asdfasdfasdf11223123",
-    "registrationNumber": "1122222211222222",
-    "role": "ADMIN",
-    "password": "abc@123",
-    "confirmPassword": "abc@123"
-=======
-    "name": "Beltrano",
-    "email": "pedro19792001@gmail.com",
-    "registrationNumber": "201919700080",
-    "role": "ADMIN",
+    "name": "Natan Silva",
+    "email": "tansinho@gmail.com",
+    "registrationNumber": "2020",
+    "role": "LIBRARIAN",
     "password": "12345",
     "confirmPassword": "12345"
->>>>>>> Stashed changes
 }
 
 ###
@@ -29,9 +20,9 @@ POST http://localhost:3333/user/login
 Content-Type: application/json
 
 {
-    "registrationNumber": "11111111111",
-    "password": "abc@123",
-    "asdf": "asdf"
+    "registrationNumber": "2020",
+    "password": "12345",
+    "asdf": "12345"
 }
 ###
 

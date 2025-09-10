@@ -142,7 +142,7 @@ export interface IAcademicWorkRepository {
   defineMainAdvisor(academicWorkId: string, advisorId: string): Promise<Error | void>;
   removeMainAdvisor(academicWorkId: string, advisorId: string): Promise<Error | void>;
   deleteAcademicWork(idAcademicWork: string): Promise<void>;
-  findByIdDoc(id: String): Promise<null | IReturnFullAcademicWorkDTO>;
+  findByIdDoc(id: String, statusVisibility?: boolean): Promise<null | IReturnFullAcademicWorkDTO>;
   getFile(idAcademicWork: string): Promise<null | string>;
   listAllProjects(): Promise<IReturnFullAcademicWorkDTO[]>;
   deleteAll(): Promise<void>;
