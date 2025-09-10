@@ -20,7 +20,6 @@ import "./formEditTCC.css";
 import DatePickerEstilizado from "@/components/datepicker/DatePickerEstilizado";
 import Cookies from "js-cookie";
 
-
 const { Option } = Select;
 const { Dragger } = Upload;
 
@@ -35,6 +34,7 @@ const FormEditTCC = ({ tccData, onClose }) => {
   const [cursos, setCursos] = useState([]);
   const [file, setFile] = useState(null);
 
+  // Efeito 1: Sincroniza o formulário e os orientadores com os dados do TCC
   useEffect(() => {
     form.setFieldsValue({
       authors:
@@ -59,6 +59,7 @@ const FormEditTCC = ({ tccData, onClose }) => {
     let main = null;
     let co = null;
     if (Array.isArray(tccData.advisors) && tccData.advisors.length > 0) {
+      
       main = tccData.advisors[0];
       if (tccData.advisors.length > 1) {
         co = tccData.advisors[1];
@@ -68,6 +69,7 @@ const FormEditTCC = ({ tccData, onClose }) => {
     setCurrentCoAdvisor(co || null);
   }, [tccData, form]);
 
+  // Efeito 2: Carrega as listas de orientadores e cursos
   useEffect(() => {
     async function loadLists() {
       try {
@@ -87,8 +89,9 @@ const FormEditTCC = ({ tccData, onClose }) => {
     loadLists();
   }, []);
 
+  // Efeito 3: Atualiza a lista de orientadores disponíveis
   useEffect(() => {
-    console.log("dados trabalho", tccData);
+    // A lógica de filtragem já estava correta, comparando o ID do TCC com o _id da API
     const assignedAdvisorIds = [];
     if (currentMainAdvisor) assignedAdvisorIds.push(currentMainAdvisor.id);
     if (currentCoAdvisor) assignedAdvisorIds.push(currentCoAdvisor.id);
@@ -98,7 +101,6 @@ const FormEditTCC = ({ tccData, onClose }) => {
     setSelectedAdvisorForDropdown(null);
     setSelectedCoadvisorForDropdown(null);
   }, [orientadores, currentMainAdvisor, currentCoAdvisor]);
-
 
   const handleSubmit = async (values) => {
     const parsedQtdPag = Number(values.qtdPag);
@@ -200,7 +202,7 @@ const FormEditTCC = ({ tccData, onClose }) => {
       onClose();
       return;
     }
-    
+ 
     console.log("Payload para basicUpdate:", payload);
     try {
       const resp = await fetch("http://localhost:3333/academicWork/basicUpdate", {
@@ -239,7 +241,7 @@ const FormEditTCC = ({ tccData, onClose }) => {
       onClose();
       return;
     }
-    console.log("aaaaaaaaaaa",advisorId);
+    
     try {
       const addResp = await fetch("http://localhost:3333/academicWork/addAdvisor", {
         method: "POST",
@@ -249,6 +251,7 @@ const FormEditTCC = ({ tccData, onClose }) => {
       if (!addResp.ok) throw new Error("Erro ao associar orientador.");
 
       const addedAdvisor = orientadores.find(o => o._id === advisorId);
+      
     if (addedAdvisor) {
       if (isMainRole) {
         setCurrentMainAdvisor({
@@ -274,13 +277,13 @@ const FormEditTCC = ({ tccData, onClose }) => {
   };
 
   const handleRemoveAdvisorRole = async (advisorId) => {
+    // CORREÇÃO: Usando o operador ?. para evitar o erro de 'null'
     console.log("--- DEBUG: REMOVENDO ORIENTADOR ---");
     console.log("ID enviado pelo clique:", advisorId);
     console.log("ID do Orientador Principal (antes):", currentMainAdvisor?.id);
     console.log("ID do Co-Orientador (antes):", currentCoAdvisor?.id);
     console.log("------------------------------------");
     
-    // NOVO: Adicione uma verificação para garantir que o ID é válido
     if (!advisorId) {
       console.error("Tentativa de remover orientador com ID inválido.");
       message.error("Falha ao remover orientador: ID inválido.");
@@ -296,20 +299,24 @@ const FormEditTCC = ({ tccData, onClose }) => {
     
     try {
       const removeResp = await fetch("http://localhost:3333/academicWork/deleteAdvisor", {
-        method: "POST",
+        method: "DELETE",
         headers: { "Content-Type": "application/json", "Authorization": `Bearer ${authToken}` },
-        body: JSON.stringify({ academicWorkId: tccData.id, advisorId: advisorId }),
+        body: JSON.stringify({ academicWorkId: tccData.id, advisorId: advisorId}),
       });
-      if (!removeResp.ok) throw new Error("Erro ao remover orientador.");
+      if (!removeResp.ok) {
+        const errorData = await removeResp.json().catch(() => ({}));
+        const errorMessage = errorData.error || errorData.detail || errorData.message || "Erro ao remover orientador.";
+        throw new Error(errorMessage);
+      }
 
       message.success("Orientador removido com sucesso!");
+      // CORREÇÃO: Comparando com a chave 'id'
       if (currentMainAdvisor && currentMainAdvisor.id === advisorId) {
-      setCurrentMainAdvisor(null);
-    } 
-    
-    if (currentCoAdvisor && currentCoAdvisor.id === advisorId) {
-      setCurrentCoAdvisor(null);
-    }
+        setCurrentMainAdvisor(null);
+      } 
+      if (currentCoAdvisor && currentCoAdvisor.id === advisorId) {
+        setCurrentCoAdvisor(null);
+      }
       
     } catch (error) {
       console.error("Erro ao remover orientador:", error);
@@ -381,7 +388,8 @@ const FormEditTCC = ({ tccData, onClose }) => {
               <Button
                 type="text"
                 icon={<DeleteOutlined style={{ color: "red" }} />}
-                onClick={() => handleRemoveAdvisorRole(currentMainAdvisor?.id)}
+                // Passa o ID para a função
+                onClick={() => handleRemoveAdvisorRole(currentMainAdvisor.id)}
               />
             </Space>
           ) : (
@@ -418,7 +426,8 @@ const FormEditTCC = ({ tccData, onClose }) => {
               <Button
                 type="text"
                 icon={<DeleteOutlined style={{ color: "red" }} />}
-                onClick={() => handleRemoveAdvisorRole(currentCoAdvisor?.id)}
+                // Passa o ID para a função
+                onClick={() => handleRemoveAdvisorRole(currentCoAdvisor.id)}
               />
             </Space>
           ) : (
