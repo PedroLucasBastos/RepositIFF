@@ -145,6 +145,7 @@ export async function academicWorkRoutes(fastify: FastifyInstance) {
 
   fastify.get("/", async (request, res) => {
     try {
+      console.log("CHEGOU NO LIST");
       await controller.list(request, res);
     } catch (error: any) {
       res.code(500).send({
@@ -158,7 +159,7 @@ export async function academicWorkRoutes(fastify: FastifyInstance) {
     const { id } = req.params as { id: string }; // Pegando o parâmetro da URL
     try {
       // ValidatorJWT.validateToken(req, res);
-      await controller.find(id, res);
+      await controller.find(req, res);
 
       // Agora `req.body` é do tipo IRequestAcademicWorkController
     } catch (error: any) {

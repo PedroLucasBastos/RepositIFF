@@ -31,6 +31,7 @@ import { DeleteAcademicWorkUseCase } from "@src/domain/application/academicWork-
 import { Prisma } from "@prisma/client";
 import { ChangeVisibilityUseCase } from "@src/domain/application/academicWork-useCases/changeVisibility-use-case.js";
 import { PrismaUserRepository } from "@src/infra/repositories/prisma/prisma-user-respository.js";
+import { GetAcademicWorkInfoUseCase } from "@src/domain/application/academicWork-useCases/getAcademicWokInfo.js";
 
 export interface IRequestAcademicWorkController {
   authors: string[];
@@ -338,9 +339,14 @@ export class academicWorkController {
       result: repo,
     });
   }
-  async find(req: string, res: FastifyReply): Promise<void> {
+  async find(req: any, res: FastifyReply): Promise<void> {
+    const { id } = req.params as { id: string }; // Pegando o parâmetro da URL
+    const userId = req.userId;
     const repo = new PrismaAcademicWorkRepository();
-    const academicWork = await repo.findByIdDoc(req);
+    const useCase = new GetAcademicWorkInfoUseCase(repo);
+
+    const user = await new PrismaUserRepository().findById(userId);
+    const academicWork = await useCase.execute(id, user?.role || "");
     if (!academicWork) {
       res.code(400).send({
         Error: "AcademicWork not found",
@@ -390,7 +396,7 @@ export class academicWorkController {
     }
     // Validate authors
     // const parseAuthors = JSON.parse(authors);
-    if (!Array.isArray(authors) || authors.some((author) => typeof author !== "string")) {
+    if (authors && (!Array.isArray(authors) || authors.some((author) => typeof author !== "string"))) {
       return new Left("Authors must be an array of strings.");
     }
 

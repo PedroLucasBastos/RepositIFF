@@ -12390,18 +12390,31 @@ export class CutterTable {
     return null;
   }
 
-  public generateCutterNumber(name: string, title: string): string {
-    const firstLetter = name[0].toLowerCase();
+  public generateCutterNumber(authorName: string, title: string): string {
+    console.log("\nGERAR AS PORCARIA DO NÚMERO DE CUTTER\n");
+    console.log(authorName);
+    console.log(title);
+    const name = authorName.toLowerCase();
+    const firstLetter = name[0];
     const tittleLetter = title[0].toUpperCase();
     const list = this.table[firstLetter];
     let code: number = 0;
+    // console.log(list);
     for (const line of list) {
       if (line[1] > name) {
         break;
       }
+      // console.log(line);
+      // console.log(line[1]);
       code = line[0];
     }
-
+    console.log(code);
+    console.log(
+      "\n========================================================================================================\n"
+    );
     return `${firstLetter.toUpperCase()}${code}${tittleLetter}`;
   }
 }
+
+// const code = new CutterTable().generateCutterNumber("Pedro", "Dark Souls");
+// console.log(code);

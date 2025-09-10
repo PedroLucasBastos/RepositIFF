@@ -32,6 +32,34 @@ export class ValidatorJWT {
     }
   }
 
+  static async getUserId(req: any, res: any): Promise<string | undefined> {
+    const authHeader = req.headers["authorization"];
+    console.log("TOKEN: ");
+    console.log(authHeader);
+    if (!authHeader) {
+      return undefined;
+    }
+
+    const token = authHeader.split(" ")[1]; // Bearer <TOKEN>
+    if (!token) {
+      return undefined;
+    }
+
+    const jwtSecret = process.env.SECRET || "";
+
+    let payload: any;
+    try {
+      console.log(`PAYLOAD: ${token}`);
+      payload = JWTService.verifyToken(token, jwtSecret);
+      return payload.id;
+      // console.log(`\n\nPAYLOAD DECODIFICADO NO VALIDATETOKEN: ${payload}`);
+      // console.log(payload.id);
+    } catch (err: any) {
+      console.log(err);
+      return undefined;
+    }
+  }
+
   // static async validateAcess(req: any, res: any, userRepository: IUsersRepository, role: Role): Promise<void> {
   //   const authHeader = req.headers["authorization"];
   //   console.log("TOKEN: ");
