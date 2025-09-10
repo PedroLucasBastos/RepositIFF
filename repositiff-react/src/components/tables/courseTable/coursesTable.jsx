@@ -7,6 +7,7 @@ import {
 } from "@ant-design/icons";
 import axios from "axios";
 import EditCourse from "./editCourse";
+import Cookies from "js-cookie";
 
 const CourseTable = () => {
   const [searchText, setSearchText] = useState("");
@@ -84,9 +85,16 @@ const CourseTable = () => {
   };
 
   const handleDelete = async () => {
+    const authToken = Cookies.get("authToken");
+              if (!authToken) {
+                message.error("Sessão expirada. Faça login novamente.");
+                return;
+              }
     try {
       await axios.delete("http://localhost:3333/course/delete", {
-        data: { courseId: selectedCourseId },
+        data: { courseId: selectedCourseId },headers: {
+                    Authorization: `Bearer ${authToken}`,
+                },
       });
 
       message.success("Curso excluído com sucesso!");
