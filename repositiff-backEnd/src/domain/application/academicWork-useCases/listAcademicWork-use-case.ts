@@ -7,7 +7,7 @@ import {
 } from "@src/infra/repositories/IAcademicWorkRepository.js";
 
 export interface listAcademicWorks {
-  id: string;
+  // id: string;
   userRole?: string;
   optionalParameters?: {
     year?: number;
@@ -20,13 +20,16 @@ export class ListAcademicWorkUseCase {
   constructor(private _repo: IAcademicWorkRepository) {}
 
   async execute(props: listAcademicWorks): Promise<Either<Error, IReturnFullAcademicWorkDTO[]>> {
+    console.log("\nNEW LISTA\n");
+    console.log(props);
+    console.log("\n\n");
     const where: any = {
-      ...(props.userRole ? {} : { academicWorkVisibility: true }), // só público se não autenticado
+      ...(props.userRole ? {} : { academicWorkVisibility: true }), // se não tiver role, só mostra públicos
       ...(props.optionalParameters?.year && { year: props.optionalParameters.year }),
       ...(props.optionalParameters?.courseId && { courseId: props.optionalParameters.courseId }),
       ...(props.optionalParameters?.advisorId && {
         advisors: {
-          some: { advisorId: props.optionalParameters.advisorId },
+          some: { advisorId: String(props.optionalParameters.advisorId) },
         },
       }),
     };
