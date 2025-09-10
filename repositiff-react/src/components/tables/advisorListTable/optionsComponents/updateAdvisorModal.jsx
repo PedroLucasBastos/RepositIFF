@@ -2,6 +2,7 @@ import React, { useEffect, useState } from "react";
 import { Form, Input, Spin, Modal, Button, message } from "antd";
 import axios from "axios";
 import PropTypes from "prop-types";
+import Cookies from "js-cookie";
 
 const UpdateAdvisorModal = ({
   advisorId,
@@ -62,7 +63,21 @@ const UpdateAdvisorModal = ({
         updateFields,
       };
 
-      await axios.put("http://localhost:3333/advisor/update", dataToSend);
+      const authToken = Cookies.get("authToken");
+    if (!authToken) {
+      message.error("Sessão expirada. Faça login novamente.");
+      return;
+    }
+    console.log(dataToSend);
+    // AQUI ESTÁ A MUDANÇA: Usando a fetch API
+    const response = await fetch("http://localhost:3333/advisor/update", {
+      method: "PUT",
+      headers: {
+        "Content-Type": "application/json",
+        Authorization: `Bearer ${authToken}`,
+      },
+      body: JSON.stringify(dataToSend),
+    });
 
       message.success("Dados do orientador atualizados com sucesso!");
       handleCancel(); // Fechar o modal após salvar

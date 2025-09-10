@@ -20,11 +20,13 @@ const TccDetailsPage = () => {
       setIsLoading(true);
       try {
         const response = await fetch(`http://localhost:3333/academicWork/${id}`);
+        
         if (!response.ok) {
           throw new Error('Trabalho não encontrado');
         }
         const data = await response.json();
-        setTcc(data.result);
+        setTcc(data.result.value);
+        console.log("Detalhes do TCC:", data.result);
       } catch (error) {
         toast.error('Não foi possível carregar os detalhes do trabalho.');
         console.error("Erro ao buscar detalhes do TCC:", error);
@@ -47,6 +49,7 @@ const TccDetailsPage = () => {
       
       const data = await response.json();
       const signedUrl = data.result.value;
+ 
 
       if (signedUrl) {
         window.open(signedUrl, '_blank');
@@ -67,6 +70,8 @@ const TccDetailsPage = () => {
   if (!tcc) {
     return <div className="text-center p-10">Trabalho não encontrado.</div>;
   }
+
+  
 
   const authors = tcc.authors?.join(', ') || 'Não informado';
   const advisors = tcc.advisors?.map(adv => `${adv.name} ${adv.surname}`).join(', ') || 'Não informado';

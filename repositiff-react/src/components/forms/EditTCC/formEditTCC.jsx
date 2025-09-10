@@ -3,7 +3,6 @@ import {
   Card,
   Input,
   Select,
-  // DatePicker, // <-- MUDANÇA: Removido
   Form,
   Button,
   Upload,
@@ -16,7 +15,6 @@ import {
   InboxOutlined,
   UserAddOutlined,
 } from "@ant-design/icons";
-// import moment from "moment"; // <-- MUDANÇA: Removido
 import PropTypes from "prop-types";
 import "./formEditTCC.css";
 import DatePickerEstilizado from "@/components/datepicker/DatePickerEstilizado";
@@ -50,7 +48,6 @@ const FormEditTCC = ({ tccData, onClose }) => {
       cddCode: tccData.cddCode,
       cduCode: tccData.cduCode,
       idCourse: tccData.course?.id,
-      // <-- MUDANÇA: Usa new Date() para criar um objeto de data nativo
       year: tccData.year ? new Date(tccData.year, 0) : null,
       qtdPag: tccData.pageCount || tccData.qtdPag,
       description: tccData.description,
@@ -102,6 +99,7 @@ const FormEditTCC = ({ tccData, onClose }) => {
     setSelectedCoadvisorForDropdown(null);
   }, [orientadores, currentMainAdvisor, currentCoAdvisor]);
 
+
   const handleSubmit = async (values) => {
     const parsedQtdPag = Number(values.qtdPag);
     if (isNaN(parsedQtdPag)) {
@@ -135,9 +133,7 @@ const FormEditTCC = ({ tccData, onClose }) => {
     if (values.idCourse !== originalData.course?.id) {
       modifiedFields.courseId = values.idCourse;
     }
-    // <-- MUDANÇA: Usa .getFullYear() para comparar o ano
     if (values.year?.getFullYear() !== originalData.year) {
-      // <-- MUDANÇA: Usa .getFullYear() para obter o ano
       modifiedFields.year = values.year.getFullYear();
     }
     if (Number(values.qtdPag) !== (originalData.pageCount || originalData.qtdPag)) {
@@ -166,32 +162,46 @@ const FormEditTCC = ({ tccData, onClose }) => {
       modifiedFields.keyWords = newKeyWords;
     }
 
-    if (Object.keys(modifiedFields).length === 0) {
-      message.info("Nenhuma alteração detectada para salvar.");
-      onClose();
-      return;
-    }
-    
     const payloadFields = { ...modifiedFields };
-
     if (!payloadFields.hasOwnProperty('authors')) {
         payloadFields.authors = originalAuthors;
     }
     
-    
+    if (file) {
+      try {
+        const base64File = await new Promise((resolve, reject) => {
+          const reader = new FileReader();
+          reader.readAsDataURL(file);
+          reader.onload = () => resolve(reader.result);
+          reader.onerror = error => reject(error);
+        });
+        payloadFields.file = base64File;
+      } catch (error) {
+        message.error("Erro ao processar o arquivo PDF.");
+        console.error("Erro FileReader:", error);
+        return;
+      }
+    }
+
+    if (Object.keys(payloadFields).length === 0 && !file) {
+      message.info("Nenhuma alteração detectada para salvar.");
+      onClose();
+      return;
+    }
+
     const payload = {
         id: tccData.id,
         fields: payloadFields
     };
+    
     const authToken = Cookies.get("authToken");
-    console.log("Token de autenticação:", authToken);
     if (!authToken) {
       message.error("Sessão expirada. Faça login novamente.");
       onClose();
       return;
     }
+    
     console.log("Payload para basicUpdate:", payload);
-    console.log("Token de autenticação:", authToken);
     try {
       const resp = await fetch("http://localhost:3333/academicWork/basicUpdate", {
         method: "PUT",
@@ -212,6 +222,7 @@ const FormEditTCC = ({ tccData, onClose }) => {
       message.error(err.message);
     }
   };
+
 
   const handleAddAdvisorRole = async (advisorId, isMainRole) => {
     if (!advisorId) {
@@ -290,7 +301,6 @@ const FormEditTCC = ({ tccData, onClose }) => {
       setCurrentMainAdvisor(null);
     } 
     
-    // Verifica se o ID removido corresponde ao co-orientador
     if (currentCoAdvisor && currentCoAdvisor.id === advisorId) {
       setCurrentCoAdvisor(null);
     }
@@ -474,7 +484,6 @@ const FormEditTCC = ({ tccData, onClose }) => {
             ))}
           </Select>
         </Form.Item>
-        {/* <-- MUDANÇA: Substituição do DatePicker aqui --> */}
         <Form.Item
           name="year"
           label="Ano"

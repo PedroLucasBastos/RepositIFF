@@ -336,11 +336,11 @@ const validateReferencePage = () => ({
           </Form.Item>
 
           <Form.Item
-            label="Descrição"
+            label="Resumo"
             name="description"
             rules={[{ required: true, message: "Obrigatório" }]}
           >
-            <Input.TextArea placeholder="Descrição do trabalho acadêmico" />
+            <Input.TextArea placeholder="Resumo do trabalho acadêmico" />
           </Form.Item>
 
           <Form.Item
