@@ -34,8 +34,10 @@ export class ListAcademicWorkUseCase {
       }),
     };
 
+    console.log(where);
     const result = await this._repo.listCustomAcademicWork(where);
 
+    console.log(result);
     return new Right(result);
   }
 }
