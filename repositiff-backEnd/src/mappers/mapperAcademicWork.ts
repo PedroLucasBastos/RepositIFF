@@ -31,16 +31,23 @@ export class MapperAcademicWork {
   }
 
   static toDTO(data: any): IReturnFullAcademicWorkDTO {
-    // console.log("================================================ toDTO =====================================================================================")
+    console.log(
+      "================================================ toDTO ====================================================================================="
+    );
     // console.log(data)
-    // console.log(data.advisors)
-    // console.log("=======================================================")
+    console.log(data.advisors);
+    console.log(data.advisors[0].id);
+    for (let i = 0; i < data.advisors.length; i++) {
+      console.log("\n FOR AQUI");
+      console.log(data.advisors[i].Advisor);
+    }
+    console.log("=======================================================");
     const mapper = {
       id: data.id,
       academicWorkStatus: data.academicWorkVisibility,
       authors: data.authors,
       advisors: data.advisors.map((advisor: any) => ({
-        id: advisor.id,
+        id: advisor.Advisor.id,
         name: advisor.Advisor.name,
         surname: advisor.Advisor.surname,
         registrationNumber: advisor.Advisor.registrationNumber,
@@ -65,6 +72,7 @@ export class MapperAcademicWork {
       file: data.file,
     };
     console.log(`Depois de mapear: ${mapper.id}`);
+    console.log(mapper.advisors);
     return mapper;
   }
 
