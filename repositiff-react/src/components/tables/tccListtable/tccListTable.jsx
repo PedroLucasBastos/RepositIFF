@@ -103,7 +103,7 @@ const TCCListTable = ({ data, loading, onRefresh, onEdit }) => {
       
       const result = await response.json(); 
 
-      if (!response.ok || !result.isRight) {
+      if (!response.ok ) {
         const errorMessage = result.Message || `Erro ao excluir trabalho.`;
         throw new Error(errorMessage);
       }
