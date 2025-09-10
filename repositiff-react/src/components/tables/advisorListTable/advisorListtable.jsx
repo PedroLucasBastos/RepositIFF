@@ -9,6 +9,7 @@ import {
 import axios from "axios";
 import AdvisorDetailsModal from "./optionsComponents/advisorDetailsModal";
 import UpdateAdvisorModal from "./optionsComponents/updateAdvisorModal";
+import Cookies from "js-cookie";
 
 const AdvisorListTable = () => {
   const [searchText, setSearchText] = useState("");
@@ -104,6 +105,11 @@ const AdvisorListTable = () => {
   };
 
   const handleDelete = async () => {
+    const authToken = Cookies.get("authToken");
+                  if (!authToken) {
+                    message.error("Sessão expirada. Faça login novamente.");
+                    return;
+                  }
     try {
       const dataToSend = {
         advisorIdentification: selectedAdvisorId,
@@ -111,6 +117,9 @@ const AdvisorListTable = () => {
 
       await axios.delete("http://localhost:3333/advisor/delete", {
         data: dataToSend,
+        headers: {
+                    Authorization: `Bearer ${authToken}`,
+                },
       });
 
       message.success("Orientador excluído com sucesso!");
