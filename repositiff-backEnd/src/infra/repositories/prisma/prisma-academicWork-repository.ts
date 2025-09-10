@@ -545,6 +545,34 @@ export class PrismaAcademicWorkRepository implements IAcademicWorkRepository {
     }
     throw new Error("Unexpected error");
   }
+
+  async listCustomAcademicWork(props: any): Promise<IReturnFullAcademicWorkDTO[]> {
+    try {
+      // --- Consulta no banco ---
+      const works = await this._prismaCli.academicWork.findMany({
+        where: props,
+        include: {
+          advisors: {
+            select: { Advisor: true },
+          },
+          course: true,
+        },
+      });
+      return works.map((data) => {
+        return MapperAcademicWork.toDTO(data);
+      });
+    } catch (error) {
+      if (error instanceof Prisma.PrismaClientKnownRequestError) {
+        // The .code property can be accessed in a type-safe manner
+        const customMessage = prismaErrorMessages[error.code] || "Unknown database error occurred";
+        console.log(customMessage);
+        throw new Error(customMessage);
+      }
+      console.log(error);
+      throw new Error("Unexpected Error to database");
+    }
+  }
+
   async listAllProjects(): Promise<IReturnFullAcademicWorkDTO[]> {
     try {
       console.log("antes da consulta");

@@ -35,13 +35,17 @@ export async function advisorRoutes(fastify: FastifyInstance) {
   //     }
   //   });
 
-  fastify.put("/update", async (req: FastifyRequest<{ Body: UpdateAdvisorPropsDTO }>, reply: FastifyReply) => {
-    try {
-      await controller.update(req, reply);
-    } catch (error: any) {
-      reply.code(500).send({ error: error.message, message: "Update has failed." });
+  fastify.put(
+    "/update",
+    { preHandler: ValidatorJWT.validateToken },
+    async (req: FastifyRequest<{ Body: UpdateAdvisorPropsDTO }>, reply: FastifyReply) => {
+      try {
+        await controller.update(req, reply);
+      } catch (error: any) {
+        reply.code(500).send({ error: error.message, message: "Update has failed." });
+      }
     }
-  });
+  );
 
   fastify.delete("/delete", async (req: FastifyRequest<{ Body: deleteAdvisor }>, reply: FastifyReply) => {
     try {

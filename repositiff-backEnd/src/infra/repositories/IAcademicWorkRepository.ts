@@ -128,6 +128,8 @@ export interface academicAssociativeAdvisors {
   academicWorkId: string;
 }
 
+export interface customListProps {}
+
 export interface IAcademicWorkRepository {
   addAcademicWork(project: addAcademicWorkDTO): Promise<Error | IReturnFullAcademicWorkDTO>;
   updateAcademicWork(project: updateAcademicWorkDTO, id: string): Promise<Error | IReturnFullAcademicWorkDTO>;
@@ -145,5 +147,6 @@ export interface IAcademicWorkRepository {
   findByIdDoc(id: String, statusVisibility?: boolean): Promise<null | IReturnFullAcademicWorkDTO>;
   getFile(idAcademicWork: string): Promise<null | string>;
   listAllProjects(): Promise<IReturnFullAcademicWorkDTO[]>;
+  listCustomAcademicWork(props: any): Promise<IReturnFullAcademicWorkDTO[]>;
   deleteAll(): Promise<void>;
 }
