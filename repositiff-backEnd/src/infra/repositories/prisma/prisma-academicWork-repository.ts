@@ -558,6 +558,9 @@ export class PrismaAcademicWorkRepository implements IAcademicWorkRepository {
           course: true,
         },
       });
+      console.log("\n\n\n\n");
+      console.log(works.advisors);
+      console.log("\n\n\n\n");
       return works.map((data) => {
         return MapperAcademicWork.toDTO(data);
       });
