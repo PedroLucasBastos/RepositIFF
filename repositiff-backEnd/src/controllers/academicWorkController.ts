@@ -343,10 +343,13 @@ export class academicWorkController {
 
   async newList(req: any, res: FastifyReply) {
     const repo = await new PrismaAcademicWorkRepository();
-    const body = req.body;
+    const body = req.body || {};
     const userId = req.userId;
-    const user = await new PrismaUserRepository().findById(userId);
-    body.userRole = user?.role;
+    console.log(req);
+    if (userId) {
+      const user = await new PrismaUserRepository().findById(userId);
+      body.userRole = user?.role;
+    }
     const useCase = new ListAcademicWorkUseCase(repo).execute(body);
     res.code(200).send({
       result: useCase,
