@@ -155,7 +155,7 @@ export async function academicWorkRoutes(fastify: FastifyInstance) {
     }
   });
 
-  fastify.get("/:id", { preHandler: ValidatorJWT.validateToken }, async (req, res) => {
+  fastify.get("/:id", { preHandler: ValidatorJWT.getUserId }, async (req, res) => {
     const { id } = req.params as { id: string }; // Pegando o parâmetro da URL
     try {
       // ValidatorJWT.validateToken(req, res);
