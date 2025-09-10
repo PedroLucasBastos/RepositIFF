@@ -143,10 +143,12 @@ export async function academicWorkRoutes(fastify: FastifyInstance) {
     }
   });
 
-  fastify.get("/", async (request, res) => {
+  fastify.get("/", { preHandler: ValidatorJWT.getUserId }, async (request, res) => {
     try {
-      console.log("CHEGOU NO LIST");
-      await controller.list(request, res);
+      // console.log("CHEGOU NO LIST");
+      // await controller.list(request, res);
+
+      await controller.newList(request, res);
     } catch (error: any) {
       res.code(500).send({
         error: error.message,
@@ -170,7 +172,7 @@ export async function academicWorkRoutes(fastify: FastifyInstance) {
     }
   });
 
-  fastify.get("/:id/download", { preHandler: ValidatorJWT.validateToken }, async (request, res) => {
+  fastify.get("/:id/download", async (request, res) => {
     const { id } = request.params as { id: string }; // Pegando o parâmetro da URL
     try {
       await controller.download(id, res);
@@ -213,15 +215,15 @@ export async function academicWorkRoutes(fastify: FastifyInstance) {
     }
   );
 
-  fastify.post(
-    "/uploadFile",
-    { preHandler: ValidatorJWT.validateToken },
-    async (req: FastifyRequest<{ Body: UpdateAcademicWorkBasicInfoPROPS }>, res: FastifyReply) => {
-      try {
-        // ValidatorJWT.validateToken(req, res);
-      } catch (error) {}
-    }
-  );
+  // fastify.post(
+  //   "/uploadFile",
+  //   { preHandler: ValidatorJWT.validateToken },
+  //   async (req: FastifyRequest<{ Body: UpdateAcademicWorkBasicInfoPROPS }>, res: FastifyReply) => {
+  //     try {
+  //       // ValidatorJWT.validateToken(req, res);
+  //     } catch (error) {}
+  //   }
+  // );
 
   fastify.post(
     "/addAdvisor",

@@ -1,4 +1,4 @@
-GET http://localhost:3333/
+GET http://localhost:3333/academicWork/
 Content-Type: application/json
 
 ###
@@ -63,7 +63,7 @@ Authorization: Bearer .eyJpZCI6ImEwMTU0ZmM2LTlhNjQtNDA0YS1hMDZkLWJhOWY3YWZkMzU1Z
 
 ###
 POST  http://localhost:3333/advisor/register
-Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6ImVlZjYwZWNjLTY2YTktNDhhMy1hMzgwLTJjOWE4YTZlMTQxNSIsImlhdCI6MTc1NzIxNzYxMCwiZXhwIjoxNzU3MjQ2NDEwfQ.wbbyX2dz9TXBeIxvuHGDT9ZAInSv5iXJnlY5joL-uqk
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjE2M2FhN2U4LWZmZDctNGMwOS04M2FmLWU1ZTdjOTdlYTdhZSIsImlhdCI6MTc1NzQ3MTIwNywiZXhwIjoxNzU3NDc4NDA3fQ.C6V6JAz4lh01y7wodrLCzHV3BTM8TWwjt6C9-eq1dBs
 Content-Type: application/json
 
 {
@@ -74,12 +74,13 @@ Content-Type: application/json
 
 ###
 PUT  http://localhost:3333/advisor/update
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjE2M2FhN2U4LWZmZDctNGMwOS04M2FmLWU1ZTdjOTdlYTdhZSIsImlhdCI6MTc1NzQ3MTIwNywiZXhwIjoxNzU3NDc4NDA3fQ.C6V6JAz4lh01y7wodrLCzHV3BTM8TWwjt6C9-eq1dBs
 Content-Type: application/json
 
 {
-   "advisorIdentification": "6e86e4e4-d239-4805-b37e-9a9fb5169c3e",
+   "advisorIdentification": "0d51f335-60f9-4583-bbb8-563888717e58",
    "updateFields": {
-        "name": "Arnaldo",
+        "name": "Raquel-adicional-EDITADA",
         "surname": "Cesar Pereira"
    }
 }

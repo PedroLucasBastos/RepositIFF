@@ -32,6 +32,7 @@ import { Prisma } from "@prisma/client";
 import { ChangeVisibilityUseCase } from "@src/domain/application/academicWork-useCases/changeVisibility-use-case.js";
 import { PrismaUserRepository } from "@src/infra/repositories/prisma/prisma-user-respository.js";
 import { GetAcademicWorkInfoUseCase } from "@src/domain/application/academicWork-useCases/getAcademicWokInfo.js";
+import { ListAcademicWorkUseCase } from "@src/domain/application/academicWork-useCases/listAcademicWork-use-case.js";
 
 export interface IRequestAcademicWorkController {
   authors: string[];
@@ -337,6 +338,18 @@ export class academicWorkController {
     console.log(repo);
     res.code(200).send({
       result: repo,
+    });
+  }
+
+  async newList(req: any, res: FastifyReply) {
+    const repo = await new PrismaAcademicWorkRepository();
+    const body = req.body;
+    const userId = req.userId;
+    const user = await new PrismaUserRepository().findById(userId);
+    body.userRole = user?.role;
+    const useCase = new ListAcademicWorkUseCase(repo).execute(body);
+    res.code(200).send({
+      result: useCase,
     });
   }
   async find(req: any, res: FastifyReply): Promise<void> {

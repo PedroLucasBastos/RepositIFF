@@ -53,6 +53,7 @@ export class AdvisorController {
       res.code(400).send({
         Error: sanitizeFieldsOrError.value,
       });
+    console.log(req);
     const user = await new PrismaUserRepository().findById(req.userId);
     const repo = new PrismaAdvisorRepository();
     const updateUseCase = new UpdateAdvisorUseCase(repo);
