@@ -146,7 +146,7 @@ Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjE2M2FhN2U4L
 Content-Type: application/json
 
 {
-    "id": "ed4c73d3-fd08-477a-8435-54f8ce973000"
+    "id": "f2f05936-e960-4506-8144-ff3a72137e73"
 }
 ###
 POST  http://localhost:3333/course/register

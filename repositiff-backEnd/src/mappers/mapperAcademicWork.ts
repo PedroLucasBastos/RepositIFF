@@ -37,7 +37,7 @@ export class MapperAcademicWork {
     // console.log("=======================================================")
     const mapper = {
       id: data.id,
-      academicWorkStatus: data.academicWorkStatus,
+      academicWorkStatus: data.academicWorkVisibility,
       authors: data.authors,
       advisors: data.advisors.map((advisor: any) => ({
         id: advisor.id,
