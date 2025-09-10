@@ -24,11 +24,21 @@ const LibrarianDashboard = () => {
 
   const fetchTCCs = async () => {
     setLoadingTccs(true);
+    const authToken = Cookies.get("authToken");
+    if (!authToken) {
+        message.error("Sessão expirada. Faça login novamente.");
+        setLoadingTccs(false);
+        return;
+    }
     try {
-      const response = await fetch("http://localhost:3333/academicWork/");
-      if (!response.ok) {
-        throw new Error("Erro ao buscar trabalhos acadêmicos");
-      }
+        const response = await fetch("http://localhost:3333/academicWork/", {
+            headers: {
+                "Authorization": `Bearer ${authToken}`
+            }
+        });
+        if (!response.ok) {
+            throw new Error("Erro ao buscar trabalhos acadêmicos");
+        }
       const data = await response.json();
 
       const fullDataWithFormattedFields = (data.result || []).map((item) => ({

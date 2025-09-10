@@ -239,7 +239,7 @@ const FormEditTCC = ({ tccData, onClose }) => {
       onClose();
       return;
     }
-
+    console.log("aaaaaaaaaaa",advisorId);
     try {
       const addResp = await fetch("http://localhost:3333/academicWork/addAdvisor", {
         method: "POST",
@@ -275,11 +275,18 @@ const FormEditTCC = ({ tccData, onClose }) => {
 
   const handleRemoveAdvisorRole = async (advisorId) => {
     console.log("--- DEBUG: REMOVENDO ORIENTADOR ---");
-  console.log("ID enviado pelo clique:", advisorId);
-  console.log("ID do Orientador Principal (antes):", currentMainAdvisor?.id);
-  console.log("ID do Co-Orientador (antes):", currentCoAdvisor?.id);
-  console.log("------------------------------------");
-
+    console.log("ID enviado pelo clique:", advisorId);
+    console.log("ID do Orientador Principal (antes):", currentMainAdvisor?.id);
+    console.log("ID do Co-Orientador (antes):", currentCoAdvisor?.id);
+    console.log("------------------------------------");
+    
+    // NOVO: Adicione uma verificação para garantir que o ID é válido
+    if (!advisorId) {
+      console.error("Tentativa de remover orientador com ID inválido.");
+      message.error("Falha ao remover orientador: ID inválido.");
+      return;
+    }
+    
     const authToken = Cookies.get("authToken");
     if (!authToken) {
       message.error("Sessão expirada. Faça login novamente.");
@@ -287,11 +294,10 @@ const FormEditTCC = ({ tccData, onClose }) => {
       return;
     }
     
-
     try {
       const removeResp = await fetch("http://localhost:3333/academicWork/deleteAdvisor", {
         method: "POST",
-        headers: { "Content-Type": "application/json","Authorization ": `Bearer ${authToken}` },
+        headers: { "Content-Type": "application/json", "Authorization": `Bearer ${authToken}` },
         body: JSON.stringify({ academicWorkId: tccData.id, advisorId: advisorId }),
       });
       if (!removeResp.ok) throw new Error("Erro ao remover orientador.");
