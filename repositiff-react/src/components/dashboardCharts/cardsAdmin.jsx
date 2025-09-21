@@ -34,7 +34,7 @@ const CardsAdmin = ({ librarians, courses, academicWorks }) => {
   }, [academicWorks]);
 
   return (
-    <div className="flex justify-between mx-12 gap-12 mt-10">
+    <div className="flex flex-col md:flex-row md:justify-between mx-4 md:mx-12 gap-6 md:gap-12 mt-6 md:mt-10">
       {/* Trabalhos Acadêmicos por ano */}
       <Card
         className="flex-1 bg-gray-100 border rounded-lg"

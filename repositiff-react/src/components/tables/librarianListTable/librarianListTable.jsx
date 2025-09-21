@@ -134,7 +134,7 @@ const LibrarianListTable = ({ data, loading, onRefresh }) => {
   ];
 
   return (
-    <div className="p-4">
+    <div className="p-4 overflow-x-auto">
       <div className="mb-4 flex items-center gap-4">
         <Input
           placeholder="Pesquisar por nome ou matrícula"
@@ -150,6 +150,7 @@ const LibrarianListTable = ({ data, loading, onRefresh }) => {
         loading={loading}
         pagination={{ pageSize: 5 }}
         rowKey="key"
+        scroll={{ x: 'max-content' }}
       />
 
       <Modal

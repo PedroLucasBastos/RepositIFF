@@ -171,7 +171,7 @@ const AdminDashboard = () => {
         />
 
         {/* tabela */}
-        <div className="mx-12 mt-8">
+        <div className="mx-12 mt-8 overflow-x-auto">
           <LibrarianListTable
             data={librarians}
             loading={loadingLib}

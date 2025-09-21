@@ -146,7 +146,7 @@ const LibrarianDashboard = () => {
         <div>
           <CardsLibrarian tccsData={tccs}/>
         </div>
-        <div>
+        <div className="overflow-x-auto">
           <TCCListTable
             data={tccs}
             loading={loadingTccs}
