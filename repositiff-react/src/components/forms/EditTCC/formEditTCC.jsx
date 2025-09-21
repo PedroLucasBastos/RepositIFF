@@ -343,7 +343,7 @@ const FormEditTCC = ({ tccData, onClose }) => {
               {fields.map(({ key, name, ...restField }, idx) => (
                 <Card
                   key={key}
-                  title={`Autor ${idx + 1}`}
+                  title={`${idx + 1}° autoria`}
                   className="mb-3"
                   extra={
                     fields.length > 1 && (
@@ -360,7 +360,7 @@ const FormEditTCC = ({ tccData, onClose }) => {
                     name={[name, "nome"]}
                     rules={[{ required: true, message: "Obrigatório" }]}
                   >
-                    <Input placeholder="Nome do autor" />
+                    <Input placeholder="Autoria" />
                   </Form.Item>
                 </Card>
               ))}
@@ -379,7 +379,7 @@ const FormEditTCC = ({ tccData, onClose }) => {
 
       <Card title="Dados dos Orientadores" className="mb-4">
         <div className="mb-3">
-          <h5>Orientador Principal:</h5>
+          <h5>Orientador(a) Principal:</h5>
           {currentMainAdvisor ? (
             <Space>
               <span>
@@ -395,7 +395,7 @@ const FormEditTCC = ({ tccData, onClose }) => {
           ) : (
             <Space style={{ width: "100%" }}>
               <Select
-                placeholder="Selecione o orientador principal"
+                placeholder="Selecione o orientador(a) principal"
                 value={selectedAdvisorForDropdown}
                 onChange={setSelectedAdvisorForDropdown}
                 style={{ flexGrow: 1 }}
@@ -417,7 +417,7 @@ const FormEditTCC = ({ tccData, onClose }) => {
         </div>
 
         <div className="mb-3">
-          <h5>Co-Orientador:</h5>
+          <h5>Co-Orientador(a):</h5>
           {currentCoAdvisor ? (
             <Space>
               <span>
@@ -433,7 +433,7 @@ const FormEditTCC = ({ tccData, onClose }) => {
           ) : (
             <Space style={{ width: "100%" }}>
               <Select
-                placeholder="Selecione o co-orientador"
+                placeholder="Selecione o co-orientador(a) (se houver)"
                 value={selectedCoadvisorForDropdown}
                 onChange={setSelectedCoadvisorForDropdown}
                 style={{ flexGrow: 1 }}
@@ -508,8 +508,8 @@ const FormEditTCC = ({ tccData, onClose }) => {
         </Form.Item>
         <Form.Item
           name="qtdPag"
-          label="Número de Páginas"
-          rules={[{ required: true, message: "O número de páginas é obrigatório" }]}
+          label="Número de Folhas"
+          rules={[{ required: true, message: "O número de folhas é obrigatório" }]}
         >
           <Input type="number" min={1} />
         </Form.Item>

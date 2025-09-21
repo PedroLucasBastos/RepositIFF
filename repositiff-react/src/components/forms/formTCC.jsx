@@ -26,9 +26,13 @@ const FormTCC = ({ onClose }) => {
   const [file, setFile] = useState(null);
   const [cursos, setCursos] = useState([]);
   const workTypes = [
-  "Undergraduate thesis"             // Artigo
+  "Undergraduate thesis"             
 ];
 
+const workTypeOptions = [
+    { value: "Undergraduate thesis", label: "Tese de Graduação" },
+   
+  ];
   // Busca os orientadores na API e extrai o array "Advisors"
   useEffect(() => {
     const fetchAdvisors = async () => {
@@ -190,7 +194,7 @@ const validateReferencePage = () => ({
                 {fields.map(({ key, name, ...restField }, index) => (
                   <Card
                     key={key}
-                    title={`Dados do Autor ${index + 1}`}
+                    title={`Dados da  ${index + 1}° autoria`}
                     className="mb-4"
                     extra={
                       index > 0 && (
@@ -208,7 +212,7 @@ const validateReferencePage = () => ({
                       label="Nome"
                       rules={[{ required: true, message: "Obrigatório" }]}
                     >
-                      <Input placeholder={`Digite o nome do autor ${index + 1}`} />
+                      <Input placeholder={`Digite a ${index + 1}° autoria`} />
                     </Form.Item>
                   </Card>
                 ))}
@@ -218,7 +222,7 @@ const validateReferencePage = () => ({
                   icon={<PlusOutlined />}
                   className="mb-4 w-full"
                 >
-                  Adicionar mais um autor
+                  Adicionar mais uma autoria
                 </Button>
               </>
             )}
@@ -227,9 +231,9 @@ const validateReferencePage = () => ({
 
         {/* Dados dos Orientadores */}
         <Card title="Dados dos Orientadores" className="mb-4">
-          <Form.Item label="Orientador">
+          <Form.Item label="Orientador(a)">
             <Select
-              placeholder="Selecione o orientador"
+              placeholder="Selecione o orientador(a)"
               value={selectedAdvisor}
               onChange={(value) => {
                 setSelectedAdvisor(value);
@@ -246,9 +250,9 @@ const validateReferencePage = () => ({
             </Select>
           </Form.Item>
 
-          <Form.Item label="Coorientador">
+          <Form.Item label="Coorientador(a)">
             <Select
-              placeholder="Selecione o coorientador (se houver)"
+              placeholder="Selecione o coorientador(a) (se houver)"
               value={selectedCoadvisor}
               onChange={(value) => setSelectedCoadvisor(value)}
             >
@@ -281,9 +285,9 @@ const validateReferencePage = () => ({
           >
             <Select placeholder="Selecione o tipo de trabalho">
             
-            {workTypes.map(type => (
-              <Option key={type} value={type}>
-                {type}
+            {workTypeOptions.map(option => (
+              <Option key={option.value} value={option.value}>
+                {option.label}
               </Option>
             ))}
           </Select>
@@ -328,11 +332,11 @@ const validateReferencePage = () => ({
           </Form.Item>
 
           <Form.Item
-            label="Número de Páginas"
+            label="Número de Folhas"
             name="qtdPag"
             rules={[{ required: true, message: "Obrigatório" }]}
           >
-            <Input placeholder="Digite o número de páginas" />
+            <Input placeholder="Digite o número de folhas" />
           </Form.Item>
 
           <Form.Item
