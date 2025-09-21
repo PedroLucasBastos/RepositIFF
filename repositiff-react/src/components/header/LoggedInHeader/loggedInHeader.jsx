@@ -36,10 +36,6 @@ const LoggedInHeader = () => {
         <HomeOutlined />
         <Link to="/bibliotecario">Início</Link>
       </Menu.Item>
-      <Menu.Item key="editProfile" className="flex items-center space-x-2">
-        <EditOutlined />
-        <Link to="/editarPerfil">Editar Perfil</Link>
-      </Menu.Item>
       <Menu.Item key="logout" className="flex items-center space-x-2">
         <LogoutOutlined />
         <a onClick={handleLogout}>LogOut</a>
@@ -64,10 +60,6 @@ const LoggedInHeader = () => {
           <li>
             <HomeOutlined />
             <Link to="/bibliotecario"> Início</Link>
-          </li>
-          <li>
-            <EditOutlined />
-            <Link to="/bibliotecario/editarPerfil"> Editar Perfil</Link>
           </li>
           <li>
             <LogoutOutlined />

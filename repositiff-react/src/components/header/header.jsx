@@ -20,14 +20,8 @@ const dropdownMenu = (
     <Menu.Item key="about" onClick={() => scrollToSection("about")}>
       Sobre
     </Menu.Item>
-    <Menu.Item key="indicadores">
-      <a href="#indicadores">Indicadores</a>
-    </Menu.Item>
-    <Menu.Item key="contato">
-      <a href="#contato">Contato</a>
-    </Menu.Item>
-    <Menu.Item key="faq">
-      <a href="#faq">FAQ</a>
+    <Menu.Item key="Login">
+      <Link to="/login">Login</Link>
     </Menu.Item>
   </Menu>
 );

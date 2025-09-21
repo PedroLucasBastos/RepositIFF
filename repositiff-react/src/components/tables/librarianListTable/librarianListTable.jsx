@@ -122,18 +122,6 @@ const LibrarianListTable = ({ data, loading, onRefresh }) => {
       key: "actions",
       render: (_, record) => (
         <Space size="middle">
-          <Tooltip title="Visualizar">
-            <EyeOutlined
-              className="text-blue-500 cursor-pointer"
-              onClick={() => handleView(record)}
-            />
-          </Tooltip>
-          <Tooltip title="Editar">
-            <EditOutlined
-              className="text-green-500 cursor-pointer"
-              onClick={() => handleEdit(record)}
-            />
-          </Tooltip>
           <Tooltip title="Apagar">
             <DeleteOutlined
               className="text-red-500 cursor-pointer"
