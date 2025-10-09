@@ -40,11 +40,6 @@ export class UpdateAcademicWork_useCase {
     const validateResult = AcademicWorkValitador.validateUpdatedProps(props);
     if (validateResult.isLeft()) return new Left(validateResult.value);
 
-    // console.log("Props");
-    // console.log(props);
-    // if (!props.authors || !props.title) {
-    //   new CutterTable().generateCutterNumber();
-    // }
     const resultUpdated = await this._repo.updateAcademicWork(
       {
         authors: props.authors,
@@ -79,51 +74,4 @@ export class UpdateAcademicWork_useCase {
     }
     return new Right(resultUpdated);
   }
-
-  // private MODELO-ANTIGO() {
-  //     const validateResult = AcademicWorkValitador.validateUpdatedProps(props)
-  //     if (validateResult.isLeft())
-  //         return new Left(validateResult.value);
-
-  //     console.log("Props")
-  //     console.log(props)
-  //     const resultUpdated = await this._repo.updateAcademicWork({
-  //         authors: props.authors,
-  //         description: props.description,
-  //         cddCode: props.cddCode,
-  //         cduCode: props.cduCode,
-  //         references: props.references,
-  //         title: props.title,
-  //         idAdvisors: props.idAdvisors,
-  //         idCourse: props.idCourse,
-  //         keyWords: props.keyWords,
-  //         qtdPag: props.qtdPag,
-  //         typeWork: props.typeWork,
-  //         year: props.year,
-  //         ilustration: props.ilustration,
-  //     }, id);
-  //     if (resultUpdated instanceof Error) {
-  //         return new Left(new DomainError(
-  //             ErrorCategory.Application,
-  //             "Error to updated academicWork",
-  //             resultUpdated.message
-  //         ))
-  //     }
-  //     if (props.file) {
-  //         await this._storage.upload(
-  //             resultUpdated.file,
-  //             props.file
-  //         );
-  //     }
-  //     return new Right(resultUpdated);
-
-  // }
-
-  // private verifyProps(props: IUpdateAcademicWorkUseCaseDTO): Either<String, IUpdateAcademicWorkUseCaseDTO> {
-  //     let errorList = [];
-  //     let validProps: IUpdateAcademicWorkUseCaseDTO;
-  //     if (props.authors && AcademicWorkValitador.) {
-  //     }
-
-  // }
 }

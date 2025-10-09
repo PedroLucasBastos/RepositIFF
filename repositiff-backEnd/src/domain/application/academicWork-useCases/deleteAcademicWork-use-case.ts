@@ -20,7 +20,5 @@ export class DeleteAcademicWorkUseCase {
 
     this._fileStorage.delete(fileName);
     const result = this._academicRepo.deleteAcademicWork(id);
-    console.log("\nRESULTADO DA EXCLUSÃO\n");
-    console.log(result);
   }
 }

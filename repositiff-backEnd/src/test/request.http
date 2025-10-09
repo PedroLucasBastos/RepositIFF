@@ -10,10 +10,10 @@ POST http://localhost:3333/user/register
 Content-Type: application/json
 
 {
-    "name": "Natan Silva",
-    "email": "tansinho@gmail.com",
-    "registrationNumber": "2020",
-    "role": "LIBRARIAN",
+    "name": "Admin",
+    "email": "Admin@gmail.com",
+    "registrationNumber": "001",
+    "role": "ADMIN",
     "password": "12345",
     "confirmPassword": "12345"
 }

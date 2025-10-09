@@ -11,7 +11,6 @@ import { EitherOO, Left, Right } from "@src/error_handling/either.js";
 import { AcademicWork, Illustration, typeWork } from "@src/domain/entities/academicWork.js";
 import { Course } from "@src/domain/entities/course.js";
 import { MapperAcademicWork } from "@src/mappers/mapperAcademicWork.js";
-import { AcademicWorkFile } from "@src/domain/entities/academicWorkFile.js";
 import { Role } from "@src/domain/entities/user.js";
 
 type response = EitherOO<DomainError, AcademicWork>;
@@ -62,24 +61,16 @@ export class CreateProjectUseCase {
       );
     }
     const { authors, file, idCourse, idAdvisors, typeWork: type, title } = newAcademicWorkDTO;
-    let newFile: AcademicWorkFile;
     let cutterNumber = "cutter-number-test";
     let key = "www.localhost.com.br";
 
-    console.log("\nparametros que vieram");
-    console.log(newAcademicWorkDTO);
-    console.log("\n---------------------------------\n\n");
-    // console.log("asdklfjasdfieklasdjfioejklasdfjased")
-    // Object.values(TypeWork).includes(typeString as TypeWork)
     if (!Object.values(typeWork).includes(type as typeWork))
       return new Left(new DomainError(ErrorCategory.Application, "ERROR_TYPEWORK", `Error to convert typework`));
 
-    console.log("passou do primeiro if");
     const advisorsOrError = await this.findAllAdvisors(idAdvisors);
     let advisorsList: Advisor[] = [];
     if (advisorsOrError.isRight()) advisorsList = advisorsOrError.value;
     else if (advisorsOrError.isLeft()) return new Left(advisorsOrError.value);
-    console.log("Dps de Advisor");
     const courseOrNull = await this._courseRepo.findCourseById(idCourse);
     let courseResult: Course;
     if (!courseOrNull)
@@ -91,7 +82,6 @@ export class CreateProjectUseCase {
         )
       );
     else courseResult = courseOrNull;
-    console.log("Advisor e course foi");
 
     const academicWorkOrError = AcademicWork.createAcademicWorkFactory({
       authors: authors,
@@ -110,8 +100,6 @@ export class CreateProjectUseCase {
       cduCode: newAcademicWorkDTO.cduCode,
     });
 
-    console.log("DPS DE INSTANCIAR");
-    console.log(academicWorkOrError);
     if (academicWorkOrError.isLeft())
       return new Left(
         new DomainError(
@@ -121,7 +109,6 @@ export class CreateProjectUseCase {
         )
       );
     const academicWorkEntity = academicWorkOrError.value as AcademicWork;
-    console.log("Na beira de mandar apr o BD");
     const resultDB = await this._academicRepo.addAcademicWork({
       idAcademicWork: academicWorkEntity.id,
       authors: academicWorkEntity.authors,
@@ -150,21 +137,12 @@ export class CreateProjectUseCase {
           resultDB.name
         )
       );
-    console.log("Result depois de criar a entidade - ");
 
     if (file != undefined) {
-      // console.log()
-      // newFile = new AcademicWorkFile({
-      //   title: title,
-      //   key: academicWorkEntity.id,
-      // });
       await this._fileStorage.upload(academicWorkEntity.file, file);
     }
-    console.log("\n\n QUASE ACABANDO AKI \n\n");
     const academicWorkResult = MapperAcademicWork.dtoToEntity(resultDB);
 
-    console.log("\n\n DEPOIS DO ULTIMO MAPPING \n\n");
-    console.log(academicWorkResult);
 
     if (academicWorkResult instanceof DomainError)
       return new Left(
@@ -176,22 +154,8 @@ export class CreateProjectUseCase {
           academicWorkResult.name
         )
       );
-    console.log("VERIFICAÇÃO");
-    console.log(`ID DA ENTIDADE: ${resultDB.id}`);
-    console.log(`ID da volta do DB: ${academicWorkResult.id}`);
-    console.log("==============================================================");
     return new Right(academicWorkResult);
   }
-
-  // async uploadedFile(file: IFile): Promise<void> {
-  //     try {
-
-  //         const fileBuffer = await fs.readFile(file.path);
-  //         await
-  //     } catch (error) {
-  //         console.error('Erro ao ler o arquivo:', error);
-  //     }
-  // }
 
   async findAllAdvisors(idAdvisors: string[]): Promise<EitherOO<DomainError, Advisor[]>> {
     const advisorsList = await Promise.all(

@@ -23,12 +23,6 @@ export class DeleteAdvisorUseCase {
     if (advisor instanceof Error)
       return new Left(new DomainError(ErrorCategory.Application, "ERROR-TO-DELETE-ADVISOR", advisor.message));
     return new Right(undefined);
-    // const idAdvisor = id.advisorIdentification;
-    // const advisorExisting = await this.repository.advisorExisting(idAdvisor);
-    // if (!advisorExisting) {
-    //     return new Left(AdvisorErrors.AdvisorNotFound());
-    // }
-    // this.repository.deleteAdvisor(idAdvisor);
-    // return new Right(undefined)
+
   }
 }

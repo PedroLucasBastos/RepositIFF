@@ -20,9 +20,6 @@ export class ListAcademicWorkUseCase {
   constructor(private _repo: IAcademicWorkRepository) {}
 
   async execute(props: listAcademicWorks): Promise<Either<Error, IReturnFullAcademicWorkDTO[]>> {
-    console.log("\nNEW LISTA\n");
-    console.log(props);
-    console.log("\n\n");
     const where: any = {
       ...(props.userRole ? {} : { academicWorkVisibility: true }), // se não tiver role, só mostra públicos
       ...(props.optionalParameters?.year && { year: props.optionalParameters.year }),
@@ -34,10 +31,8 @@ export class ListAcademicWorkUseCase {
       }),
     };
 
-    console.log(where);
     const result = await this._repo.listCustomAcademicWork(where);
 
-    console.log(result);
     return new Right(result);
   }
 }

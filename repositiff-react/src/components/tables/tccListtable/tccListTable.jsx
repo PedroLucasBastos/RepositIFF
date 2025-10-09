@@ -334,7 +334,7 @@ const TCCListTable = ({ data, loading, onRefresh, onEdit }) => {
           cancelText="Cancelar"
         >
           <p>
-            Você tem certeza que deseja alterar a visibilidade do trabalho **"{recordToChangeVisibility.title}"**?
+            Você tem certeza que deseja alterar a visibilidade do trabalho <strong>&quot;{recordToChangeVisibility.title}&quot;</strong>?
           </p>
           <p>
             Essa ação irá tornar o trabalho{" "}

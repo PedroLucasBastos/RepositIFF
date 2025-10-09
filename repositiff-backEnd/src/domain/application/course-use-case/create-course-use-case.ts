@@ -10,7 +10,6 @@ export class CreateCourseUseCase {
   constructor(private _repo: ICourseRepository) {}
 
   async execute(newCourseProps: ICourseProps, userRole: string): Promise<response> {
-    console.log("User role in CreateCourseUseCase:", userRole);
     if (userRole !== Role.ADMIN) {
       return new Left(
         new DomainError(
@@ -27,7 +26,6 @@ export class CreateCourseUseCase {
       courseCode,
       degreeType,
     });
-    // console.log(courseOrError.value);
     if (courseOrError.isLeft()) return new Left(courseOrError.value);
     const course = courseOrError.value as Course;
     const resultOrError = await this._repo.addCourse(course);

@@ -14,12 +14,6 @@ export class ChangeVisibilityUseCase {
     private _fileStorage: IFileStorage
   ) {}
 
-  /*
-    Para mudar a visibilidade
-    Eu preciso que os dados do banco de dados estajam preenchidos corretamente
-    Eu preciso que haja um arquivo na cloudflare
-  
-  */
 
   async execute(academimcWorkId: string, userRole: string): Promise<Either<DomainError, string>> {
     if (userRole !== Role.LIBRARIAN) {
@@ -41,7 +35,6 @@ export class ChangeVisibilityUseCase {
       return new Left(new DomainError(ErrorCategory.Application, "ACADEMIC_WORK_NOT_FOUND", "Academic work not found"));
     }
 
-    console.log(responseConsulting);
     if (responseConsulting.academicWorkStatus === true) {
       const result = await this._repo.changeVsibility(academimcWorkId, false);
       if (result instanceof Error) {

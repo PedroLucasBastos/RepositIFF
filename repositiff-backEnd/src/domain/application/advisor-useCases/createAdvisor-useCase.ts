@@ -36,7 +36,6 @@ export class CreateAdvisorUseCase {
     }
 
     const advisor = advisorOrError.value as Advisor;
-    // console.log(advisor);
 
     const resultOrError = await this.advisorRepostory.addAdvisor(advisor);
     if (resultOrError instanceof Error) {
@@ -45,19 +44,5 @@ export class CreateAdvisorUseCase {
       );
     }
     return new Right(resultOrError as Advisor);
-  }
-
-  async teste() {
-    // const resultOrError = await this._repo.addCourse(course);
-    // if (resultOrError instanceof Error)
-    //     return new Left(
-    //         new DomainError(
-    //             ErrorCategory.Application,
-    //             "ERROR_TO_CADASTRATE_COURSE",
-    //             resultOrError.message,
-    //             resultOrError
-    //         )
-    //     )
-    // return new Right(resultOrError as Course);
   }
 }

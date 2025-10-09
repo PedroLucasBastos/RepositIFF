@@ -61,9 +61,6 @@ export interface IUpdateRouteRequest {
 // interface IReque
 export class academicWorkController {
   async cadastrated(req: any, res: FastifyReply): Promise<void> {
-    console.log("\n INICIO DA REQUISIÇÃO DE ADIÇÃO");
-    // console.log(req);
-    console.log("\n");
     const resultSanitize = this.sanitizeReceivedDataToAdd(req);
     if (resultSanitize.isLeft()) {
       return res.status(400).send({
@@ -78,29 +75,7 @@ export class academicWorkController {
     const advisorRepo = new PrismaAdvisorRepository();
     const flare = new CloudFlareFileStorage();
     const useCase = new CreateProjectUseCase(repo, advisorRepo, courseRepo, flare);
-    // console.log(parameters);
-    console.log("PARAMETROS DO CONTROLLER");
-    console.log({
-      authors: parameters.authors,
-      idAdvisors: parameters.idAdvisors,
-      title: parameters.title,
-      typeWork: parameters.typeWork,
-      year: parameters.year,
-      qtdPag: parameters.qtdPag,
-      description: parameters.description,
-      idCourse: parameters.idCourse,
-      keyWords: parameters.keyWords,
-      ilustration: parameters.ilustration,
-      references: parameters.references,
-      cddCode: parameters.optinalParameters.cddCode,
-      cduCode: parameters.optinalParameters.cduCode,
-      file: parameters.optinalParameters.file,
-      userId: req.userId,
-    });
 
-    console.log("\n\n");
-
-    console.log(`userId: ${req.userId}`);
     const user = await new PrismaUserRepository().findById(req.userId);
 
     if (!user) {
@@ -147,26 +122,14 @@ export class academicWorkController {
     const user = await new PrismaUserRepository().findById(req.userId);
 
     const useCase = new DeleteAcademicWorkUseCase(repo, flare).execute(id, user?.role || "");
-    // if (result.isLeft())
-    //   return res.status(400).send({
-    //     Error: result.value,
-    //   });
-    // console.log("\nPASSOU TUDO\n");
     res.code(200).send({
       Message: "TRABALHO FOI EXCLUÍDO COM SUCESSO",
     });
   }
 
   async basicUpdate(req: any, res: FastifyReply): Promise<void> {
-    console.log("\n\nCOMEÇOU O CONTROLLER DE BASIC\n");
-    // console.log(req);
-    console.log("\n\n\n");
     const { id, fields } = req.body;
     const userId = req.userId;
-    console.log(req.body);
-    console.log(`\n Id: ${id} \n`);
-    console.log(`\n fields: ${fields} \n`);
-    console.log(`\n userId: ${userId} \n`);
     const resultSanitize = this.sanitizeReceivedDataToUpdateBasicInfo(req.body);
     if (resultSanitize.isLeft()) {
       return res.status(400).send({
@@ -174,7 +137,6 @@ export class academicWorkController {
         detail: resultSanitize.value,
       });
     }
-    console.log("passou da sanitização - basic info");
     const repo = new PrismaAcademicWorkRepository();
     const useCase = new BasicUpdateAcademicWorkUseCase(repo, new CloudFlareFileStorage());
 
@@ -182,15 +144,11 @@ export class academicWorkController {
 
     const result = await useCase.execute({ id, fields }, user?.role || "");
 
-    // console.log("\n\nRESULTADO DA SANITIZAÇÃO\n");
-    // console.log(resultSanitize);
-    // console.log("\nRESULTADO DA SANITIZAÇÃO\n\n");
 
     if (result.isLeft())
       return res.status(400).send({
         Error: result.value,
       });
-    console.log("\nPASSOU TUDO\n");
     res.code(200).send({
       isRight: result,
       Message: "DEU BOM AKI",
@@ -297,12 +255,9 @@ export class academicWorkController {
   }
 
   async update(req: any, res: FastifyReply): Promise<void> {
-    console.log("COMEÇOU A ROTA AKIIIIIIIIIIIIII");
-    console.log("req");
-    console.log(req);
+    
     const { id, body } = req;
-    console.log(`id ${id}`);
-    console.log(`body ${body}`);
+   
     const resultSanitize = this.sanitizeReceivedDataToUpdate(body);
     if (resultSanitize.isLeft()) {
       return res.status(400).send({
@@ -311,15 +266,12 @@ export class academicWorkController {
       });
     }
 
-    console.log("Depois de sanitizar");
     const parameters = resultSanitize.value;
     const repo = new PrismaAcademicWorkRepository();
     const flare = new CloudFlareFileStorage();
     const useCase = new UpdateAcademicWork_useCase(repo, flare);
 
-    console.log("Parameters abaixo");
-    console.log(parameters);
-    console.log("ANTES DO USE CASE");
+ 
 
     const result = await useCase.execute(parameters, id);
 
@@ -335,8 +287,7 @@ export class academicWorkController {
   }
   async list(req: FastifyRequest, res: FastifyReply): Promise<void> {
     const repo = await new PrismaAcademicWorkRepository().listAllProjects();
-    console.log("askldjfasdfasdjkfasdfa");
-    console.log(repo);
+  
     res.code(200).send({
       result: repo,
     });
@@ -346,7 +297,6 @@ export class academicWorkController {
     const repo = await new PrismaAcademicWorkRepository();
     const body = req.body || {};
     const userId = req.userId;
-    console.log(req);
     if (userId) {
       const user = await new PrismaUserRepository().findById(userId);
       body.userRole = user?.role;
@@ -390,8 +340,6 @@ export class academicWorkController {
   }
 
   sanitizeReceivedDataToUpdateBasicInfo(request: any): Either<string, void> {
-    console.log("SANITIZAÇÃO BASIC INFO\n");
-    console.log(request);
     const { id, fields } = request;
     const {
       authors,
@@ -422,9 +370,7 @@ export class academicWorkController {
       return new Left("Title must be a string.");
     }
 
-    // Validate type
-    // console.log("AKASIEKDASFJWEASDF");
-    // console.log(typeof typeWork);
+   
     if (typeWork && typeof typeWork !== "string") {
       return new Left("Type must be a string.ASDFASDFASD");
     }
@@ -474,7 +420,6 @@ export class academicWorkController {
     if (cddCode && typeof cddCode !== "string") {
       return new Left("CDD code, if provided, must be a string.");
     }
-    console.log("TUDO CERTO AQUI - sanitização basic info");
     return new Right(undefined);
   }
 
@@ -511,8 +456,6 @@ export class academicWorkController {
     // Validate idAdvisors
     const parseidAdvisors = idAdvisors ? JSON.parse(idAdvisors) : "";
     if (idAdvisors && (!Array.isArray(parseidAdvisors) || parseidAdvisors.some((id) => typeof id !== "string"))) {
-      console.log(parseidAdvisors[0]);
-      console.log(Array.isArray(parseidAdvisors));
       return new Left("Advisors must be an array of strings.");
     }
 
@@ -522,10 +465,8 @@ export class academicWorkController {
     }
 
     // Validate type
-    console.log("AKASIEKDASFJWEASDF");
-    console.log(typeof typeWork);
     if (typeWork && typeof typeWork !== "string") {
-      return new Left("Type must be a string.ASDFASDFASD");
+      return new Left("Type must be a string.");
     }
 
     // Validate year
@@ -609,13 +550,10 @@ export class academicWorkController {
     });
   }
   sanitizeReceivedDataToAdd(request: any): Either<string, IRequestAcademicWorkController> {
-    console.log(request);
     const { optinalParameters, ...parameters } = request;
     const verify = Object.entries(parameters).filter(([key, value]) => value === undefined);
     if (verify.length > 0) return new Left("All parameters must be provided");
 
-    console.log("\n\n INICIO SANITIZAÇÃO \n");
-    console.log(request);
     const {
       authors,
       idAdvisors,
@@ -629,7 +567,6 @@ export class academicWorkController {
       ilustration,
       references,
     } = request;
-    console.log("\n\n\n");
     // Validate authors
     const parseAuthors = JSON.parse(authors);
     if (!Array.isArray(parseAuthors) || parseAuthors.some((author) => typeof author !== "string")) {
@@ -639,8 +576,6 @@ export class academicWorkController {
     // Validate idAdvisors
     const parseidAdvisors = JSON.parse(idAdvisors);
     if (!Array.isArray(parseidAdvisors) || parseidAdvisors.some((id) => typeof id !== "string")) {
-      console.log(parseidAdvisors[0]);
-      console.log(Array.isArray(parseidAdvisors));
       return new Left("Advisors must be an array of strings.");
     }
 
